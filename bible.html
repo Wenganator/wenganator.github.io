@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bible Verse Search</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <header>
+    <h1>Bible Verse Search</h1>
+  </header>
+
+  <main>
+    <form id="search-form">
+        <label for="verse-input">Enter Bible Verse(s) (e.g., John 3:16 or John 3:16-18):</label>
+        <input type="text" id="verse-input" required>
+        <button type="submit">Search</button>
+      </form>
+      
+      <div id="verse-display"></div>
+
+    <div id="verse-display">
+      <!-- Processed Bible verse will appear here -->
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Your Bible Search</p>
+  </footer>
+
+  <script src="scripts/bible.js" defer></script>
+</body>
+</html>

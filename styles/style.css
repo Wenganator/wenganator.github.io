@@ -1,5 +1,6 @@
 body {
     font-family: Arial, sans-serif;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
   }
@@ -27,6 +28,8 @@ body {
   
   main {
     padding: 2rem;
+    max-width: 800 px;
+    margin: 0 auto;
   }
   
   footer {
@@ -48,4 +51,42 @@ body {
   
   #site-directory a:hover {
     text-decoration: underline;
+  }
+
+
+
+/* Bible verse search form (bible.html)*/
+
+  #search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  #verse-display {
+    margin-top: 2rem;
+    font-size: 1.2rem;
+  }
+  
+  .hidden-word {
+    display: inline-block;
+    position: relative;
+  }
+  
+  .hidden-word span.full-word {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  
+  .hidden-word:hover span.full-word {
+    opacity: 1;
+    transform: translateX(10px); /* Adjust for spacing effect */
+  }
+  
+  .hidden-word span.first-letter {
+    opacity: 1;
   }
