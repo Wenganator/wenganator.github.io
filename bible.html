@@ -6,23 +6,67 @@
   <title>Bible Verse Search</title>
   <link rel="stylesheet" href="styles/style.css">
 </head>
+
+
+<script>
+    // Include the fetchBibleVerse function here
+    async function fetchBibleVerse(passage, translation = "kjv") {
+      const display = document.getElementById("verse-display");
+
+      if (!passage) {
+        display.textContent = "Please enter a valid passage.";
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://bible-api.com/${encodeURIComponent(passage)}?translation=${translation}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.text) {
+          display.textContent = data.text.trim();
+        } else {
+          display.textContent = "Error: Passage not found.";
+        }
+      } catch (error) {
+        display.textContent = `Error fetching verse: ${error.message}`;
+      }
+    }
+
+      
+        // Handle form submission
+        function handleSearch(event) {
+      event.preventDefault();
+      const passage = document.getElementById("verse-input").value;
+      const translation = document.getElementById("translation-select").value;
+      fetchBibleVerse(passage, translation);
+    }
+  </script>
+
+
 <body>
   <header>
     <h1>Bible Verse Search</h1>
   </header>
 
   <main>
-    <form id="search-form">
-        <label for="verse-input">Enter Bible Verse(s) (e.g., John 3:16 or John 3:16-18):</label>
-        <input type="text" id="verse-input" required>
-        <button type="submit">Search</button>
-      </form>
-      
-      <div id="verse-display"></div>
-
-    <div id="verse-display">
-      <!-- Processed Bible verse will appear here -->
-    </div>
+    <form onsubmit="handleSearch(event);">
+    <label for="verse-input">Enter a Bible Passage:</label>
+    <input type="text" id="verse-input" placeholder="e.g., John 3:16, Psalm 23">
+    
+    <label for="translation-select">Select Translation:</label>
+    <select id="translation-select">
+      <option value="kjv">King James Version (KJV)</option>
+      <option value="web">World English Bible (WEB)</option>
+      <option value="akjv">American KJV (AKJV)</option>
+    </select>
+    
+    <button type="submit">Search</button>
+    </form>
+    <div id="verse-display" style="white-space: pre-wrap; margin-top: 1rem;"></div>
   </main>
 
   <footer>

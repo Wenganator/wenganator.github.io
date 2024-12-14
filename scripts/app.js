@@ -41,72 +41,74 @@ const pages = [
 
 // Bible verse search form (bible.html)
 // scripts/bible.js
-const API_BASE_URL = "https://api.esv.org/v3/passage/text/";
-const DEFAULT_TRANSLATION = "ESV"; // Currently only ESV is supported
-const API_KEY = "627fcad2f869abd15c665a6db9003912e36a1d85"; // Replace with your ESV API key
-
-/**
- * Fetch Bible verse(s) using the ESV API.
- * 
- * @param {string} verseInput - The passage(s) to query (e.g., "John 3:16" or "John 3:16-18").
- * @param {string} [translation=DEFAULT_TRANSLATION] - The Bible translation (currently only ESV).
- * @returns {Promise<string|null>} The formatted passage text or null on failure.
- */
-async function fetchBibleVerse(verseInput, translation = DEFAULT_TRANSLATION) {
-  if (translation !== "ESV") {
-    console.error(`Translation ${translation} is not supported yet.`);
-    return null;
-  }
-
-  try {
-    const url = `${API_BASE_URL}?q=${encodeURIComponent(verseInput)}`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Authorization: `Token ${API_KEY}`, // Pass API key in the Authorization header
-      },
-    });
-
-    if (!response.ok) {
-      console.error("Error fetching Bible verse:", response.statusText);
-      return null;
-    }
-
-    const data = await response.json();
-
-    // Extract and return passage text
-    if (data.passages && data.passages.length > 0) {
-      return data.passages.join("\n"); // Combine multiple passages if provided
-    } else {
-      console.error("No passages found for the query.");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching Bible verse:", error);
-    return null;
-  }
-}
-
-/**
- * Event listener for the search form.
- */
 document.getElementById("search-form").addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  const verseInput = document.getElementById("verse-input").value.trim();
-  const verseDisplay = document.getElementById("verse-display");
-
-  if (!verseInput) {
-    verseDisplay.textContent = "Please enter a valid Bible verse.";
-    return;
+    event.preventDefault();
+  
+    const verseInput = document.getElementById("verse-input").value.trim();
+    const verseDisplay = document.getElementById("verse-display");
+  
+    if (!verseInput) {
+      verseDisplay.textContent = "Please enter a valid Bible verse.";
+      return;
+    }
+  
+    // Fetch the Bible verse using an API (like Bible API) or a static local JSON file.
+    const verseText = await fetchBibleVerse(verseInput);
+  
+    if (!verseText) {
+      verseDisplay.textContent = "Verse not found. Please try again.";
+      return;
+    }
+  
+    // Process the verse text into the hover effect format.
+    const formattedText = formatVerseText(verseText);
+  
+    // Display the processed text.
+    verseDisplay.innerHTML = formattedText;
+  });
+  
+  // Function to fetch a Bible verse (replace with actual API or static data)
+  async function fetchBibleVerse(passage, translsation = "kjv") {
+    const display = document.getElementById("verse-display");
+  
+    if (!passage) {
+      display.textContent = "Please enter a valid passage.";
+      return;
+    }
+  
+    try {
+      // Fetch the passage from the Bible API
+      const response = await fetch(`https://bible-api.com/${encodeURIComponent(passage)}?translation=${translation}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+  
+      // Check if a valid passage is returned
+      if (data.text) {
+        display.textContent = data.text.trim();
+      } else {
+        display.textContent = "Error: Passage not found.";
+      }
+    } catch (error) {
+      display.textContent = `Error fetching verse: ${error.message}`;
+    }
   }
-
-  // Fetch Bible verse
-  const verseText = await fetchBibleVerse(verseInput);
-
-  if (verseText) {
-    verseDisplay.textContent = verseText;
-  } else {
-    verseDisplay.textContent = "Error fetching verse. Please try again.";
+  
+  // Function to format verse text
+  function formatVerseText(text) {
+    return text
+      .split(" ")
+      .map(word => {
+        const firstLetter = word.charAt(0);
+        const remainingLetters = word.slice(1);
+        return `
+          <span class="hidden-word">
+            <span class="first-letter">${firstLetter}</span>
+            <span class="full-word">${remainingLetters}</span>
+          </span>
+        `;
+      })
+      .join(" ");
   }
-});
