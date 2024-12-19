@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+header {
+    background-color: #0078d7;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem;
+}
+.controls label {
+    font-weight: bold;
+}
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 5rem; /* Ensures space for the banner */
+}
+.article-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.article-card img {
+    width: 100%;
+    height: auto;
+    max-height: 350px; /* adjust this value to resize preview images */
+    object-fit: cover;
+}
+.article-card h3 {
+    margin: 0.5rem;
+    font-size: 1.2rem;
+}
+.article-card p {
+    margin: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+.article-card a {
+    display: block;
+    text-decoration: none;
+    color: #0078d7;
+    margin: 0.5rem;
+    font-weight: bold;
+}
+.toggle-banner {
+    background-color: #0078d7;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+}
+.banner {
+    display: none;
+    background-color: white;
+    border-top: 1px solid #ddd;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 1rem;
+    position: fixed;
+    bottom: 3rem; /* Keeps the banner above the toggle button */
+    left: 0;
+    width: 100%;
+    z-index: 5;
+}
+.banner ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    columns: 3;
+    column-gap: 2rem;
+}
+.banner ul li {
+    margin: 0.5rem 0;
+}
+.banner ul li a {
+    text-decoration: none;
+    color: #0078d7;
+}

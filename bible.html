@@ -13,18 +13,18 @@
   </header>
 
   <main>
-    <form onsubmit="handleSearch(event);">
-    <label for="verse-input">Enter a Bible Passage:</label>
-    <input type="text" id="verse-input" placeholder="e.g., John 3:16, Psalm 23">
-    
-    <label for="translation-select">Select Translation:</label>
-    <select id="translation-select">
-      <option value="kjv">King James Version (KJV)</option>
-      <option value="web">World English Bible (WEB)</option>
-      <option value="akjv">American KJV (AKJV)</option>
-    </select>
-    
-    <button type="submit">Search</button>
+    <form id="search-form" onsubmit="handleSearch(event);">
+        <label for="verse-input">Enter a Bible Passage:</label>
+        <input type="text" id="verse-input" placeholder="e.g., John 3:16, Jn 3:16, John 3">
+        
+        <label for="translation-select">Select Translation:</label>
+        <select id="translation-select">
+        <option value="kjv">King James Version (KJV)</option>
+        <option value="web">World English Bible (WEB)</option>
+        <option value="akjv">American KJV (AKJV)</option>
+        </select>
+        
+        <button type="submit">Search</button>
     </form>
     <div id="verse-display" style="white-space: pre-wrap; margin-top: 1rem;"></div>
   </main>

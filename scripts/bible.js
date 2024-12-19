@@ -16,10 +16,10 @@ document.getElementById("search-form").addEventListener("submit", async function
     // Fetch the Bible verse using an API (like Bible API) or a static local JSON file.
     const verseText = await fetchBibleVerse(verseInput);
   
-    if (!verseText) {
-      verseDisplay.textContent = "Verse not found. Please try again.";
-      return;
-    }
+    // if (!verseText) {
+    //   verseDisplay.textContent = "Verse not found. Please try again.";
+    //   return;
+    // }
   
     // Process the verse text into the hover effect format.
     const formattedText = formatVerseText(verseText);
@@ -59,21 +59,58 @@ document.getElementById("search-form").addEventListener("submit", async function
 
 
   // Function to format verse text
+//   function formatVerseText(text) {
+//     return text
+//       .split(" ")
+//       .map(word => {
+//         const firstLetter = word.charAt(0);
+//         const remainingLetters = word.slice(1);
+//         return `
+//           <span class="hidden-word">
+//             <span class="first-letter">${firstLetter}</span>
+//             <span class="full-word">${remainingLetters}</span>
+//           </span>
+//         `;
+//       })
+//       .join(" ");
+//   }
+
   function formatVerseText(text) {
-    return text
-      .split(" ")
-      .map(word => {
-        const firstLetter = word.charAt(0);
-        const remainingLetters = word.slice(1);
-        return `
-          <span class="hidden-word">
-            <span class="first-letter">${firstLetter}</span>
-            <span class="full-word">${remainingLetters}</span>
-          </span>
-        `;
-      })
-      .join(" ");
+    const container = document.createElement("div"); // Create a container for the verse text
+  
+    text.split(" ").forEach(word => {
+      const firstLetter = word.charAt(0); // Extract the first letter
+      const remainingLetters = word.slice(1); // Extract the rest of the word
+  
+      // Create the wrapper for each word
+      const wordSpan = document.createElement("span");
+      wordSpan.classList.add("hidden-word");
+  
+      // Create the span for the first letter
+      const firstLetterSpan = document.createElement("span");
+      firstLetterSpan.classList.add("first-letter");
+      firstLetterSpan.textContent = firstLetter;
+  
+      // Create the span for the remaining letters
+      const fullWordSpan = document.createElement("span");
+      fullWordSpan.classList.add("full-word");
+      fullWordSpan.textContent = remainingLetters;
+  
+      // Append the first letter and full word to the word span
+      wordSpan.appendChild(firstLetterSpan);
+      wordSpan.appendChild(fullWordSpan);
+  
+      // Append the word span to the container
+      container.appendChild(wordSpan);
+  
+      // Add a space after each word
+      container.appendChild(document.createTextNode(" "));
+    });
+  
+    return container; // Return the container with formatted text
   }
+  
+
 
 
 

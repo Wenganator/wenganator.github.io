@@ -8,6 +8,7 @@ const pages = [
     { name: "About", url: "about.html" },
     { name: "Contact", url: "contact.html" },
     { name: "Bible", url: "bible.html"},
+    { name: "Wikipedia", url: "wikipedia.html"},
     // Add more pages here
   ];
   
