@@ -1,61 +1,145 @@
+/* Default styles for body of page */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-  }
+}
   
-  header {
-    background-color: #333;
+header {
+    background-color: #0078d7;
     color: white;
-    padding: 1rem 0;
-  }
-  
-  #navbar {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-  
-  #navbar a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  #navbar a:hover {
-    text-decoration: underline;
-  }
-  
-  main {
+    padding: 1rem;
+    text-align: center;
+}
+
+main {
     padding: 2rem;
     max-width: 800 px;
     margin: 0 auto;
-  }
-  
-  footer {
+}
+
+h1 {
+    font-family: Cinzel, 'Times New Roman', Times, serif;
+}
+
+footer {
     background-color: #f4f4f4;
     text-align: center;
-    padding: 1rem;
+    padding: 0.2rem;
     margin-top: 2rem;
-  }
+}
+
+/* Navigation bar (at top of page) */
+#navbar {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
   
-  #site-directory {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  #site-directory a {
+#navbar a {
+    color: white;
     text-decoration: none;
-    color: #007BFF;
+}
+  
+#navbar a:hover {
+    text-decoration: underline;
+}
+
+
+/* Fonts */
+.roboto-thin {
+    font-family: "Roboto", serif;
+    font-weight: 100;
+    font-style: normal;
   }
   
-  #site-directory a:hover {
-    text-decoration: underline;
+  .roboto-light {
+    font-family: "Roboto", serif;
+    font-weight: 300;
+    font-style: normal;
   }
+  
+  .roboto-regular {
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .roboto-medium {
+    font-family: "Roboto", serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  .roboto-bold {
+    font-family: "Roboto", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .roboto-black {
+    font-family: "Roboto", serif;
+    font-weight: 900;
+    font-style: normal;
+  }
+  
+  .roboto-thin-italic {
+    font-family: "Roboto", serif;
+    font-weight: 100;
+    font-style: italic;
+  }
+  
+  .roboto-light-italic {
+    font-family: "Roboto", serif;
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  .roboto-regular-italic {
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .roboto-medium-italic {
+    font-family: "Roboto", serif;
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  .roboto-bold-italic {
+    font-family: "Roboto", serif;
+    font-weight: 700;
+    font-style: italic;
+  }
+  
+  .roboto-black-italic {
+    font-family: "Roboto", serif;
+    font-weight: 900;
+    font-style: italic;
+  }
+
+.itim-regular {
+    font-family: "Itim", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+/* <uniquifier>: Use a unique and descriptive class name */
+/* <weight>: Use a value from 400 to 900 */
+.cinzel {
+    font-family: "Cinzel", serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+  }
+
 
 
 
 /* Bible verse search form (bible.html)*/
+/* TO DO: move this section to new stylesheet */
 
   #search-form {
     display: flex;
