@@ -7,7 +7,8 @@ const pages = [
     { name: "Home", url: "index.html" },
     { name: "About", url: "about.html" },
     { name: "Contact", url: "contact.html" },
-    { name: "Bible", url: "bible.html"},
+    { name: "Passage Search", url: "bible.html"},
+    { name: "Bible Memory", url: "bible2.html" },
     { name: "Wikipedia", url: "wikipedia.html"},
     { name: "Books", url: "books.html"},
     // Add more pages here

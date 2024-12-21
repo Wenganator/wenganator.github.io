@@ -47,7 +47,7 @@ footer {
 }
 
 
-/* Fonts */
+/* Google Fonts */
 .roboto-thin {
     font-family: "Roboto", serif;
     font-weight: 100;
@@ -133,44 +133,4 @@ footer {
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
-  }
-
-
-
-
-/* Bible verse search form (bible.html)*/
-/* TO DO: move this section to new stylesheet */
-
-  #search-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  #verse-display {
-    margin-top: 2rem;
-    font-size: 1.2rem;
-  }
-  
-  .hidden-word {
-    display: inline-block;
-    position: relative;
-  }
-  
-  .hidden-word span.full-word {
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s, transform 0.3s;
-  }
-  
-  .hidden-word:hover span.full-word {
-    opacity: 1;
-    transform: translateX(10px); /* Adjust for spacing effect */
-  }
-  
-  .hidden-word span.first-letter {
-    opacity: 1;
   }
