@@ -1,0 +1,266 @@
+@import url('https://fonts.googleapis.com/css2?family=Averia+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Cardo:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@500&family=Homemade+Apple&family=Itim&family=Julius+Sans+One&family=Kalam:wght@300;400;700&family=Kristi&family=LXGW+WenKai+Mono+TC&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Merienda:wght@300..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
+/* Google Fonts - "embed code" output */
+.itim-regular {
+    font-family: "Itim", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.roboto-thin {
+    font-family: "Roboto", serif;
+    font-weight: 100;
+    font-style: normal;
+  }
+  
+  .roboto-light {
+    font-family: "Roboto", serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  .roboto-regular {
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .roboto-medium {
+    font-family: "Roboto", serif;
+    font-weight: 500;
+    font-style: normal;
+  }
+  
+  .roboto-bold {
+    font-family: "Roboto", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .roboto-black {
+    font-family: "Roboto", serif;
+    font-weight: 900;
+    font-style: normal;
+  }
+  
+  .roboto-thin-italic {
+    font-family: "Roboto", serif;
+    font-weight: 100;
+    font-style: italic;
+  }
+  
+  .roboto-light-italic {
+    font-family: "Roboto", serif;
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  .roboto-regular-italic {
+    font-family: "Roboto", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .roboto-medium-italic {
+    font-family: "Roboto", serif;
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  .roboto-bold-italic {
+    font-family: "Roboto", serif;
+    font-weight: 700;
+    font-style: italic;
+  }
+  
+  .roboto-black-italic {
+    font-family: "Roboto", serif;
+    font-weight: 900;
+    font-style: italic;
+}
+  
+
+/* <uniquifier>: Use a unique and descriptive class name */
+/* <weight>: Use a value from 400 to 900 */
+.cinzel {
+  font-family: "Cinzel", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+
+.lxgw-wenkai-mono-tc-regular {
+    font-family: "LXGW WenKai Mono TC", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.lato-thin {
+    font-family: "Lato", serif;
+    font-weight: 100;
+    font-style: normal;
+  }
+  
+  .lato-light {
+    font-family: "Lato", serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  .lato-regular {
+    font-family: "Lato", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .lato-bold {
+    font-family: "Lato", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .lato-black {
+    font-family: "Lato", serif;
+    font-weight: 900;
+    font-style: normal;
+  }
+  
+  .lato-thin-italic {
+    font-family: "Lato", serif;
+    font-weight: 100;
+    font-style: italic;
+  }
+  
+  .lato-light-italic {
+    font-family: "Lato", serif;
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  .lato-regular-italic {
+    font-family: "Lato", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .lato-bold-italic {
+    font-family: "Lato", serif;
+    font-weight: 700;
+    font-style: italic;
+  }
+  
+  .lato-black-italic {
+    font-family: "Lato", serif;
+    font-weight: 900;
+    font-style: italic;
+}
+
+
+/* <uniquifier>: Use a unique and descriptive class name */
+/* <weight>: Use a value from 300 to 900 */
+.merienda {
+  font-family: "Merienda", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+.cardo-regular {
+    font-family: "Cardo", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .cardo-bold {
+    font-family: "Cardo", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .cardo-regular-italic {
+    font-family: "Cardo", serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+
+.homemade-apple-regular {
+    font-family: "Homemade Apple", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.julius-sans-one-regular {
+    font-family: "Julius Sans One", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.averia-libre-light {
+    font-family: "Averia Libre", serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  .averia-libre-regular {
+    font-family: "Averia Libre", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .averia-libre-bold {
+    font-family: "Averia Libre", serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
+  .averia-libre-light-italic {
+    font-family: "Averia Libre", serif;
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  .averia-libre-regular-italic {
+    font-family: "Averia Libre", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  .averia-libre-bold-italic {
+    font-family: "Averia Libre", serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+
+.kristi-regular {
+    font-family: "Kristi", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.kalam-light {
+    font-family: "Kalam", serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  .kalam-regular {
+    font-family: "Kalam", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .kalam-bold {
+    font-family: "Kalam", serif;
+    font-weight: 700;
+    font-style: normal;
+}  
