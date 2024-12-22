@@ -1,47 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"></html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>
-            Books
-        </title>
-        <link rel="stylesheet" href="styles/style.css">
-        <!-- Add additional stylesheets here to override original styles as needed -->
-    </head>
-    <body>
-        <header>
-            <nav id = "navbar">
-                <!-- Navigation will be dynamically inserted here -->
-            </nav>
-
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Itim&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-        </header>
-
-        <main>
-            <h1> <!-- Add text here --> </h1>
-            <p> <!-- Add text here --> </p>
-        </main>
-
-        <footer>
-            <p>&copy; 2024 JW</p>
-        </footer>
-
-        <script src="scripts/app.js" defer></script>
-    </body>
-</html>
-
-
-
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Recommendations</title>
+    <link rel="stylesheet" href="styles/style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -129,6 +92,16 @@
     </style>
 </head>
 <body>
+    <header>
+        <nav id = "navbar">
+            <!-- Navigation will be dynamically inserted here -->
+        </nav>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Itim&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    </header>
+
     <h1 style="text-align: center;">Book Recommendations</h1>
     <div class="genre" id="genre-nonfiction">
         <div class="wheel" id="wheel-nonfiction"></div>
@@ -152,6 +125,13 @@
             <p id="overlay-notes"></p>
         </div>
     </div>
+
+    <footer>
+        <p>&copy; 2024 JW</p>
+    </footer>
+
+    <script src="scripts/app.js" defer></script>
+
 
     <script>
         const genres = {
@@ -217,50 +197,54 @@
             let startX = 0;
             let currentRotation = 0;
             let spinVelocity = 0;
+            let animationFrame;
 
             wheel.onmousedown = (event) => {
                 event.preventDefault();
                 isDragging = true;
                 startX = event.clientX;
-                wheel.style.animation = 'none';
-                spinVelocity = 0;
+                cancelAnimationFrame(animationFrame);
             };
 
-            window.onmousemove = (event) => {
+            wheel.onmousemove = (event) => {
                 if (!isDragging) return;
                 const deltaX = event.clientX - startX;
-                spinVelocity = deltaX * 0.1;
-                currentRotation += spinVelocity;
-                wheel.style.transform = `rotateY(${currentRotation}deg)`;
                 startX = event.clientX;
+                currentRotation += deltaX * 0.5;
+                wheel.style.transform = `rotateY(${currentRotation}deg)`;
+                spinVelocity = deltaX;
             };
 
-            window.onmouseup = () => {
-                if (isDragging) {
-                    isDragging = false;
-                    let inertia = spinVelocity;
-                    const deceleration = 0.05;
-                    const animateInertia = () => {
-                        if (Math.abs(inertia) > 0.1) {
-                            currentRotation += inertia;
-                            wheel.style.transform = `rotateY(${currentRotation}deg)`;
-                            inertia *= 1 - deceleration;
-                            requestAnimationFrame(animateInertia);
-                        } else {
-                            wheel.style.animation = 'rotate 15s linear infinite';
-                        }
-                    };
-                    animateInertia();
+            wheel.onmouseup = () => {
+                isDragging = false;
+                let lastTime;
+                function animate(time) {
+                    if (!lastTime) lastTime = time;
+                    const deltaTime = time - lastTime;
+                    lastTime = time;
+
+                    if (Math.abs(spinVelocity) > 0.1) {
+                        currentRotation += spinVelocity * (deltaTime / 16);
+                        wheel.style.transform = `rotateY(${currentRotation}deg)`;
+                        spinVelocity *= 0.95;
+                        animationFrame = requestAnimationFrame(animate);
+                    } else {
+                        animationFrame = null;
+                    }
                 }
+                animationFrame = requestAnimationFrame(animate);
             };
+
+            wheel.onmouseleave = wheel.onmouseup;
         }
 
         function showOverlay(book) {
+            const overlay = document.getElementById('book-overlay');
             document.getElementById('overlay-cover').src = book.cover;
-            document.getElementById('overlay-title').innerText = book.title;
-            document.getElementById('overlay-author').innerText = book.author;
-            document.getElementById('overlay-notes').innerText = book.notes;
-            document.getElementById('book-overlay').style.display = 'flex';
+            document.getElementById('overlay-title').textContent = book.title;
+            document.getElementById('overlay-author').textContent = book.author;
+            document.getElementById('overlay-notes').textContent = book.notes;
+            overlay.style.display = 'flex';
         }
 
         function closeOverlay() {

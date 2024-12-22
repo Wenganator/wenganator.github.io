@@ -1,0 +1,27 @@
+#output {
+    white-space: pre-wrap; /* Ensure spaces and line breaks are preserved */
+}
+
+#output span {
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+}
+
+#output span .hidden-part {
+    visibility: hidden; /* Make it invisible instead of display: none */
+    display: inline; /* Ensure the layout adjusts dynamically */
+}
+
+#output span:hover .hidden-part {
+    visibility: visible; /* Show the rest of the word */
+}
+
+#output span:hover {
+    color: blue; /* Change color of the entire word */
+}
+
+.select {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: #474747;
+}
