@@ -1,15 +1,27 @@
-/* Default styles for body of page */
+/* Modify Bootstrap's main colors */
+:root {
+    --primary-color: #279AF1;
+    --secondary-color: #C0E0DE;
+    --accent-color: #7B6D8D;
+    --dark-color: #136F63;
+    --darker-color: #041B15;
+}
+
+
+
+
 body {
     font-family: Roboto, Arial, Helvetica, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
+    color: var(--darker-color);
 }
-  
+
 header {
-    background-color: #0078d7;
+    /* background-color: #0078d7; */
     color: white;
-    padding: 1rem;
+    /* padding: 1rem; */
     text-align: center;
 }
 
@@ -20,7 +32,7 @@ main {
 }
 
 h1 {
-    font-family: 'LXGW WenKai Mono TC', 'Times New Roman', Times, serif;
+    font-family: 'Playfair Display', 'Times New Roman', Times, serif;
 }
 
 h2 {
@@ -34,18 +46,74 @@ footer {
     margin-top: 2rem;
 }
 
-/* Navigation bar (at top of page) */
+
+
+
+/* Dynamically generated navbar (see app.js) */
+/* id navbar */
 #navbar {
     display: flex;
     justify-content: center;
     gap: 1rem;
+    padding-right: 1rem;
 }
   
 #navbar a {
     color: white;
     text-decoration: none;
+    font-family: 'Averia Libre', 'Times New Roman', Times, serif;
 }
   
 #navbar a:hover {
     text-decoration: underline;
+}
+
+
+
+/* TO-DO Update new content below */
+
+
+
+
+/* Header (see header.html) */
+
+/* class navbar */
+.navbar {
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-family: 'Merienda';
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important;
+}
+
+/* Search bar */
+.search-bar .form-control {
+    border-color: var(--secondary-color);
+}
+
+.btn-outline-success {
+    color: var(--dark-color);
+    border-color: var(--dark-color);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--dark-color);
+    color: #fff;
+}
+
+.content {
+    padding: 2rem;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("assets/images/cheetah-one-line-1.webp") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+}
+
+footer {
+    background-color: var(--secondary-color);
+    padding: 1rem;
+    text-align: center;
+    color: var(--darker-color);
+    margin-top: auto;
 }
