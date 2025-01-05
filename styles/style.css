@@ -103,9 +103,11 @@ footer {
     color: #fff;
 }
 
+/* Styling for div class "content" */
+/* including image background */
 .content {
     padding: 2rem;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("assets/images/cheetah-one-line-1.webp") no-repeat center center fixed;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("../assets/images/cheetah-one-line-1.webp") no-repeat center center fixed;
     background-size: cover;
     color: #fff;
 }

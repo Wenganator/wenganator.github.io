@@ -15,6 +15,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Contact", url: "contact.html" },
             { name: "Passage Search", url: "bible-search.html" },
             { name: "Bible Memory", url: "bible-memory.html" },
+            { name: "Verse Vault", url: "verse-vault.html"},
             { name: "Wikipedia", url: "wikipedia.html" },
             { name: "Books", url: "books.html" },
             { name: "Medicine", url: "medicine.html" },
@@ -54,14 +55,3 @@ window.addEventListener('DOMContentLoaded', event => {
 // TO-DO
 // Search bar
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('searchForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const keyword = document.getElementById('searchInput').value.trim();
-        if (keyword) {
-            window.location.href = `search.html?query=${encodeURIComponent(keyword)}`;
-        } else {
-            alert('Please enter a search term.');
-        }
-    });
-});
