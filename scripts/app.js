@@ -12,15 +12,15 @@ window.addEventListener('DOMContentLoaded', event => {
         const pages = [
             // { name: "Home", url: "index.html" },
             // { name: "About", url: "about.html" },
-            { name: "Contact", url: "contact.html" },
             { name: "Passage Search", url: "bible-search.html" },
             { name: "Bible Memory", url: "bible-memory.html" },
-            { name: "Verse Vault", url: "verse-vault.html"},
+            { name: "Verse Vault", url: "verse-vault.html" },
             { name: "Wikipedia", url: "wikipedia.html" },
             { name: "Books", url: "books.html" },
             { name: "Medicine", url: "medicine.html" },
-            { name: "Music", url: "music.html"},
+            { name: "Music", url: "music.html" },
             { name: "Writing", url: "writing.html" },
+            { name: "Contact", url: "contact.html" },
             // Add more pages here
         ];
         

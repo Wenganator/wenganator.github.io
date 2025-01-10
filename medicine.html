@@ -21,19 +21,130 @@
         <link rel="stylesheet" href="styles/fonts.css">
         <link rel="stylesheet" href="styles/style.css">
         <!-- Add additional stylesheets here to override original styles as needed -->
+
+        <style>
+            .carousel-item iframe {
+              height: 500px; /* Adjust for larger previews */
+              width: 100%;
+              border: none;
+            }
+            .modal-dialog {
+              max-width: 90%;
+              height: 90%;
+            }
+            .modal-content {
+              height: 100%;
+            }
+            .modal-body iframe {
+              width: 100%;
+              height: 100%;
+              border: none;
+            }
+          </style>
     </head>
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
 
-        <div class="content">
-            <h1> <!-- Add text here --> </h1>
-            <p> <!-- Add text here --> </p>
-        </div>
+        
+        <div class="container mt-5">
+            <h1 class="text-center">Medicine Resources</h1>
 
-        <main>
-            <h1> <!-- Add text here --> </h1>
-            <p> <!-- Add text here --> </p>
-        </main>
+            <!-- Bootstrap Carousel -->
+            <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+
+                <!-- Slide 1 -->
+                <div class="carousel-item active"> <!-- First slide is class "carousel-item active"; rest are "carousel-item" -->
+                    <iframe 
+                      src="https://drive.google.com/file/d/1dnF81DyKaE4my8ibmV9L0ae7yL5LUgaq/preview" 
+                      class="d-block w-100" 
+                      allowfullscreen>
+                    </iframe>
+                    <button class="btn btn-primary mt-2 d-block mx-auto" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#documentModal" 
+                            data-doc-url="https://drive.google.com/file/d/1dnF81DyKaE4my8ibmV9L0ae7yL5LUgaq/preview">
+                      View Full Document
+                    </button>
+                  </div>
+                
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                  <iframe 
+                    src="https://drive.google.com/file/d/1d9p9C4xxgH3232tYpNn8ghI36rfzFyM8/preview" 
+                    class="d-block w-100" 
+                    allowfullscreen>
+                  </iframe>
+                  <button class="btn btn-primary mt-2 d-block mx-auto" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#documentModal" 
+                          data-doc-url="https://drive.google.com/file/d/1d9p9C4xxgH3232tYpNn8ghI36rfzFyM8/preview">
+                    View Full Document
+                  </button>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                  <iframe 
+                    src="https://drive.google.com/file/d/1zAmR85p3lxOgUNSkRTnnqRlsmOBJfPUR/preview" 
+                    class="d-block w-100" 
+                    allowfullscreen>
+                  </iframe>
+                  <button class="btn btn-primary mt-2 d-block mx-auto" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#documentModal" 
+                          data-doc-url="https://drive.google.com/file/d/1zAmR85p3lxOgUNSkRTnnqRlsmOBJfPUR/preview">
+                    View Full Document
+                  </button>
+                </div>
+                
+                <!-- Add more slides as needed -->
+                 
+              </div>
+          
+              <!-- Carousel Controls -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+        </div>
+          
+        <!-- Modal for Full-Size Document Viewer -->
+        <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="documentModalLabel">Full Document Viewer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <iframe src="" id="documentViewer" frameborder="0" allowfullscreen></iframe>
+            </div>
+            </div>
+        </div>
+        </div>
+          
+        <script>
+        const documentModal = document.getElementById('documentModal');
+        documentModal.addEventListener('show.bs.modal', (event) => {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const docUrl = button.getAttribute('data-doc-url'); // Extract document URL
+            const iframe = document.getElementById('documentViewer');
+            iframe.src = docUrl; // Load document in the modal
+        });
+        
+        documentModal.addEventListener('hidden.bs.modal', () => {
+            const iframe = document.getElementById('documentViewer');
+            iframe.src = ''; // Clear iframe src to stop loading
+        });
+        </script>
+
+        
 
         <div id="footer"></div> <!-- Modify footer content in footer.html -->
 
