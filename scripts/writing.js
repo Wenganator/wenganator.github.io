@@ -1,0 +1,27 @@
+// Theme selector buttons
+// See writing.css for styling of the buttons
+const changeTheme = (theme) => {
+    const root = document.documentElement;
+    if (theme === "light") {
+    root.style.setProperty("--background-color", "#f8f9fa");
+    root.style.setProperty("--text-color", "#212529");
+    } else if (theme === "dark") {
+    root.style.setProperty("--background-color", "#212529");
+    root.style.setProperty("--text-color", "#f8f9fa");
+    } else if (theme === "ocean") {
+    root.style.setProperty("--background-color", "#1b3b6f");
+    root.style.setProperty("--text-color", "#d4f1f9");
+    } else if (theme === "sepia") {
+    root.style.setProperty("--background-color", "#f4ecd8");
+    root.style.setProperty("--text-color", "#5e503f");
+    } else if (theme === "persian-green") {
+    root.style.setProperty("--background-color", "#2a9d8f");
+    root.style.setProperty("--text-color", "#ffffff");
+    } else if (theme === "lavender") {
+    root.style.setProperty("--background-color", "#e6e6fa");
+    root.style.setProperty("--text-color", "#4b0082");
+    } else if (theme === "neon") {
+    root.style.setProperty("--background-color", "#0f0f0f");
+    root.style.setProperty("--text-color", "#39ff14");
+    }
+};

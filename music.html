@@ -41,6 +41,53 @@
         .delete-btn {
         margin-top: 10px;
         }
+
+        /* Theme selector */
+        .btn-light-theme {
+            background-color: #f8f9fa;
+            color: #212529;
+            border-color: #212529;
+        }
+
+        .btn-dark-theme {
+            background-color: #212529;
+            color: #f8f9fa;
+            border-color: #f8f9fa;
+        }
+
+        .btn-ocean-theme {
+            background-color: #1b3b6f;
+            color: #d4f1f9;
+            border-color: #d4f1f9;
+        }
+
+        .btn-sepia-theme {
+            background-color: #f4ecd8;
+            color: #5e503f;
+            border-color: #5e503f;
+        }
+
+        .btn-persian-green-theme {
+            background-color: #2a9d8f;
+            color: #ffffff;
+            border-color: #ffffff;
+        }
+
+        .btn-lavender-theme {
+            background-color: #e6e6fa;
+            color: #4b0082;
+            border-color: #4b0082;
+        }
+
+        .btn-neon-theme {
+            background-color: #0f0f0f;
+            color: #39ff14;
+            border-color: #39ff14;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 
@@ -91,10 +138,15 @@
   <!-- Theme Selector -->
   <div class="mt-4">
     <h2>Change Theme</h2>
-    <button class="btn btn-light" onclick="changeTheme('light')">Light</button>
-    <button class="btn btn-dark" onclick="changeTheme('dark')">Dark</button>
-    <button class="btn btn-info" onclick="changeTheme('blue')">Blue</button>
-    <button class="btn btn-secondary" onclick="changeTheme('sepia')">Sepia</button>
+    <div class="d-flex flex-wrap">
+        <button class="btn btn-sm me-2 mb-2 btn-light-theme" onclick="changeTheme('light')">Light</button>
+        <button class="btn btn-sm me-2 mb-2 btn-dark-theme" onclick="changeTheme('dark')">Dark</button>
+        <button class="btn btn-sm me-2 mb-2 btn-ocean-theme" onclick="changeTheme('ocean')">Ocean</button>
+        <button class="btn btn-sm me-2 mb-2 btn-sepia-theme" onclick="changeTheme('sepia')">Sepia</button>
+        <button class="btn btn-sm me-2 mb-2 btn-persian-green-theme" onclick="changeTheme('persian-green')">Green</button>
+        <button class="btn btn-sm me-2 mb-2 btn-lavender-theme" onclick="changeTheme('lavender')">Lavender</button>
+        <button class="btn btn-sm me-2 mb-2 btn-neon-theme" onclick="changeTheme('neon')">Neon</button>
+    </div>
   </div>
 </main>
 
@@ -219,22 +271,32 @@
     });
   };
 
+  // Changes background and text colors in CSS body{}
   const changeTheme = (theme) => {
     const root = document.documentElement;
     if (theme === "light") {
-      root.style.setProperty("--background-color", "#f8f9fa");
-      root.style.setProperty("--text-color", "#212529");
+    root.style.setProperty("--background-color", "#f8f9fa");
+    root.style.setProperty("--text-color", "#212529");
     } else if (theme === "dark") {
-      root.style.setProperty("--background-color", "#212529");
-      root.style.setProperty("--text-color", "#f8f9fa");
-    } else if (theme === "blue") {
-      root.style.setProperty("--background-color", "#002855");
-      root.style.setProperty("--text-color", "#ffffff");
+    root.style.setProperty("--background-color", "#212529");
+    root.style.setProperty("--text-color", "#f8f9fa");
+    } else if (theme === "ocean") {
+    root.style.setProperty("--background-color", "#1b3b6f");
+    root.style.setProperty("--text-color", "#d4f1f9");
     } else if (theme === "sepia") {
-      root.style.setProperty("--background-color", "#f4ecd8");
-      root.style.setProperty("--text-color", "#5e503f");
+    root.style.setProperty("--background-color", "#f4ecd8");
+    root.style.setProperty("--text-color", "#5e503f");
+    } else if (theme === "persian-green") {
+    root.style.setProperty("--background-color", "#2a9d8f");
+    root.style.setProperty("--text-color", "#ffffff");
+    } else if (theme === "lavender") {
+    root.style.setProperty("--background-color", "#e6e6fa");
+    root.style.setProperty("--text-color", "#4b0082");
+    } else if (theme === "neon") {
+    root.style.setProperty("--background-color", "#0f0f0f");
+    root.style.setProperty("--text-color", "#39ff14");
     }
-  };
+};
 
   document.addEventListener("DOMContentLoaded", loadPlaylistSets);
 </script>

@@ -10,17 +10,18 @@ window.addEventListener('DOMContentLoaded', event => {
         // Dynamically generate navigation bar (at top of page)
         // To add more pages, create a new HTML file in the root directory; then add the new page to the 'pages' array below. The navigation bar will automatically update.
         const pages = [
-            // { name: "Home", url: "index.html" },
-            // { name: "About", url: "about.html" },
-            { name: "Passage Search", url: "bible-search.html" },
-            { name: "Bible Memory", url: "bible-memory.html" },
-            { name: "Verse Vault", url: "verse-vault.html" },
-            { name: "Wikipedia", url: "wikipedia.html" },
-            { name: "Books", url: "books.html" },
-            { name: "Medicine", url: "medicine.html" },
-            { name: "Music", url: "music.html" },
-            { name: "Writing", url: "writing.html" },
-            { name: "Contact", url: "contact.html" },
+            // { name: "Home", url: "/index.html" },
+            // { name: "About", url: "/about.html" },
+            { name: "Passage Search", url: "/bible-search.html" },
+            { name: "Bible Memory", url: "/bible-memory.html" },
+            { name: "Verse Vault", url: "/verse-vault.html" },
+            { name: "Medicine", url: "/medicine.html" },
+            { name: "Music", url: "/music.html" },
+            { name: "Wikipedia", url: "/wikipedia.html" },
+            { name: "Books", url: "/books.html" },
+            { name: "Writing", url: "/writing.html" },
+            { name: "Notes", url: "/notes.html" },
+            { name: "Contact", url: "/contact.html" },
             // Add more pages here
         ];
         
@@ -44,8 +45,8 @@ window.addEventListener('DOMContentLoaded', event => {
     }
 
     // Load centralized header (header.html) and footer (footer.html) into current HTML page
-    loadComponent('header', 'header.html');
-    loadComponent('footer', 'footer.html');
+    loadComponent('header', '/header.html');
+    loadComponent('footer', '/footer.html');
 
 });
 

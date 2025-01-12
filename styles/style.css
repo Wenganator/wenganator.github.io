@@ -50,6 +50,15 @@ footer {
     margin-top: 2rem;
 }
 
+/* Class dropcap for dropped capitals at the beginning of a paragraph or section */
+.dropcap::first-letter {
+    font-size: 4em; /* Adjust the size as needed */
+    font-weight: bold;
+    float: left;
+    line-height: 1;
+    margin-right: 8px; /* Space between the drop cap and the text */
+    color: var(--primary-color); /* Optional: change the color */
+}
 
 
 

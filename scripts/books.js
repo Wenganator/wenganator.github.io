@@ -11,8 +11,8 @@ const genres = {
         { cover: 'assets/images/books/the-valley-of-vision.jpg', title: 'The Valley of Vision: A Collection of Puritan Prayers & Devotions', author: 'Ed. Arthur Bennett', notes: 'Notes for Theology Book 9' },
     ],
     Nonfiction: [
-        { cover: 'placeholder.jpg', title: 'Nonfiction Book 1', author: 'Author A', notes: 'Notes for Nonfiction Book 1' },
-        { cover: 'placeholder.jpg', title: 'Nonfiction Book 2', author: 'Author B', notes: 'Notes for Nonfiction Book 2' },
+        { cover: 'assets/images/books/in-cold-blood.jpg', title: 'In Cold Blood', author: 'Truman Capote', notes: 'Notes for Nonfiction Book 1' },
+        { cover: 'assets/images/books/thinking-fast-and-slow.jpg', title: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', notes: 'Notes for Nonfiction Book 2' },
         { cover: 'placeholder.jpg', title: 'Nonfiction Book 3', author: 'Author C', notes: 'Notes for Nonfiction Book 3' },
         { cover: 'placeholder.jpg', title: 'Nonfiction Book 4', author: 'Author D', notes: 'Notes for Nonfiction Book 4' },
         { cover: 'placeholder.jpg', title: 'Nonfiction Book 5', author: 'Author E', notes: 'Notes for Nonfiction Book 5' },
@@ -21,14 +21,24 @@ const genres = {
         { cover: 'placeholder.jpg', title: 'Nonfiction Book 8', author: 'Author H', notes: 'Notes for Nonfiction Book 8' }
     ],
     Fiction: [
-        { cover: 'assets/images/books/station-eleven.jpg', title: 'Station Eleven', author: 'Emily St. John Mandel', notes: 'Notes for Fiction Book 1' },
-        { cover: 'placeholder.jpg', title: 'Fiction Book 2', author: 'Author G', notes: 'Notes for Fiction Book 2' },
-        { cover: 'placeholder.jpg', title: 'Fiction Book 3', author: 'Author H', notes: 'Notes for Fiction Book 3' },
-        { cover: 'placeholder.jpg', title: 'Fiction Book 4', author: 'Author I', notes: 'Notes for Fiction Book 4' },
+        { cover: 'assets/images/books/inheritance.jpg', title: 'Inheritance', author: 'Christopher Paolini', notes: 'Notes for Fiction Book 1' },
+        { cover: 'assets/images/books/station-eleven.jpg', title: 'Station Eleven', author: 'Emily St. John Mandel', notes: 'Notes for Fiction Book 2' },
+        { cover: 'assets/images/books/enders-game.jpg', title: 'Ender\'s Game', author: 'Orson Scott Card', notes: 'Notes for Fiction Book 3' },
+        { cover: 'assets/images/books/sherlock-holmes.jpg', title: 'The Adventures of Sherlock Holmes', author: 'Sir Arthur Conan Doyle', notes: 'Notes for Fiction Book 4' },
         { cover: 'placeholder.jpg', title: 'Fiction Book 5', author: 'Author J', notes: 'Notes for Fiction Book 5' },
         { cover: 'placeholder.jpg', title: 'Fiction Book 6', author: 'Author K', notes: 'Notes for Fiction Book 6' },
         { cover: 'placeholder.jpg', title: 'Fiction Book 7', author: 'Author L', notes: 'Notes for Fiction Book 7' },
         { cover: 'placeholder.jpg', title: 'Fiction Book 8', author: 'Author M', notes: 'Notes for Fiction Book 8' }
+    ],
+    Classics: [
+        { cover: 'assets/images/books/a-tale-of-two-cities.jpg', title: 'A Tale of Two Cities', author: 'Charles Dickens', notes: 'Notes for Classics Book 1' },
+        { cover: 'assets/images/books/heart-of-darkness.jpg', title: 'Heart of Darkness', author: 'Joseph Conrad', notes: 'Notes for Classics Book 2' },
+        { cover: 'assets/images/books/the-count-of-monte-cristo.jpg', title: 'The Count of Monte Cristo', author: 'Alexandre Dumas', notes: 'Notes for Classics Book 3' },
+        { cover: 'assets/images/books/the-great-gatsby.jpg', title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', notes: 'Notes for Classics Book 4' },
+        { cover: 'assets/images/books/brave-new-world.jpg', title: 'Brave New World', author: 'Aldous Huxley', notes: 'Notes for Classics Book 5' },
+        { cover: 'placeholder.jpg', title: 'Classics Book 6', author: 'Author U', notes: 'Notes for Classics Book 6' },
+        { cover: 'placeholder.jpg', title: 'Classics Book 7', author: 'Author V', notes: 'Notes for Classics Book 7' },
+        { cover: 'placeholder.jpg', title: 'Classics Book 8', author: 'Author W', notes: 'Notes for Classics Book 8' }
     ],
     Other: [
         { cover: 'placeholder.jpg', title: 'Other Book 1', author: 'Author P', notes: 'Notes for Other Book 1' },
@@ -119,4 +129,5 @@ function closeOverlay() {
 setupWheel('Theology', 'wheel-theology');
 setupWheel('Nonfiction', 'wheel-nonfiction');
 setupWheel('Fiction', 'wheel-fiction');
+setupWheel('Classics', 'wheel-classics');
 setupWheel('Other', 'wheel-other');

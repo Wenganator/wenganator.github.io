@@ -233,6 +233,8 @@ const bookmarkedList = document.getElementById('bookmarkedList');
 const clearBookmarks = document.getElementById('clearBookmarks');
 const randomButton = document.getElementById('randomButton');
 
+let currentDisplayedVerse = null; // Tracks the currently displayed passage
+
 function populateBooks(testament) {
     bookSelect.innerHTML = '<option value="">Select Book</option>';
     chapterVerseSelect.innerHTML = '<option value="">Select Chapter/Verse</option>';
@@ -274,10 +276,15 @@ function updateBookmarks() {
         li.onclick = () => {
             const [testament, book, reference] = verse.split('|');
             const selectedVerse = bibleData[testament][book].find(v => v.reference === reference);
+        
             verseTitle.textContent = selectedVerse.reference;
-            verseText.innerHTML = selectedVerse[translationSelect.value]; // Use innerHTML for formatting instead of textContent
+            verseText.innerHTML = selectedVerse[translationSelect.value];
             verseContainer.classList.remove('d-none');
+        
+            // Update the currently displayed verse
+            currentDisplayedVerse = { testament, book, reference };
         };
+        
         const removeBtn = document.createElement('button');
         removeBtn.className = 'btn btn-sm btn-danger';
         removeBtn.textContent = 'Remove';
@@ -306,21 +313,23 @@ chapterVerseSelect.addEventListener('change', () => {
     const testament = testamentSelect.value;
     const book = bookSelect.value;
     const verseIndex = chapterVerseSelect.value;
+
     if (testament && book && verseIndex !== "") {
         const verse = bibleData[testament][book][verseIndex];
         verseTitle.textContent = verse.reference;
-        verseText.innerHTML = verse[translationSelect.value]; // Use innerHTML for formatting instead of textContent
+        verseText.innerHTML = verse[translationSelect.value];
         verseContainer.classList.remove('d-none');
+
+        // Update the currently displayed verse
+        currentDisplayedVerse = { testament, book, reference: verse.reference };
     }
 });
 
 translationSelect.addEventListener('change', () => {
-    const testament = testamentSelect.value;
-    const book = bookSelect.value;
-    const verseIndex = chapterVerseSelect.value;
-    if (testament && book && verseIndex !== "") {
-        const verse = bibleData[testament][book][verseIndex];
-        verseText.innerHTML = verse[translationSelect.value]; // Use innerHTML for formatting instead of textContent
+    if (currentDisplayedVerse) {
+        const { testament, book, reference } = currentDisplayedVerse;
+        const selectedVerse = bibleData[testament][book].find(v => v.reference === reference);
+        verseText.innerHTML = selectedVerse[translationSelect.value];
     }
 });
 
@@ -337,7 +346,7 @@ randomButton.addEventListener('click', () => {
     verseText.innerHTML = randomVerse[translationSelect.value]; // Use innerHTML for formatting instead of textContent
     verseContainer.classList.remove('d-none');
 
-    // Update the dropdown states to reflect the random selection
+    // Update dropdowns to match the random selection
     testamentSelect.value = randomTestament;
     populateBooks(randomTestament);
     bookSelect.value = randomBook;
@@ -346,6 +355,9 @@ randomButton.addEventListener('click', () => {
     // Find and set the random verse index in the dropdown
     const randomVerseIndex = verses.findIndex(v => v.reference === randomVerse.reference);
     chapterVerseSelect.value = randomVerseIndex;
+
+    // Update the currently displayed verse
+    currentDisplayedVerse = { testament: randomTestament, book: randomBook, reference: randomVerse.reference };
 });
 
 bookmarkButton.addEventListener('click', () => {

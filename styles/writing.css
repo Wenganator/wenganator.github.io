@@ -1,0 +1,107 @@
+h1 {
+    font-size: 2.5rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1rem;
+}
+
+body {
+    background-color: var(--background-color, #f5f5f4);
+    color: var(--text-color, #212529);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+
+
+/* Styling for writing.html */
+.category {
+    margin: 20px 0;
+}
+.back-link {
+    margin-top: 30px;
+    text-align: center;
+}
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
+}
+.thumbnail {
+    width: 50px;
+    height: auto;
+    margin-right: 10px;
+}
+.writing-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+
+/* Dropped capitals (drop cap) class */
+.dropcap::first-letter {
+    font-family: 'Playfair Display', 'Times New Roman', Times, serif;
+    font-size: 4em; /* Adjust the size as needed */
+    font-weight: normal;
+    float: left;
+    line-height: 1;
+    margin-right: 8px; /* Space between the drop cap and the text */
+    color: var(--primary-color); /* Optional: change the color */
+}
+
+
+
+/* Styling theme selector buttons based on their respective theme colors */
+/* See writing.js for scripting of the buttons */
+.btn-light-theme {
+    background-color: #f8f9fa;
+    color: #212529;
+    border-color: #212529;
+}
+
+.btn-dark-theme {
+    background-color: #212529;
+    color: #f8f9fa;
+    border-color: #f8f9fa;
+}
+
+.btn-ocean-theme {
+    background-color: #1b3b6f;
+    color: #d4f1f9;
+    border-color: #d4f1f9;
+}
+
+.btn-sepia-theme {
+    background-color: #f4ecd8;
+    color: #5e503f;
+    border-color: #5e503f;
+}
+
+.btn-persian-green-theme {
+    background-color: #2a9d8f;
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.btn-lavender-theme {
+    background-color: #e6e6fa;
+    color: #4b0082;
+    border-color: #4b0082;
+}
+
+.btn-neon-theme {
+    background-color: #0f0f0f;
+    color: #39ff14;
+    border-color: #39ff14;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
