@@ -62,6 +62,7 @@ footer {
 
 
 
+
 /* Dynamically generated navbar (see app.js) */
 /* id navbar */
 #navbar {
@@ -101,6 +102,25 @@ footer {
     color: #fff !important;
 }
 
+
+/* Make dropdown background match the navbar */
+.navbar .dropdown-menu {
+    background-color: var(--primary-color); /* Match the navbar background color */
+    border: none; /* Remove border, optional */
+}
+
+/* Style dropdown links to match the navbar links */
+.navbar .dropdown-menu .dropdown-item {
+    color: #fff; /* Match the navbar link text color */
+}
+
+.navbar .dropdown-menu .dropdown-item:hover,
+.navbar .dropdown-menu .dropdown-item:focus {
+    color: var(--primary-color); /* Optional: Change to navbar background color on hover */
+    background-color: var(--accent-color); /* Optional: Change background color on hover */
+}
+
+
 /* Search bar */
 .search-bar .form-control {
     border-color: var(--secondary-color);
@@ -116,18 +136,21 @@ footer {
     color: #fff;
 }
 
+
+
+
 /* Styling for div class "content" */
 /* including image background */
 .content {
     padding: 2rem;
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("../assets/images/cheetah-one-line-1.webp") no-repeat center center fixed;
     background-size: cover;
-    color: #fff;
+    color: #ffffff;
 }
 
 footer {
     background-color: var(--secondary-color);
-    padding: 1rem;
+    padding: 0.5rem;
     text-align: center;
     color: var(--darker-color);
     margin-top: auto;

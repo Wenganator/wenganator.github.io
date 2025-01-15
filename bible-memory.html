@@ -25,8 +25,7 @@
 
     <main>
         <h1>Scripture Memory Tool</h1>
-        <h2>Bible Passage Search with First Letters Only</h2>
-        <p>Use this tool to assist in memorizing a new passage. After you search for a passage, only the first letter of each word will be displayed. Hover over each letter to reveal the full word.</p>
+        <p>Use this tool to assist in memorizing a new passage. After you search for a passage, only the first letter of each word will be displayed. Hover over each letter to reveal the rest of the corresponding word as you mentally recite the passage.</p>
 
         <div class="select">
             <label for="translation">Translation:</label>
@@ -122,6 +121,13 @@
         <button onclick="searchPassage()">Search</button>
         <div id="output"></div>
         <button onclick="revealFullText()" style="margin-top: 20px;">Reveal Full Text</button>
+
+        <h2><br>Custom Text</h2>
+        <p>To utilize the tool on a custom text, such as a translation not available above or a non-biblical text, input your desired text below. Consider using this tool in conjunction with the <a href="/verse-vault.html">Verse Vault</a>.</p>
+        <textarea id="custom-text" class="form-control" rows="4" placeholder="Enter or paste your text here..."></textarea>
+        <button onclick="processCustomText()" class="btn btn-primary mt-3">Go</button>
+        <div id="custom-output" class="mt-3"></div>
+
     </main>
 
     <div id="footer"></div> <!-- Modify footer content in footer.html -->

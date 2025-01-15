@@ -132,3 +132,36 @@ function revealFullText() {
     const outputDiv = document.getElementById("output");
     outputDiv.innerHTML = fullText;
 }
+
+
+// Function to handle custom user-input text
+function processCustomText() {
+    const customText = document.getElementById("custom-text").value.trim(); // Get the custom input text
+
+    if (!customText) {
+        alert("Please enter some text to process.");
+        return;
+    }
+
+    // Format the custom text to show only the first letters with hover functionality
+    const outputDiv = document.getElementById("output");
+    outputDiv.innerHTML = customText
+        .split("\n") // Handle multiple lines
+        .map(line =>
+            line
+                .split(" ") // Split line into words
+                .map(
+                    word =>
+                        word
+                            ? `<span>${word[0]}<span class='hidden-part'>${word.slice(
+                                  1
+                              )}</span></span>`
+                            : "" // Ignore empty strings
+                )
+                .join(" ") // Join words back together
+        )
+        .join("\n"); // Add line breaks between lines
+
+    // Store the full custom text for "reveal full text" functionality
+    fullText = customText;
+}

@@ -12,9 +12,11 @@ window.addEventListener('DOMContentLoaded', event => {
         const pages = [
             // { name: "Home", url: "/index.html" },
             // { name: "About", url: "/about.html" },
-            { name: "Passage Search", url: "/bible-search.html" },
-            { name: "Bible Memory", url: "/bible-memory.html" },
-            { name: "Verse Vault", url: "/verse-vault.html" },
+            { name: "Bible", group: true, children: [
+                { name: "Passage Search", url: "/bible-search.html" },
+                { name: "Bible Memory", url: "/bible-memory.html" },
+                { name: "Verse Vault", url: "/verse-vault.html" },
+            ]},
             { name: "Medicine", url: "/medicine.html" },
             { name: "Music", url: "/music.html" },
             { name: "Wikipedia", url: "/wikipedia.html" },
@@ -32,27 +34,63 @@ window.addEventListener('DOMContentLoaded', event => {
             if (navbar) {
                 pages.forEach(page => {
                     const listItem = document.createElement('li');
-                    listItem.classList.add('nav-item');
-                    const link = document.createElement('a');
-                    link.classList.add('nav-link');
-                    link.href = page.url;
-                    link.textContent = page.name;
-                    listItem.appendChild(link);
+                    if (page.group && page.children) {
+                        // Create a dropdown for grouped tabs
+                        listItem.classList.add('nav-item', 'dropdown');
+                        const link = document.createElement('a');
+                        link.classList.add('nav-link', 'dropdown-toggle');
+                        link.href = "#";
+                        link.setAttribute('data-bs-toggle', 'dropdown');
+                        link.setAttribute('aria-expanded', 'false');
+                        link.textContent = page.name;
+                        listItem.appendChild(link);
+        
+                        // Create the dropdown menu
+                        const dropdownMenu = document.createElement('ul');
+                        dropdownMenu.classList.add('dropdown-menu');
+                        page.children.forEach(child => {
+                            const dropdownItem = document.createElement('li');
+                            const childLink = document.createElement('a');
+                            childLink.classList.add('dropdown-item');
+                            childLink.href = child.url;
+                            childLink.textContent = child.name;
+                            dropdownItem.appendChild(childLink);
+                            dropdownMenu.appendChild(dropdownItem);
+                        });
+                        listItem.appendChild(dropdownMenu);
+                    } else {
+                        // Create a regular nav item for non-grouped tabs
+                        listItem.classList.add('nav-item');
+                        const link = document.createElement('a');
+                        link.classList.add('nav-link');
+                        link.href = page.url;
+                        link.textContent = page.name;
+                        listItem.appendChild(link);
+                    }
                     navbar.appendChild(listItem);
                 });
             }
-        }
+        }        
     }
 
     // Load centralized header (header.html) and footer (footer.html) into current HTML page
-    loadComponent('header', '/header.html');
+    loadComponent('header', '/header.html').then(() => {
+        // Add hover functionality to dropdowns after the header is dynamically loaded
+        document.querySelectorAll('.nav-item.dropdown').forEach(dropdown => {
+            dropdown.addEventListener('mouseenter', () => {
+                const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                const bootstrapDropdown = bootstrap.Dropdown.getOrCreateInstance(dropdownToggle);
+                bootstrapDropdown.show();
+            });
+
+            dropdown.addEventListener('mouseleave', () => {
+                const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                const bootstrapDropdown = bootstrap.Dropdown.getOrCreateInstance(dropdownToggle);
+                bootstrapDropdown.hide();
+            });
+        });
+    });
+
+    // Load footer
     loadComponent('footer', '/footer.html');
-
 });
-
-
-
-
-// TO-DO
-// Search bar
-
