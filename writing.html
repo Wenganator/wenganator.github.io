@@ -25,107 +25,127 @@
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
 
-        <div class="container">
-    
-            <!-- Prose Section -->
-            <div class="category">
-                <h3>Prose</h3>
-                <ul>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/new-yorker-19950925.webp" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/prose/bullet-in-the-brain.html">Bullet in the Brain</a> &nbsp; - Beautiful prose.
-                    </li>
-                </ul>
+        <main class="container">
+            <!-- Theme Selector -->
+            <!-- See writing.css and writing.js for modification of theme selector buttons -->
+            <div class="mt-4">
+                <div class="d-flex flex-wrap justify-content-end">
+                    <button class="btn btn-sm me-2 mb-2 btn-light-theme" onclick="changeTheme('light')">Light</button>
+                    <button class="btn btn-sm me-2 mb-2 btn-dark-theme" onclick="changeTheme('dark')">Dark</button>
+                    <button class="btn btn-sm me-2 mb-2 btn-ocean-theme" onclick="changeTheme('ocean')">Ocean</button>
+                    <button class="btn btn-sm me-2 mb-2 btn-sepia-theme" onclick="changeTheme('sepia')">Sepia</button>
+                    <button class="btn btn-sm me-2 mb-2 btn-persian-green-theme" onclick="changeTheme('persian-green')">Green</button>
+                    <button class="btn btn-sm me-2 mb-2 btn-lavender-theme" onclick="changeTheme('lavender')">Lavender</button>
+                    <button class="btn btn-sm me-2 mb-2 btn-neon-theme" onclick="changeTheme('neon')">Neon</button>
+                </div>
             </div>
-    
-            <!-- Poetry Section -->
-            <div class="category">
-                <h3>Poetry</h3>
-                <ul>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/the-love-song-of-j-alfred-prufrock.webp" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/the-love-song-of-j-alfred-prufrock.html">The Love Song of J. Alfred Prufrock</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/i-wandered-lonely-as-a-cloud.webp" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/i-wandered-lonely-as-a-cloud.html">I Wandered Lonely as a Cloud</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/dylan-thomas.jpg" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/do-not-go-gentle-into-that-good-night.html">Do not go gentle into that good night</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/bei-dao.webp" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/ramallah.html">Ramallah</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/ozymandias.html">Ozymandias</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/the-second-coming.html">The Second Coming</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/poetry/triage-of-two-cultures.html">Triage of Two Cultures</a>
-                    </li>
-                </ul>
+
+            <div class="container">
+                <!-- Prose Section -->
+                <div class="category">
+                    <h3>Prose</h3>
+                    <ul>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/new-yorker-19950925.webp" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/prose/bullet-in-the-brain.html">Bullet in the Brain</a> &nbsp; - Beautiful prose.
+                        </li>
+                    </ul>
+                </div>
+        
+                <!-- Poetry Section -->
+                <div class="category">
+                    <h3>Poetry</h3>
+                    <ul>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/the-love-song-of-j-alfred-prufrock.webp" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/the-love-song-of-j-alfred-prufrock.html">The Love Song of J. Alfred Prufrock</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/i-wandered-lonely-as-a-cloud.webp" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/i-wandered-lonely-as-a-cloud.html">I Wandered Lonely as a Cloud</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/dylan-thomas.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/do-not-go-gentle-into-that-good-night.html">Do not go gentle into that good night</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/bei-dao.webp" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/ramallah.html">Ramallah</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/ozymandias.html">Ozymandias</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/the-second-coming.html">The Second Coming</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/the-flea.html">The Flea</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/poetry/triage-of-two-cultures.html">Triage of Two Cultures</a>
+                        </li>
+                    </ul>
+                </div>
+        
+                <!-- Theology Section -->
+                <div class="category">
+                    <h3>Theology</h3>
+                    <ul>
+                        <li class="writing-item">
+                            <img src="/assets/images/elephant.JPG" alt="Thumbnail" class="thumbnail">
+                            <a href="theology/example1.html">Example Theology Piece 1</a> - A description of the content.
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/elephant.JPG" alt="Thumbnail" class="thumbnail">
+                            <a href="theology/example2.html">Example Theology Piece 2</a> - Another description.
+                        </li>
+                    </ul>
+                </div>
+        
+                <!-- Song Section -->
+                <div class="category">
+                    <h3>Song</h3>
+                    <ul>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/song/for-christmas-day.html">For Christmas Day</a> &nbsp; - Hark how all the Welkin rings...
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/elephant.JPG" alt="Thumbnail" class="thumbnail">
+                            <a href="song/example2.html">Example Song 2</a> - Another brief description.
+                        </li>
+                    </ul>
+                </div>
+        
+                <!-- Original Writing Section -->
+                <div class="category">
+                    <h3>Original</h3>
+                    <ul>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/original/a-mothership.html">A (Mother)Ship</a>
+                        </li>
+                        <li class="writing-item">
+                            <img src="/assets/images/writing/lord-sovereign-gracious.webp" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/original/lord-sovereign-gracious.html">Lord, Sovereign and Gracious, Eternal and Merciful</a>&nbsp;- A prayer.
+                        </li>
+                    </ul>
+                </div>
             </div>
-    
-            <!-- Theology Section -->
-            <div class="category">
-                <h3>Theology</h3>
-                <ul>
-                    <li class="writing-item">
-                        <img src="/assets/images/elephant.JPG" alt="Thumbnail" class="thumbnail">
-                        <a href="theology/example1.html">Example Theology Piece 1</a> - A description of the content.
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/elephant.JPG" alt="Thumbnail" class="thumbnail">
-                        <a href="theology/example2.html">Example Theology Piece 2</a> - Another description.
-                    </li>
-                </ul>
+        
+            <!-- Back to Main Page Link -->
+            <div class="back-link pb-4">
+                <a href="index.html" class="btn btn-outline-primary">Back to Home</a>
             </div>
-    
-            <!-- Song Section -->
-            <div class="category">
-                <h3>Song</h3>
-                <ul>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/song/for-christmas-day.html">For Christmas Day</a> &nbsp; - Hark how all the Welkin rings...
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/elephant.JPG" alt="Thumbnail" class="thumbnail">
-                        <a href="song/example2.html">Example Song 2</a> - Another brief description.
-                    </li>
-                </ul>
-            </div>
-    
-            <!-- Original Writing Section -->
-            <div class="category">
-                <h3>Original</h3>
-                <ul>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/placeholder.jpg" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/original/a-mothership.html">A (Mother)Ship</a>
-                    </li>
-                    <li class="writing-item">
-                        <img src="/assets/images/writing/lord-sovereign-gracious.webp" alt="Thumbnail" class="thumbnail">
-                        <a href="/writing/original/lord-sovereign-gracious.html">Lord, Sovereign and Gracious, Eternal and Merciful</a>&nbsp;- A prayer.
-                    </li>
-                </ul>
-            </div>
-        </div>
-    
-        <!-- Back to Main Page Link -->
-        <div class="back-link pb-4">
-            <a href="index.html" class="btn btn-outline-primary">Back to Home</a>
-        </div>
-    
-        <!-- Scroll to Top Button -->
-        <button class="btn btn-primary scroll-to-top">Top</button>
+        
+            <!-- Scroll to Top Button -->
+            <button class="btn btn-primary scroll-to-top">Top</button>
+
+        </main>
 
         <script>
             // Show/Hide Scroll to Top Button
@@ -153,6 +173,6 @@
 
         <!-- My personal JS -->
         <script src="/scripts/app.js" defer></script>
-        <!-- Add additional JS here as needed -->
+        <script src="/scripts/writing.js"></script>
     </body>
 </html>

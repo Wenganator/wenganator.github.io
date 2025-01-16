@@ -61,7 +61,7 @@ body {
 /* Styling theme selector buttons based on their respective theme colors */
 /* See writing.js for scripting of the buttons */
 .btn-light-theme {
-    background-color: #f8f9fa;
+    background-color: #f5f5f4;
     color: #212529;
     border-color: #212529;
 }

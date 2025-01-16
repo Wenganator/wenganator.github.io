@@ -2,6 +2,11 @@
 // See writing.css for styling of the buttons
 const changeTheme = (theme) => {
     const root = document.documentElement;
+    
+    // Save the selected theme to localStorage
+    localStorage.setItem('selectedTheme', theme);
+
+    // Apply the theme
     if (theme === "light") {
     root.style.setProperty("--background-color", "#f8f9fa");
     root.style.setProperty("--text-color", "#212529");
@@ -25,3 +30,11 @@ const changeTheme = (theme) => {
     root.style.setProperty("--text-color", "#39ff14");
     }
 };
+
+// Apply the saved theme on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('selectedTheme');
+    if (savedTheme) {
+        changeTheme(savedTheme);
+    }
+});
