@@ -10,6 +10,7 @@
 
 
 
+/* Basic text styles */
 body {
     font-family: Roboto, Arial, Helvetica, sans-serif;
     line-height: 1.6;
@@ -44,7 +45,7 @@ h3 {
 }
 
 footer {
-    background-color: #f4f4f4;
+    /* background-color: #f4f4f4; */
     text-align: center;
     padding: 0.2rem;
     margin-top: 2rem;
