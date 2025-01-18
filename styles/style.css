@@ -10,6 +10,8 @@
 
 
 
+
+
 /* Basic text styles */
 body {
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -60,6 +62,8 @@ footer {
     margin-right: 8px; /* Space between the drop cap and the text */
     color: var(--primary-color); /* Optional: change the color */
 }
+
+
 
 
 
@@ -122,6 +126,10 @@ footer {
 }
 
 
+
+
+
+
 /* Search bar */
 .search-bar .form-control {
     border-color: var(--secondary-color);
@@ -136,6 +144,44 @@ footer {
     background-color: var(--dark-color);
     color: #fff;
 }
+
+
+/* Search input initially shrunk */
+input[type=search] {
+    width: 40px; /* Start width */
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 20px; /* Rounded corners */
+    background-color: white;
+    background-image: url('/assets/images/search.png');
+    background-size: 16px 16px; /* Adjust icon size */
+    background-position: 10px center; 
+    background-repeat: no-repeat;
+    padding: 5px 10px 5px 35px; /* Leave space for the icon */
+    transition: width 0.4s ease-in-out, border-radius 0.4s ease-in-out;
+    cursor: pointer; /* Indicate interactivity */
+}
+
+/* Expand the input on focus */
+input[type=search]:focus {
+    width: 200px; /* Expanded width */
+    border-radius: 4px; /* Normal corners */
+    padding: 5px 10px 5px 35px; /* Maintain padding for the icon */
+    cursor: text; /* Switch to text cursor */
+}
+
+/* Optional: Prevent form input from collapsing when clicked outside */
+input[type=search]:focus-within {
+    outline: none; /* Remove default outline */
+}
+
+/* Optional: Style the placeholder text */
+input[type=search]::placeholder {
+    color: #aaa; /* Light gray placeholder */
+    font-size: 14px;
+}
+
+
 
 
 
