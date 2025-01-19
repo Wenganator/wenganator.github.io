@@ -67,7 +67,8 @@ footer {
 /* Class dropcap for dropped capitals at the beginning of a paragraph or section */
 .dropcap::first-letter {
     font-size: 4em; /* Adjust the size as needed */
-    font-weight: bold;
+    font-weight: normal;
+    font-style: italic;
     float: left;
     line-height: 1;
     margin-right: 8px; /* Space between the drop cap and the text */
@@ -199,7 +200,7 @@ input[type=search]::placeholder {
 /* including image background */
 .content {
     padding: 2rem;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("../assets/images/cheetah-one-line-1.webp") no-repeat center center fixed;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("../assets/images/owl-welkin.webp") no-repeat center center fixed;
     background-size: cover;
     color: #ffffff;
 }

@@ -46,10 +46,12 @@ body {
 
 
 /* Dropped capitals (drop cap) class */
+/* Note: Overwrites the same dropcap class in style.css if writing.css placed after style.css in HTML code */
 .dropcap::first-letter {
     font-family: 'Playfair Display', 'Times New Roman', Times, serif;
     font-size: 4em; /* Adjust the size as needed */
     font-weight: normal;
+    font-style: italic;
     float: left;
     line-height: 1;
     margin-right: 8px; /* Space between the drop cap and the text */
