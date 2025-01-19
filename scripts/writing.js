@@ -1,5 +1,10 @@
 // Theme selector buttons
 // See writing.css for styling of the buttons
+// See theme-buttons.html for HTML code inserted into each subpage of writing.html
+
+
+// 
+// Scripts for buttons to change theme
 const changeTheme = (theme) => {
     const root = document.documentElement;
     
@@ -38,3 +43,29 @@ window.addEventListener('DOMContentLoaded', () => {
         changeTheme(savedTheme);
     }
 });
+
+
+
+
+// 
+// Load buttons into each subpage of writing.html
+// Function to dynamically load the buttons
+async function loadThemeButtons() {
+    const container = document.getElementById('theme-buttons-container');
+    if (container) {
+        try {
+            const response = await fetch('/theme-buttons.html'); // Update the path as needed
+            if (response.ok) {
+                const buttonsHtml = await response.text();
+                container.innerHTML = buttonsHtml;
+            } else {
+                console.error('Failed to load theme buttons:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error loading theme buttons:', error);
+        }
+    }
+}
+
+// Call the function to load the buttons
+loadThemeButtons();
