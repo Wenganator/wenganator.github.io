@@ -75,6 +75,11 @@ footer {
     color: var(--primary-color); /* Optional: change the color */
 }
 
+/* Class text-shadow-outline to outline letters with a black shadow */
+.text-shadow-outline {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
 
 
 

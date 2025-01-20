@@ -34,3 +34,21 @@ h1{
 h2 {
     font-size: 1.5rem; /* default for h2 appears to be 2rem */
 }
+
+
+
+
+/* Progressive reveal section */
+#progressive-reveal-container {
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#progressive-reveal-output {
+    font-size: 1.25rem;
+    min-height: 50px;
+    white-space: nowrap;
+}

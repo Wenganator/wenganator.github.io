@@ -74,6 +74,11 @@ async function searchPassage() {
                     .join(" ")
             )
             .join("\n");
+
+
+            
+        // After the passage is processed, initialize the progressive reveal function
+        initializeProgressiveReveal(fullText);
     } catch (error) {
         alert("Error: " + error.message);
     }
@@ -164,4 +169,75 @@ function processCustomText() {
 
     // Store the full custom text for "reveal full text" functionality
     fullText = customText;
+}
+
+
+
+
+// Functions below for Progressive Reveal section
+
+let words = []; // Array to hold the individual words
+let currentWordIndex = 0; // Index to track the current word
+
+// Initialize the progressive reveal section
+function initializeProgressiveReveal(text) {
+    fullText = text; // Update the fullText with the given text
+    words = fullText.split(" "); // Split the text into words
+    currentWordIndex = 0; // Reset the index
+
+    const revealOutputDiv = document.getElementById("progressive-reveal-output");
+    revealOutputDiv.innerHTML = ""; // Clear any existing words
+}
+
+// Reveal the next word
+function revealNextWord() {
+    if (currentWordIndex < words.length) {
+        const revealOutputDiv = document.getElementById("progressive-reveal-output");
+        const span = document.createElement("span");
+        span.textContent = words[currentWordIndex] + " ";
+        revealOutputDiv.appendChild(span);
+        currentWordIndex++;
+    }
+}
+
+// Hide the most recently revealed word
+function revealPreviousWord() {
+    if (currentWordIndex > 0) {
+        const revealOutputDiv = document.getElementById("progressive-reveal-output");
+        revealOutputDiv.removeChild(revealOutputDiv.lastChild); // Remove the last span
+        currentWordIndex--;
+    }
+}
+
+// Reset the progressive reveal section
+function resetProgressiveReveal() {
+    initializeProgressiveReveal(fullText); // Re-initialize with the current text
+}
+
+// Keydown event listener for right arrow (next), left arrow (back), and R (reset)
+// Could consider adding space bar as another trigger for next, but then user wouldn't be able to use space bar when typing into custom text section
+document.addEventListener("keydown", (event) => {
+    if (event.code === "ArrowRight") {
+        event.preventDefault(); // Prevent default scrolling behavior
+        revealNextWord();
+    } else if (event.code === "ArrowLeft") {
+        revealPreviousWord();
+    } else if (event.code === "KeyR") {
+        resetProgressiveReveal();
+    }
+});
+
+
+// Custom text functionality - integrating custom text input into progressive reveal function
+function useCustomText() {
+    const customTextInput = document.getElementById("custom-text").value.trim();
+
+    if (customTextInput) {
+        fullText = customTextInput; // Update the full text with custom input
+        document.getElementById("custom-output").textContent = fullText; // Update custom output
+
+        currentWordIndex = 0; // Reset the progressive reveal index
+        document.getElementById("progressive-reveal-output").textContent = ""; // Clear the progressive reveal area
+        initializeProgressiveReveal(fullText); // Initialize progressive reveal with custom text
+    }
 }
