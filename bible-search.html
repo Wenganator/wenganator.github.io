@@ -26,12 +26,13 @@
 
   <main>
     <h1>Bible Passage Search</h1>
+    <div>Uses bible-api.com to return passages from open Bible translations.<br><br></div>
 
     <form id="search-form" onsubmit="handleSearch(event);">
-        <label for="verse-input">Enter a Bible Passage:</label>
+        <label for="verse-input"><strong>Enter a Bible Passage:</strong></label>
         <input type="text" id="verse-input" placeholder="e.g., Ezekiel 18, Ezek 18:30-32">
         
-        <label for="translation-select">Select Translation:</label>
+        <label for="translation-select"><strong>Select Translation:</strong></label>
         <select id="translation-select">
             <option value="kjv">King James Version (KJV)</option>
             <option value="web">World English Bible (WEB)</option>
