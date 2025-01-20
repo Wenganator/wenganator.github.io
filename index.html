@@ -21,15 +21,178 @@
         <!-- My personal CSS -->
         <link rel="stylesheet" href="styles/fonts.css">
         <link rel="stylesheet" href="styles/style.css">
+        <link rel="stylesheet" href="styles/index.css">
         <!-- Add additional stylesheets here to override original styles as needed -->
     </head>
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
 
         <div class="content">
-            <h1>Welcome!</h1>
-            <br>
-            <p>Excuse my current appearance. Additional content in the works!<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>    
+
+            <div class="container-fluid grid-container">
+                <div class="header">
+                    <!-- <h1>Welcome!</h1>
+                    <p>Click a tile to navigate to a specific page</p> -->
+                </div>
+
+                <!-- Tile 1 (odd) -->
+                <div class="row row-cols-3 row-cols-md-5 g-0"> <!-- Change N in row-cols-md-N to control for the number of tiles in a row. NB: In order for alternating colors based on odd/even, need to have an odd number of total tiles N -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-odd" style="background-image: url('image1.jpg');">
+                                    <a href="/bible-search.html"></a>
+                                    <p>Passage Search</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/bible-search.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Tile 2 (even) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-even" style="background-image: url('image2.jpg')">
+                                    <a href="/bible-memory.html"></a>
+                                    <p>Bible Memory</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/bible-memory.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Tile 3 (odd) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-odd" style="background-image: url('image3.jpg');">
+                                    <a href="/verse-vault.html"></a>
+                                    <p>Verse Vault</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/verse-vault.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Tile 4 (even) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-even" style="background-image: url('image4.jpg');">
+                                    <a href="/medicine.html"></a>
+                                    <p>Medicine</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/medicine.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Tile 5 (odd) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-odd" style="background-image: url('image5.jpg');">
+                                    <a href="/music.html"></a>
+                                    <p>Music</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/music.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tile 6 (even) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-even" style="background-image: url('image5.jpg');">
+                                    <a href="/wikipedia.html"></a>
+                                    <p>Wikipedia</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/wikipedia.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tile 7 (odd) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-odd" style="background-image: url('image5.jpg');">
+                                    <a href="/books.html"></a>
+                                    <p>Books</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/books.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tile 8 (even) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-even" style="background-image: url('image5.jpg');">
+                                    <a href="/writing.html"></a>
+                                    <p>Writing</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/writing.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tile 9 (odd) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-odd" style="background-image: url('image5.jpg');">
+                                    <a href="/notes.html"></a>
+                                    <p>Notes</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/notes.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tile 10 (even) -->
+                    <div class="col">
+                        <div class="tile">
+                            <div class="tile-inner">
+                                <div class="tile-front tile-front-even" style="background-image: url('image5.jpg');">
+                                    <a href="/contact.html"></a>
+                                    <p>Contact</p>
+                                </div>
+                                <div class="tile-back">
+                                    <a href="/contact.html"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Add more tiles below -->
+
+
+                </div>
+            </div>
+
         </div>
 
         <div id="footer"></div> <!-- Modify footer content in footer.html -->
