@@ -33,15 +33,17 @@
     align-items: center;
     text-align: center;
     color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Black outline around letters */
     font-family: 'Playfair Display', 'Times New Roman', Times, serif;
     font-size: 3.5rem;
 }
 
 .tile-front {
     background-color: var(--primary-color);
-    background-size: cover;
-    background-position: center;
-    opacity: 0.9; /* Adjust the tile opacity */
+    background-size: contain; /* Adjust image to fit inside the tile */
+    background-repeat: no-repeat; /* Prevent tiling */
+    background-position: center; /* Center the image */
+    /* opacity: 0.9; */
 }
 
 .tile-front-odd {
@@ -91,10 +93,16 @@
     .row-cols-md-5 {
         --bs-columns: 2;
     }
+    .tile-back {
+        font-size: 1rem; /* Adjust font size for smaller screens */
+    }
 }
 
 @media (max-width: 576px) {
     .row-cols-md-5 {
         --bs-columns: 1;
+    }
+    .tile-back {
+        font-size: 0.8rem; /* Further adjust font size for extra small screens */
     }
 }
