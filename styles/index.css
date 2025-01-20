@@ -93,6 +93,9 @@
     .row-cols-md-5 {
         --bs-columns: 2;
     }
+    .tile-front {
+        font-size: 2.5rem; /* Adjust font size for smaller screens */
+    }
     .tile-back {
         font-size: 1rem; /* Adjust font size for smaller screens */
     }
@@ -101,6 +104,9 @@
 @media (max-width: 576px) {
     .row-cols-md-5 {
         --bs-columns: 1;
+    }
+    .tile-front {
+        font-size: 2rem; /* Further adjust font size for extra small screens */
     }
     .tile-back {
         font-size: 0.8rem; /* Further adjust font size for extra small screens */
