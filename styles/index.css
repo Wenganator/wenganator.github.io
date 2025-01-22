@@ -94,10 +94,10 @@
         --bs-columns: 2;
     }
     .tile-front {
-        font-size: 2.5rem; /* Adjust font size for smaller screens */
+        font-size: 2.2rem; /* Adjust font size for smaller screens */
     }
     .tile-back {
-        font-size: 1rem; /* Adjust font size for smaller screens */
+        font-size: 0.88rem; /* Adjust font size for smaller screens */
     }
 }
 
@@ -106,9 +106,9 @@
         --bs-columns: 1;
     }
     .tile-front {
-        font-size: 2rem; /* Further adjust font size for extra small screens */
+        font-size: 1.8rem; /* Further adjust font size for extra small screens */
     }
     .tile-back {
-        font-size: 0.8rem; /* Further adjust font size for extra small screens */
+        font-size: 0.72rem; /* Further adjust font size for extra small screens */
     }
 }
