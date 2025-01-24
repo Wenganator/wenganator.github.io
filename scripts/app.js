@@ -22,6 +22,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Wikipedia", url: "/wikipedia.html" },
             { name: "Books", url: "/books.html" },
             { name: "Writing", url: "/writing.html" },
+            { name: "Blog", url: "/blog.html" },
             { name: "Notes", url: "/notes.html" },
             { name: "Contact", url: "/contact.html" },
             // Add more pages here
