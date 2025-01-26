@@ -1,74 +1,25 @@
 // blogPosts for blog.html and tags.html
 const blogPosts = [
     {
-        title: 'Blog Post 1',
-        tag: 'Bible',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        image: '/assets/images/elephant.jpg',
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 2',
-        tag: 'Books',
-        content: 'Vivamus lacinia odio vitae vestibulum vestibulum.',
-        image: '/assets/images/elephant.jpg', 
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 3',
-        tag: 'Christianity',
-        content: 'Cras ultricies ligula sed magna dictum porta.',
-        image: '/assets/images/elephant.jpg',
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 4',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
-        image: '/assets/images/elephant.jpg',
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 5',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
-        image: '/assets/images/elephant.jpg',
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 6',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
-        image: '/assets/images/elephant.jpg',
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 7',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
+        title: 'Antibiotics',
+        tag: ['Medicine'],
+        content: 'A practical guide to antibiotics by an internal medicine resident',
         image: 'https://via.placeholder.com/350x200',
-        url: '/blog/placeholder.html'
+        url: '/blog/antibiotics.html'
     },
     {
-        title: 'Blog Post 8',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
+        title: 'Scripture Memorization',
+        tag: ['Bible', 'Memory'],
+        content: 'A guide to Scripture memorization',
         image: 'https://via.placeholder.com/350x200',
-        url: '/blog/placeholder.html'
+        url: '/blog/scripture-memorization.html'
     },
     {
-        title: 'Blog Post 9',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
+        title: 'Welcome',
+        tag: ['Miscellaneous'],
+        content: 'Welcome!',
         image: 'https://via.placeholder.com/350x200',
-        url: '/blog/placeholder.html'
-    },
-    {
-        title: 'Blog Post 10',
-        tag: 'Technology',
-        content: 'Curabitur aliquet quam id dui posuere blandit.',
-        image: 'https://via.placeholder.com/350x200',
-        url: '/blog/placeholder.html'
+        url: '/blog/welcome.html'
     }
 ];
 
@@ -86,14 +37,53 @@ let currentPage = 1; // for infinite scrolling
 const postsPerPage = 3; // for infinite scrolling  // Change this value to control how many posts load at a time
 
 
+// const renderPosts = (posts) => {
+//     posts.forEach(post => {
+//         const card = `
+//             <div class="col-md-4 mb-4">
+//                 <div class="card blog-card">
+//                     <img src="${post.image}" class="card-img-top" alt="${post.title}">
+//                     <div class="card-body">
+//                         <h5 class="card-title">${post.title}</h5>
+//                         <p class="card-text">${post.content}</p>
+//                         <a href="${post.url}" class="btn btn-primary">Read More</a>
+//                         <button class="btn btn-outline-secondary bookmark-btn" data-title="${post.title}">Bookmark</button>
+//                     </div>
+//                 </div>
+//             </div>
+//         `;
+//         blogContainer.innerHTML += card;
+//     });
+
+//     // Remove all previous event listeners by re-selecting new buttons
+//     const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
+//     bookmarkButtons.forEach(button => {
+//         button.replaceWith(button.cloneNode(true)); // Removes existing event listeners
+//     });
+
+//     // Reattach event listeners for bookmark buttons
+//     const updatedBookmarkButtons = document.querySelectorAll('.bookmark-btn');
+//     updatedBookmarkButtons.forEach(button => {
+//         button.addEventListener('click', (e) => {
+//             const postTitle = e.target.dataset.title;
+//             toggleBookmark(postTitle);
+//         });
+//     });
+
+//     // Update bookmark icons after rendering posts
+//     updateBookmarkIcons();
+// };
+
 const renderPosts = (posts) => {
     posts.forEach(post => {
+        const tagsHtml = post.tag.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('');
         const card = `
             <div class="col-md-4 mb-4">
                 <div class="card blog-card">
                     <img src="${post.image}" class="card-img-top" alt="${post.title}">
                     <div class="card-body">
                         <h5 class="card-title">${post.title}</h5>
+                        <div class="mb-2">${tagsHtml}</div>
                         <p class="card-text">${post.content}</p>
                         <a href="${post.url}" class="btn btn-primary">Read More</a>
                         <button class="btn btn-outline-secondary bookmark-btn" data-title="${post.title}">Bookmark</button>
@@ -124,6 +114,7 @@ const renderPosts = (posts) => {
 };
 
 
+
 // Additional code for infinite scrolling
 const loadMorePosts = () => {
     const start = (currentPage - 1) * postsPerPage; // Starting index
@@ -150,19 +141,34 @@ const handleScroll = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // const filterPosts = () => {
+    //     const searchText = searchBar.value.toLowerCase();
+    //     const selectedTag = tagFilter.value;
+
+    //     const filteredPosts = blogPosts.filter(post => {
+    //         const matchesText = post.title.toLowerCase().includes(searchText);
+    //         const matchesTag = !selectedTag || post.tag === selectedTag;
+    //         return matchesText && matchesTag;
+    //     });
+
+    //     blogContainer.innerHTML = ''; // Clear all posts
+    //     currentPage = 1; // Reset to the first page
+    //     loadMoreFilteredPosts(filteredPosts); // Load the first batch of filtered posts    
+    // };
+
     const filterPosts = () => {
         const searchText = searchBar.value.toLowerCase();
         const selectedTag = tagFilter.value;
-
+    
         const filteredPosts = blogPosts.filter(post => {
             const matchesText = post.title.toLowerCase().includes(searchText);
-            const matchesTag = !selectedTag || post.tag === selectedTag;
+            const matchesTag = !selectedTag || post.tag.includes(selectedTag);
             return matchesText && matchesTag;
         });
-
+    
         blogContainer.innerHTML = ''; // Clear all posts
         currentPage = 1; // Reset to the first page
-        loadMoreFilteredPosts(filteredPosts); // Load the first batch of filtered posts    
+        loadMoreFilteredPosts(filteredPosts); // Load the first batch of filtered posts
     };
 
     const loadMoreFilteredPosts = (filteredPosts) => {
