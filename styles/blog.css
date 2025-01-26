@@ -19,6 +19,12 @@
 .filter-section {
     margin-bottom: 20px;
 }
+.bookmark-btn.active {
+    background-color: #ffc107;
+    color: #000;
+    border-color: #ffc107;
+}
+
 
 
 
