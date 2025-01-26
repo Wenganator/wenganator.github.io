@@ -4,12 +4,12 @@ const blogPosts = [
         title: 'Antibiotics',
         tag: ['Medicine'],
         content: 'A practical guide to antibiotics by an internal medicine resident',
-        image: 'https://via.placeholder.com/350x200',
+        image: '/assets/images/blog/antibiotics-teachIM.jpg',
         url: '/blog/antibiotics.html'
     },
     {
         title: 'Scripture Memorization',
-        tag: ['Bible', 'Memory'],
+        tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
         content: 'A guide to Scripture memorization',
         image: 'https://via.placeholder.com/350x200',
         url: '/blog/scripture-memorization.html'
@@ -18,7 +18,7 @@ const blogPosts = [
         title: 'Welcome',
         tag: ['Miscellaneous'],
         content: 'Welcome!',
-        image: 'https://via.placeholder.com/350x200',
+        image: '/assets/images/writing-quill.png',
         url: '/blog/welcome.html'
     }
 ];
@@ -36,43 +36,6 @@ blogContainer.parentNode.appendChild(loading);
 let currentPage = 1; // for infinite scrolling
 const postsPerPage = 3; // for infinite scrolling  // Change this value to control how many posts load at a time
 
-
-// const renderPosts = (posts) => {
-//     posts.forEach(post => {
-//         const card = `
-//             <div class="col-md-4 mb-4">
-//                 <div class="card blog-card">
-//                     <img src="${post.image}" class="card-img-top" alt="${post.title}">
-//                     <div class="card-body">
-//                         <h5 class="card-title">${post.title}</h5>
-//                         <p class="card-text">${post.content}</p>
-//                         <a href="${post.url}" class="btn btn-primary">Read More</a>
-//                         <button class="btn btn-outline-secondary bookmark-btn" data-title="${post.title}">Bookmark</button>
-//                     </div>
-//                 </div>
-//             </div>
-//         `;
-//         blogContainer.innerHTML += card;
-//     });
-
-//     // Remove all previous event listeners by re-selecting new buttons
-//     const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
-//     bookmarkButtons.forEach(button => {
-//         button.replaceWith(button.cloneNode(true)); // Removes existing event listeners
-//     });
-
-//     // Reattach event listeners for bookmark buttons
-//     const updatedBookmarkButtons = document.querySelectorAll('.bookmark-btn');
-//     updatedBookmarkButtons.forEach(button => {
-//         button.addEventListener('click', (e) => {
-//             const postTitle = e.target.dataset.title;
-//             toggleBookmark(postTitle);
-//         });
-//     });
-
-//     // Update bookmark icons after rendering posts
-//     updateBookmarkIcons();
-// };
 
 const renderPosts = (posts) => {
     posts.forEach(post => {
@@ -141,21 +104,6 @@ const handleScroll = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // const filterPosts = () => {
-    //     const searchText = searchBar.value.toLowerCase();
-    //     const selectedTag = tagFilter.value;
-
-    //     const filteredPosts = blogPosts.filter(post => {
-    //         const matchesText = post.title.toLowerCase().includes(searchText);
-    //         const matchesTag = !selectedTag || post.tag === selectedTag;
-    //         return matchesText && matchesTag;
-    //     });
-
-    //     blogContainer.innerHTML = ''; // Clear all posts
-    //     currentPage = 1; // Reset to the first page
-    //     loadMoreFilteredPosts(filteredPosts); // Load the first batch of filtered posts    
-    // };
-
     const filterPosts = () => {
         const searchText = searchBar.value.toLowerCase();
         const selectedTag = tagFilter.value;
