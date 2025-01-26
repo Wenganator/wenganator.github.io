@@ -53,81 +53,8 @@
         <!-- Add additional JS here as needed -->
         <script>
             // Sample data: Replace this with dynamic data from your backend or API.
-            
-            // Ideally, const blogPosts updated in blog.js and will be pulled in here to use. But this doesn't work for some reason
-            // Instead, manually update blogPosts here and in blog.js
-            const blogPosts = [
-                {
-                    title: 'Blog Post 1',
-                    tag: 'Bible',
-                    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                    image: '/assets/images/elephant.jpg',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 2',
-                    tag: 'Books',
-                    content: 'Vivamus lacinia odio vitae vestibulum vestibulum.',
-                    image: '/assets/images/elephant.jpg', 
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 3',
-                    tag: 'Christianity',
-                    content: 'Cras ultricies ligula sed magna dictum porta.',
-                    image: '/assets/images/elephant.jpg',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 4',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: '/assets/images/elephant.jpg',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 5',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: '/assets/images/elephant.jpg',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 6',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: '/assets/images/elephant.jpg',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 7',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: 'https://via.placeholder.com/350x200',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 8',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: 'https://via.placeholder.com/350x200',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 9',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: 'https://via.placeholder.com/350x200',
-                    url: '/blog/placeholder.html'
-                },
-                {
-                    title: 'Blog Post 10',
-                    tag: 'Technology',
-                    content: 'Curabitur aliquet quam id dui posuere blandit.',
-                    image: 'https://via.placeholder.com/350x200',
-                    url: '/blog/placeholder.html'
-                }
-            ];
+
+            // blogPosts located in blog.js
         
             // Get the tag from the query string
             const params = new URLSearchParams(window.location.search);
@@ -137,7 +64,9 @@
             document.getElementById("tag-name").textContent = selectedTag;
         
             // Filter blog posts by the selected tag
-            const filteredPosts = blogPosts.filter(post => post.tag === selectedTag);
+            const filteredPosts = blogPosts.filter(post => 
+                post.tag.toLowerCase() === selectedTag.toLowerCase()
+            );
         
             // Dynamically render the filtered blog posts
             const blogList = document.getElementById("blog-list");

@@ -1,4 +1,4 @@
-// Update blogPosts here (blog.js) and tags.html
+// blogPosts for blog.html and tags.html
 const blogPosts = [
     {
         title: 'Blog Post 1',
