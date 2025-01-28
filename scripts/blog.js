@@ -1,5 +1,14 @@
 // blogPosts for blog.html and tags.html
+
+// From newest to oldest posts (so newest posts will display at the top)
 const blogPosts = [
+    {
+        title: 'Freebies', 
+        tag: ['Games', 'Technology', 'Miscellaneous'],
+        content: 'Freebies (or something close)',
+        images: '/assets/images/blog/freebies.svg',
+        url: '/blog/freebies.html'
+    },
     {
         title: 'Antibiotics',
         tag: ['Medicine'],
@@ -10,7 +19,7 @@ const blogPosts = [
     {
         title: 'Scripture Memorization',
         tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
-        content: 'A guide to Scripture memorization',
+        content: 'A basic guide to Scripture memorization',
         image: 'https://via.placeholder.com/350x200',
         url: '/blog/scripture-memorization.html'
     },
