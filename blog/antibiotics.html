@@ -22,6 +22,35 @@
         <link rel="stylesheet" href="/styles/style.css">
         <link rel="stylesheet" href="/styles/blog.css">
         <!-- Add additional stylesheets here to override original styles as needed -->
+        <style>
+            /* Antibiotic classes */
+            .antibiotic-penicillin { background-color: #cce5ff; color: #004085; } /* Light Blue */
+            .antibiotic-cephalosporin { background-color: #d4edda; color: #155724; } /* Light Green */
+            .antibiotic-fq { background-color: #ffcccc; color: #800000; } /* Light Red */
+            .antibiotic-macrolide { background-color: #ffd9e6; color: #b30059; } /* Light Pink */
+            .antibiotic-tetracycline { background-color: #e6ccff; color: #4b0082; } /* Light Purple */
+            .antibiotic-carbapenem { background-color: #ffebcc; color: #804000; } /* Light Orange */
+            .antibiotic-aminoglycoside { background-color: #e6f7ff; color: #007399; } /* Light Cyan */
+
+            /* Bacterial classes */
+            .bacteria-gram-positive { background-color: #ffccff; color: #660066; } /* Soft Purple */
+            .bacteria-gram-negative { background-color: #ff9999; color: #660000; } /* Soft Red */
+            .bacteria-anaerobe { background-color: #ccffcc; color: #006600; } /* Soft Green */
+            .bacteria-atypical { background-color: #99ccff; color: #003366; } /* Soft Blue */
+            .bacteria-mrsa { background-color: #66ccff; color: #005580; } /* Bright Blue */
+            .bacteria-psa { background-color: #ff6666; color: #990000; } /* Bold Red */
+            .bacteria-vre { background-color: #ffcc66; color: #805500; } /* Golden Yellow */
+            .bacteria-esbl { background-color: #cccccc; color: #333333; } /* Neutral Gray */
+
+            .coverage {
+                color: green;
+            }
+
+            .no-coverage {
+                /* list-style: none; */
+                color: red;
+            }
+        </style>
     </head>
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
@@ -73,8 +102,8 @@
                                     <li><strong>Atypicals</strong>: ***</li>
                                     <li><strong>Methicillin-resistant <i>Staphylococcus aureus</i> (MRSA)</strong>: ***</li>
                                     <li><strong><i>Pseudomonas aeruginosa</i>(PsA)</strong>: ***</li>
-                                    <li><strong>Extended-spectrum beta-lactamases (ESBLs)</strong>: ***</li>
                                     <li><strong>Vancomycin-resistant <i>Enterococcus</i> (VRE)</strong>: ***</li>
+                                    <li><strong>Extended-spectrum beta-lactamases (ESBLs)</strong>: ***</li>
                                 </ul>
                             </p>
 
@@ -84,60 +113,127 @@
                             <div class="accordion" id="antibioticAccordion">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePenicillin">
+                                        <button class="accordion-button collapsed antibiotic-penicillin" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePenicillin">
                                             Penicillins
                                         </button>
                                     </h2>
                                     <div id="collapsePenicillin" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            Effective against <span class="bacteria-gram-positive">Gram-positive</span> and 
-                                            <span class="bacteria-anaerobes">Anaerobes</span>.
+                                            <ul>
+                                                <li><strong>Penicillin</strong>: IM PCN only for syphilis</li>
+                                                <li><strong>Amoxicillin, ampicillin</strong>: <i>Strep</i>, otitis, etc.; ampicillin-sensitive <i>Enterococcus</i></li>
+                                                <li><strong>Methicillin, oxacillin, dicloxacillin, nafcillin</strong>: MSSA<br></li>
+                                                <li><strong>Amoxicillin/clavulanate (PO Augmentin), ampicillin/sulbactam (IV Unasyn)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span></li>
+                                                <ul class="no-coverage"><li>∅ MRSA, PsA, atypicals</li></ul>
+                                                <li><strong>Piperacillin/tazobactam (IV Zosyn)</strong>: adds PsA coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span></li>
+                                                <li><strong>"Broad spectrum"</strong>: vancomycin + piperacillin/tazobactam ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <ul class="no-coverage"><li>∅ atypicals</li></ul>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCephalosporin">
+                                        <button class="accordion-button collapsed antibiotic-cephalosporin" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCephalosporin">
                                             Cephalosporins
                                         </button>
                                     </h2>
                                     <div id="collapseCephalosporin" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            Effective against <span class="bacteria-gram-positive">Gram-positive</span> and 
-                                            <span class="bacteria-gram-negative">Gram-negative</span>.
+                                            <!--  -->
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bacteria-anaerobe" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnaerobe">
+                                            Anaerobes
+                                        </button>
+                                    </h2>
+                                    <div id="collapseAnaerobe" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <!--  -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bacteria-atypical" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAtypical">
+                                            Atypicals
+                                        </button>
+                                    </h2>
+                                    <div id="collapseAtypical" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <!--  -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bacteria-mrsa" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMRSA">
+                                            MRSA
+                                        </button>
+                                    </h2>
+                                    <div id="collapseMRSA" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <!--  -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bacteria-psa" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePsA">
+                                            PsA
+                                        </button>
+                                    </h2>
+                                    <div id="collapsePsA" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <!--  -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bacteria-vre" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVRE">
+                                            VRE
+                                        </button>
+                                    </h2>
+                                    <div id="collapseVRE" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <!--  -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed bacteria-esbl" type="button" data-bs-toggle="collapse" data-bs-target="#collapseESBL">
+                                            ESBL
+                                        </button>
+                                    </h2>
+                                    <div id="collapseESBL" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <!--  -->
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
+
+
 
                             <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Covers Gram-positive bacteria">
                                 Penicillin
                             </button>
                             
 
-                            <h3>Penicillins</h3>
-                            <p></p>
-
-                            <h3>Cephalosporins</h3>
-                            <p></p>
-
-                            <h3>Anaerobes</h3>
-                            <p></p>
-
-                            <h3>Atypicals</h3>
-                            <p></p>
-
-                            <h3>MRSA</h3>
-                            <p></p>
-
-                            <h3>PsA</h3>
-                            <p></p>
-
-                            <h3>ESBLs</h3>
-                            <p></p>
-
-                            <h3>VRE</h3>
-                            <p></p>
 
                             <h3>Closing Thoughts</h3>
                             <p></p>
@@ -150,7 +246,7 @@
                                             <p class="card-text">
                                                 Covers: 
                                                 <span class="bacteria-gram-positive">Gram-positive</span>,
-                                                <span class="bacteria-anaerobes">Anaerobes</span>
+                                                <span class="bacteria-anaerobe">Anaerobes</span>
                                             </p>
                                         </div>
                                     </div>
@@ -175,6 +271,7 @@
                                     <li>TeachIM: <a href="https://teachim.org/teaching_material/antibiotics-part-1-spectrum/">Spectrum (Part 1)</a>, <a href="https://teachim.org/teaching_material/abx-2-sites/">Sites of Infection (Part 2)</a></li>
                                     <li><a href="https://www.hopkinsguides.com/hopkins/index/Johns_Hopkins_ABX_Guide/All_Topics/A">Johns Hopkins ABX Guide</a></li>
                                     <li><a href="/abx/BugDrugDX.html">BugDrugDX, an interactive page hosted on All the Welkin</a></li>
+                                    <li><a href="/abx/TMC-antimicrobial-treatment-and-dosing-guide.html">Tufts Medical Center Antimicrobial Treatment and Dosing Guide for Adults</a></li>
                                 </ol>
                             </p>
                                           

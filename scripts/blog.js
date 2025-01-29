@@ -6,7 +6,7 @@ const blogPosts = [
         title: 'Freebies', 
         tag: ['Games', 'Technology', 'Miscellaneous'],
         content: 'Freebies (or something close)',
-        images: '/assets/images/blog/freebies.svg',
+        image: '/assets/images/blog/freebies.svg',
         url: '/blog/freebies.html'
     },
     {
