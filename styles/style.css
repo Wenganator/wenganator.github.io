@@ -80,6 +80,11 @@ footer {
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
+/* Class small caps */
+.small-caps {
+    font-variant: small-caps;
+}
+
 
 
 

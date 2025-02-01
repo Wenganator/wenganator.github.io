@@ -1,7 +1,18 @@
 // blogPosts for blog.html and tags.html
 
 // From newest to oldest posts (so newest posts will display at the top)
+// TO-DO: Standardize sizing of images to e.g., 350x200?
+
+// Tags: Bible, Books, Christianity, Cooking, Games, Medicine, Memory, Music, Sports, 
+//       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
+    {
+        title: 'Worship Sets',
+        tag: ['Christianity', 'Music', 'Theology', 'Worship'],
+        content: 'Ideas for worship sets',
+        image: '/assets/images/blog/worship-sets.webp',
+        url: '/blog/worship-sets.html'
+    },
     {
         title: 'Freebies', 
         tag: ['Games', 'Technology', 'Miscellaneous'],
@@ -20,7 +31,7 @@ const blogPosts = [
         title: 'Scripture Memorization',
         tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
         content: 'A basic guide to Scripture memorization',
-        image: 'https://via.placeholder.com/350x200',
+        image: '/assets/images/blog/scripture-memorization.webp',
         url: '/blog/scripture-memorization.html'
     },
     {
