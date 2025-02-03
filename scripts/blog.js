@@ -7,6 +7,13 @@
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
     {
+        title: 'Doxologies',
+        tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
+        content: 'Doxologies and prayers from the Bible',
+        image: '/assets/images/blog/placeholder',
+        url: '/blog/doxologies.html'
+    },
+    {
         title: 'Worship Sets',
         tag: ['Christianity', 'Music', 'Theology', 'Worship'],
         content: 'Ideas for worship sets',

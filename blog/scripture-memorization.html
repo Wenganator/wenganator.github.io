@@ -26,6 +26,16 @@
             .custom-card {
                 margin-bottom: 1.5rem;
             }
+
+            .card-header-tabs .nav-link {
+                color: var(--secondary-color) !important;
+            }
+
+            .card-header-tabs .nav-link.active {
+                color: var(--primary-color) !important;
+                background-color: transparent; /* if you want to remove any background color */
+                border-color: transparent;     /* if you want to remove any border color */
+            }
         </style>
     </head>
     <body>
@@ -62,31 +72,108 @@
                                 Scripture memorization immediately came to mind.
                             </p>
                             
-                            <h3>Subheading</h3>
+                            <h3>1. Biblical basis</h3>
                             <p>
-                                <a href="/assets/pdf/Scripture-Memorization-20250128.pdf">Notes</a>
+                                What does Scripture command about knowing Scripture?
                             </p>
 
-                            <div class="card border-primary custom-card">
+                            <h4>Old Testament</h4>
+
+                            <div class="card custom-card">
+                                <div class="card-header" id="myTab">
+                                    <ul class="nav nav-tabs card-header-tabs">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="a1-tab" data-bs-toggle="tab" href="#a1">
+                                                Deut. 10:12-13
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="a2-tab" data-bs-toggle="tab" href="#a2">
+                                                Josh. 1:8-9
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="a3-tab" data-bs-toggle="tab" href="#a3">
+                                                Ezra 7:10
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="a4-tab" data-bs-toggle="tab" href="#a4">
+                                                Ps. 1
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="a5-tab" data-bs-toggle="tab" href="#a5">
+                                                Ps. 19:7
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">Deuteronomy 10:12-1 (ESV)</h5>
-                                    <p class="card-text">“And now, Israel, what does the <span class="small-caps">Lord</span> your God require of you, but to fear the <span class="small-caps">Lord</span> your God, to walk in all his ways, to love him, to serve the <span class="small-caps">Lord</span> your God with all your heart and with all your soul, and to keep the commandments and statutes of the <span class="small-caps">Lord</span>, which I am commanding you today for your good?</p>
+                                    <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="a1">
+                                            <h5>Deuteronomy 10:12-13 (ESV)</h5>
+                                            “And now, Israel, what does the <span class="small-caps">Lord</span> your God require of you, but to fear the <span class="small-caps">Lord</span> your God, to walk in all his ways, to love him, to serve the <span class="small-caps">Lord</span> your God with all your heart and with all your soul, and to keep the commandments and statutes of the <span class="small-caps">Lord</span>, which I am commanding you today for your good?
+                                        </div>
+                                        <div class="tab-pane fade" id="a2">
+                                            <h5>Joshua 1:8-9 (ESV)</h5>
+                                            This Book of the Law shall not depart from your mouth, but you shall meditate on it day and night, so that you may be careful to do according to all that is written in it. For then you will make your way prosperous, and then you will have good success. Have I not commanded you? Be strong and courageous. Do not be frightened, and do not be dismayed, for the <span class="small-caps">Lord</span> your God is with you wherever you go.”
+                                        </div>
+                                        <div class="tab-pane fade" id="a3">
+                                            <h5>Ezra 7:10 (NKJV)</h5>
+                                            For Ezra had prepared his heart to seek the Law of the <span class="small-caps">Lord</span>, and to do it, and to teach statutes and ordinances in Israel.
+                                        </div>
+                                        <div class="tab-pane fade" id="a4">
+                                            <h5>Psalm 1 (ESV)</h5>
+                                            Blessed is the man<br>    
+                                            &nbsp;&nbsp;&nbsp;&nbsp;who walks not in the counsel of the wicked,<br>
+                                            nor stands in the way of sinners,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;nor sits in the seat of scoffers;<br>
+                                            but his delight is in the law of the <span class="small-caps">Lord</span>,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;and on his law he meditates day and night.<br><br>
+                                            He is like a tree<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;planted by streams of water<br>
+                                            that yields its fruit in its season,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;and its leaf does not wither.<br>
+                                            In all that he does, he prospers.<br>The wicked are not so,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;but are like chaff that the wind drives away.<br><br>
+                                            Therefore the wicked will not stand in the judgment,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;nor sinners in the congregation of the righteous;<br>
+                                            for the <span class="small-caps">Lord</span> knows the way of the righteous,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;but the way of the wicked will perish.
+                                        </div>
+                                        <div class="tab-pane fade" id="a5">
+                                            <h5>Psalm 19:7 (ESV)</h5>
+                                            "The law of the <span class="small-caps">Lord</span> is perfect,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;reviving the soul;<br>
+                                            the testimony of the <span class="small-caps">Lord</span> is sure,<br>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;making wise the simple;
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="card border-primary custom-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Joshua 1:8-9 (ESV)</h5>
-                                    <p class="card-text">This Book of the Law shall not depart from your mouth, but you shall meditate on it day and night, so that you may be careful to do according to all that is written in it. For then you will make your way prosperous, and then you will have good success. Have I not commanded you? Be strong and courageous. Do not be frightened, and do not be dismayed, for the <span class="small-caps">Lord</span> your God is with you wherever you go.”</p>
-                                </div>
-                            </div>
+                            <h4>New Testament</h4>
 
-                            <div class="card border-primary custom-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Ezra 7:10 (NKJV)</h5>
-                                    <p class="card-text">For Ezra had prepared his heart to seek the Law of the <span class="small-caps">Lord</span>, and to do it, and to teach statutes and ordinances in Israel.</p>
-                                </div>
-                            </div>
+                            <h3>2. Purpose</h3>
+                            <p>Why memorize?</p>
+
+                            <h3>3. Aim</h3>
+                            <p>Practical goals</p>
+
+                            <h3>4. Strategy & considerations</h3>
+                            <p></p>
+
+                            <h3>5. First steps</h3>
+                            <p></p>
+
+                            <h3>6. Next steps</h3>
+                            <p></p>
+
+                            <h3>Notes</h3>
+                            <p>
+                                My personal notes are located <a href="/assets/pdf/Scripture-Memorization-20250128.pdf">here</a>.
+                            </p>
             
                             
                             <p></p>
