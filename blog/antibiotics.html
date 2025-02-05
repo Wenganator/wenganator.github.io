@@ -57,11 +57,11 @@
 
         <!-- Breadcrumb -->
         <div class="container my-4">
-            <nav aria-label="breadcrumb">
+            <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
                 <li class="breadcrumb-item"><a href="/blog.html">Blog</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Antibiotics</li>
+                <li class="breadcrumb-item active">Antibiotics</li>
             </ol>
             </nav>
         </div>
@@ -76,39 +76,60 @@
                         <p class="text-muted">Published on January 25, 2025 | By JW</p>
                         
                         <img src="/assets/images/blog/antibiotics-teachIM.jpg" class="img-fluid rounded" alt="Antimicrobial spectrum">
+                        <div style="font-size: small;"><i>Antibiotic coverage chart. Source: <a href="https://teachim.org/teaching_material/antibiotics-part-1-spectrum/">teachIM.org</a>.</i></div>
                         
                         <div class="blog-content mt-4">
-                            <p>Antibiotics are one of the few domains over which the general internist still commands jurisdiction. 
+                            <p>
+                                Antibiotics are one of the few domains over which the general internist still commands jurisdiction. 
                                 In medical school, I was drawn to microbiology/antibiotics thanks to <a href="https://www.sketchy.com/medical-courses/microbiology">Sketchy</a>. 
                                 I have found that medical students and interns alike often feel hesitation with antibiotic selection, 
                                 borne at least in part out of learning several dozen microbes and their pharmacological counterparts 
-                                and their mechanisms of actions in the classroom in a haphazard manner, and in part out of a habit of 
+                                and mechanisms of action in the classroom in a haphazard manner, and in part out of a habit of 
                                 using a specific but seemingly arbitrary set of antibiotics on the wards that depends highly on institutional 
                                 habits but devoid of any sensible structure. Here I’ll share a simplified but practically high-yield framework 
                                 for thinking about antibiotics in the inpatient setting. As an early trainee, you will immediately add value to 
                                 many medicine teams and most non-medicine teams (I’m looking at you, surgery, AKA the Ancef aficionados) by 
-                                wielding your antibiotic scepter with confidence.</p>
+                                wielding your antibiotic scepter with confidence.
+                            </p>
 
-                            <p>As always, be familiar with your institutional practices, stay up to date with your local antibiogram trends, 
+                            <p>
+                                As always, be familiar with your institutional practices, stay up to date with your local antibiogram trends, 
                                 and keep your pharmacy and ID colleagues close. Use nuance, of which the approach described herein lacks, 
-                                when making clinical decisions.</p>
+                                when making clinical decisions.
+                            </p>
                             
                             <h3>Bacterial Classifications</h3>
-                            <p>Roughly, we will approach different clinical classes of bacteria as follows:
+                            <p>
+                                Roughly, we will approach different clinical classes of bacteria as follows:
                                 <ul>
-                                    <li><strong>Gram-positive</strong>: ***</li>
-                                    <li><strong>Gram-negative</strong>: ***</li>
+                                    <li><strong>Gram-positive (G+)</strong>: ***</li>
+                                    <li><strong>Gram-negative (G-)</strong>: ***</li>
                                     <li><strong>Anaerobes</strong>: ***</li>
                                     <li><strong>Atypicals</strong>: ***</li>
                                     <li><strong>Methicillin-resistant <i>Staphylococcus aureus</i> (MRSA)</strong>: ***</li>
-                                    <li><strong><i>Pseudomonas aeruginosa</i>(PsA)</strong>: ***</li>
+                                    <li><strong><i>Pseudomonas aeruginosa</i> (PsA)</strong>: ***</li>
                                     <li><strong>Vancomycin-resistant <i>Enterococcus</i> (VRE)</strong>: ***</li>
                                     <li><strong>Extended-spectrum beta-lactamases (ESBLs)</strong>: ***</li>
                                 </ul>
                             </p>
 
-                            <p>Difference between Zosyn and cefepime - anaerobic coverage</p>
-                            <p></p>
+                            <h3>Overview to Antibiotics</h3>
+
+                            <p>
+                                In the panels below, bacterial classes are color-coded; when following "~", 
+                                this indicates that the preceding antibiotic(s) provides appropriate coverage of that class, 
+                                and when following "∅", this indicates inadequate coverage. 
+                                We will start by reviewing the constituents of two major classes of β-lactam antibiotics, 
+                                followed by the coverage options for the common bacterial classes explored above. 
+                                For the purpose of discussing common coverage patterns (particularly the gaps in such regimens), 
+                                we will exclude VRE and ESBLs as these classes tend to be less common and more severe in presentation than the others.
+                            </p>
+
+                            <!-- Expand/collapse all buttons -->
+                            <div class="mb-3">
+                                <button id="expandAll" class="btn btn-primary btn-sm">Expand All</button>
+                                <button id="collapseAll" class="btn btn-secondary btn-sm">Collapse All</button>
+                            </div>
 
                             <div class="accordion" id="antibioticAccordion">
                                 <div class="accordion-item">
@@ -126,7 +147,9 @@
                                                 <li><strong>Amoxicillin/clavulanate (PO Augmentin), ampicillin/sulbactam (IV Unasyn)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span></li>
                                                 <ul class="no-coverage"><li>∅ MRSA, PsA, atypicals</li></ul>
                                                 <li><strong>Piperacillin/tazobactam (IV Zosyn)</strong>: adds PsA coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span></li>
-                                                <li><strong>"Broad spectrum"</strong>: vancomycin + piperacillin/tazobactam ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <ul class="no-coverage"><li>∅ MRSA, atypicals</li></ul>
+                                                <ul><li>NB: Pip/tazo confers anaerobic coverage, while cefepime does not</li></ul>
+                                                <li><em>"Broad spectrum"</em> = <strong>vancomycin + piperacillin/tazobactam</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span></li>
                                                 <ul class="no-coverage"><li>∅ atypicals</li></ul>
                                             </ul>
                                         </div>
@@ -141,7 +164,22 @@
                                     </h2>
                                     <div id="collapseCephalosporin" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            <ul>
+                                                <li><em>1st generation.</em> <strong>Cephalexin (PO Keflex), cefazolin (IV Ancef)</strong> ~ <span class="bacteria-gram-positive">G+</span> (<i>Strep</i>, MSSA)</li>
+                                                <li><em>2nd generation.</em> <strong>Cefotetan (IV/IM), cefuroxime (PO/IV)</strong>: not routinely used, adds some <span class="bacteria-gram-negative">G-</span> coverage</li>
+                                                <li><em>3rd generation.</em> <strong>Cefpodoxime (PO), ceftriaxone (IV; abbrev. CTX)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span></li>
+                                                <ul class="no-coverage"><li>∅ MRSA, PsA, anaerobes, atypicals</li></ul>
+                                                <li><em>4th generation.</em> <strong>Cefepime</strong>: adds <span class="bacteria-psa">PsA</span> coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-psa">PsA</span></li>
+                                                <ul class="no-coverage"><li>∅ MRSA, anaerobes, atypicals</li></ul>
+                                                <ul><li>NB: Pip/tazo confers anaerobic coverage, while cefepime does not</li></ul>
+                                                <li><em>"Broad spectrum"</em> = <strong>vancomycin + cefepime + metronidazole</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <ul class="no-coverage"><li>∅ atypicals</li></ul>
+                                                <ul><li>Analogous to vanc + pip/tazo</li></ul>
+                                                <li><em>5th generation.</em> <strong>Ceftaroline</strong>: adds <span class="bacteria-mrsa">MRSA</span> coverage, loses <span class="bacteria-psa">PsA</span> coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <ul class="no-coverage"><li>∅ PsA, anaerobes, atypicals</li></ul>
+                                                <li><em>*3rd generation.</em> <strong>Ceftazidime</strong>: compared to cefpo and CTX, adds <span class="bacteria-psa">PsA</span> coverage but loses <span class="bacteria-gram-positive">G+</span> coverage ~ <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-psa">PsA</span></li>
+                                                <ul class="no-coverage"><li>∅ G+, MRSA, anaerobes, atypicals</li></ul>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -154,7 +192,13 @@
                                     </h2>
                                     <div id="collapseAnaerobe" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            <ul>
+                                                <li><strong>Clindamycin</strong>: covers infections <u>above</u> the diaphragm</li>
+                                                <ul><li>Increases <i>C. diff</i> risk</li></ul>
+                                                <ul><li>Bacteriostatic&mdash;inhibits toxin synthesis (along with linezolid), e.g., <i>Strep</i> and <i>Staph</i> infections complicated by necrotizing fasciitis or toxic shock syndrome</li></ul>
+                                                <li><strong>Metronidazole (PO Flagyl; abbrev. MTZ)</strong>: covers infections <u>below</u> the diaphragm</li>
+                                                <ul><li>Can be used as treatment for <i>C. diff</i> infection (usually second-line tx; first-line = PO fidaxomicin or PO vancomycin)</li></ul>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -167,7 +211,20 @@
                                     </h2>
                                     <div id="collapseAtypical" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            Mnemonic: <span style="font-weight: bold; color: blue;">FAT</span>
+                                            <ul>
+                                                <li><em><span style="font-weight: bold; color: blue;">F</span>luoroquinolones</em>: <strong>ciprofloxacin, levofloxacin, moxifloxacin</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-atypical">atypicals</span>, <span class="bacteria-psa">PsA</span></li>
+                                                <ul><li>Cipro and levo cover <u>urinary</u> sources; levo and moxi cover <u>respiratory</u> sources</li></ul>
+                                                <ul><li>Cipro does <em>not</em> cover <span class="bacteria-gram-positive">G+</span>; moxi does <em>not</em> cover <span class="bacteria-psa">PsA</span></li></ul>
+                                                <ul><li>Adverse effects: QT prolongation, tendon rupture</li></ul>
+                                                <li><em>Macrolides</em>: <strong><span style="font-weight: bold; color: blue;">A</span>zithromycin, erythromycin</strong></li>
+                                                <ul><li>Azithro covers <i>Legionella</i>, ?increases <i>C. diff</i> risk</li></ul>
+                                                <ul><li>Erythro often used for its promotility effect (e.g., before EGD in upper GI bleed)</li></ul>
+                                                <li><em><span style="font-weight: bold; color: blue;">T</span>etracyclines</em>: <strong>doxycycline</strong> ~ <span class="bacteria-anaerobe">oral anaerobes</span>, <span class="bacteria-atypical">atypicals</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <ul><li>Does not increase <i>C. diff</i> risk but does not cover <i>Legionella</i> (vs. azithro)</li></ul>
+                                                <ul><li>Adverse effects: photosensitivity, pill esophagitis; in children: inhibition of bone growth, ?discoloration of teeth</li></ul>
+                                            </ul>
+                                            CAP coverage: e.g., CTX + azithro &nbsp;-or-&nbsp; CTX + doxy ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-atypical">atypicals</span>
                                         </div>
                                     </div>
                                 </div>
@@ -180,7 +237,28 @@
                                     </h2>
                                     <div id="collapseMRSA" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            Inpatient / Hospital
+                                            <ol style="font-weight: bold;">
+                                                <li>Vancomycin</li>
+                                                <li>Daptomycin</li>
+                                                <li>Linezolid</li>
+                                            </ol>
+
+                                            Outpatient / Community
+                                            <ol style="font-weight: bold;">
+                                                <li>Bactrim</li>
+                                                <li>Doxycycline</li>
+                                                <li>Clindamycin</li>
+                                            </ol>
+
+                                            Others
+                                            <ul style="font-weight: bold;">
+                                                <li>Ceftaroline</li>
+                                                <li>Tigecycline</li>
+                                            </ul>
+
+                                            Mnemonic (convoluted AI-generated): <span style="font-weight: bold; color: blue;">Vans Don't Last, Cars Tire Daily, Clean Bacteria</span><br>
+                                            <span style="padding: 10rem;">Vanc Dapto Linezolid / Ceftaroline Tigecycline / Doxy Clinda Bactrim
                                         </div>
                                     </div>
                                 </div>
@@ -319,6 +397,49 @@
         <script>
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             const tooltipList = tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        
+
+            
+
+
+            // Buttons for accordion panels - expand and collapse all
+
+            // Wait until the DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+
+                // Function to expand all accordion panels
+                function expandAll() {
+                // Select all accordion collapse elements within your accordion container
+                const panels = document.querySelectorAll('#antibioticAccordion .accordion-collapse');
+                panels.forEach(panel => {
+                    // Get an existing Bootstrap Collapse instance or create a new one without toggling immediately
+                    let collapseInstance = bootstrap.Collapse.getInstance(panel);
+                    if (!collapseInstance) {
+                    collapseInstance = new bootstrap.Collapse(panel, { toggle: false });
+                    }
+                    // Call show() on each panel to expand it
+                    collapseInstance.show();
+                });
+                }
+
+                // Function to collapse all accordion panels
+                function collapseAll() {
+                const panels = document.querySelectorAll('#antibioticAccordion .accordion-collapse');
+                panels.forEach(panel => {
+                    let collapseInstance = bootstrap.Collapse.getInstance(panel);
+                    if (!collapseInstance) {
+                    collapseInstance = new bootstrap.Collapse(panel, { toggle: false });
+                    }
+                    // Call hide() on each panel to collapse it
+                    collapseInstance.hide();
+                });
+                }
+
+                // Attach event listeners to the buttons
+                document.getElementById('expandAll').addEventListener('click', expandAll);
+                document.getElementById('collapseAll').addEventListener('click', collapseAll);
+            });
+
         </script>
     </body>
 </html>
