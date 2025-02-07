@@ -25,7 +25,8 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Blog", url: "/blog.html" },
             { name: "Tools", group: true, children: [
                 { name: "Word Wizard", url: "/word-wizard.html" },
-                { name: "Notes", url: "/notes.html" },
+                { name: "Notes App", url: "/notes.html" },
+                { name: "Price Pilot", url: "/price-pilot.html" },
             ]},
             { name: "Contact", url: "/contact.html" },
             // Add more pages here
