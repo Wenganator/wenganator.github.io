@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Play & Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/css/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/js/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish/15.1.0/stockfish.js"></script>
+    <style>
+        #board {
+            max-width: 100%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 text-center">
+        <h2>Chess Play & Analysis</h2>
+        <div id="board" style="width: 400px; margin: auto;"></div>
+        <button id="flipBoard" class="btn btn-secondary mt-3">Flip Board</button>
+        <button id="startGame" class="btn btn-primary mt-3">Restart Game</button>
+        
+        <h4 class="mt-4">PGN Input</h4>
+        <textarea id="pgnInput" class="form-control" rows="4" placeholder="Paste PGN here..."></textarea>
+        <button id="loadPgn" class="btn btn-success mt-2">Load PGN</button>
+        <button id="exportPgn" class="btn btn-info mt-2">Export PGN</button>
+        
+        <h4 class="mt-4">Stockfish Analysis</h4>
+        <button id="analyze" class="btn btn-warning">Analyze Position</button>
+        <p id="engineOutput" class="mt-2"></p>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof Chessboard !== "function") {
+                console.error("Chessboard.js failed to load.");
+                return;
+            }
+            
+            var game = new Chess();
+            var stockfish = new Worker("https://cdnjs.cloudflare.com/ajax/libs/stockfish/15.1.0/stockfish.js");
+            var board = Chessboard('board', {
+                draggable: true,
+                position: 'start',
+                onDrop: function(source, target) {
+                    var move = game.move({ from: source, to: target, promotion: 'q' });
+                    if (move === null) return 'snapback';
+                    board.position(game.fen());
+                }
+            });
+            
+            document.getElementById('flipBoard').addEventListener('click', function() {
+                board.flip();
+            });
+            
+            document.getElementById('startGame').addEventListener('click', function() {
+                game.reset();
+                board.position('start');
+            });
+            
+            document.getElementById('loadPgn').addEventListener('click', function() {
+                var pgn = document.getElementById('pgnInput').value;
+                if (game.load_pgn(pgn)) {
+                    board.position(game.fen());
+                } else {
+                    alert("Invalid PGN. Please check your input.");
+                }
+            });
+            
+            document.getElementById('exportPgn').addEventListener('click', function() {
+                alert("Exported PGN:\n" + game.pgn());
+            });
+            
+            document.getElementById('analyze').addEventListener('click', function() {
+                if (game.game_over()) {
+                    document.getElementById('engineOutput').innerText = "Game over.";
+                    return;
+                }
+                
+                stockfish.postMessage("uci");
+                stockfish.postMessage("position fen " + game.fen());
+                stockfish.postMessage("go depth 15");
+            });
+            
+            stockfish.onmessage = function(event) {
+                if (event.data.includes("bestmove")) {
+                    document.getElementById('engineOutput').innerText = "Stockfish suggests: " + event.data;
+                }
+            };
+        });
+    </script>
+</body>
+</html>

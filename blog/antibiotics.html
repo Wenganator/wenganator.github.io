@@ -61,7 +61,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/index.html">Home</a></li>
                 <li class="breadcrumb-item"><a href="/blog.html">Blog</a></li>
-                <li class="breadcrumb-item active">Antibiotics</li>
+                <li class="breadcrumb-item active">A Practical Guide to Antibiotics</li>
             </ol>
             </nav>
         </div>
@@ -102,15 +102,16 @@
                             <p>
                                 Roughly, we will approach different clinical classes of bacteria as follows:
                                 <ul>
-                                    <li><strong>Gram-positive (G+)</strong>: ***</li>
-                                    <li><strong>Gram-negative (G-)</strong>: ***</li>
-                                    <li><strong>Anaerobes</strong>: ***</li>
-                                    <li><strong>Atypicals</strong>: ***</li>
-                                    <li><strong>Methicillin-resistant <i>Staphylococcus aureus</i> (MRSA)</strong>: ***</li>
-                                    <li><strong><i>Pseudomonas aeruginosa</i> (PsA)</strong>: ***</li>
-                                    <li><strong>Vancomycin-resistant <i>Enterococcus</i> (VRE)</strong>: ***</li>
-                                    <li><strong>Extended-spectrum beta-lactamases (ESBLs)</strong>: ***</li>
+                                    <li><strong>Gram-positive (<span class="bacteria-gram-positive">G+</span>)</strong>: thick peptidoglycan cell wall that retains crystal violet Gram stain; includes <i>Staph</i> (which includes MSSA and <span class="bacteria-mrsa">MRSA</span>), <i>Strep</i>, and <i>Enterococcus</i> (which includes <span class="bacteria-vre">VRE</span>)</li>
+                                    <li><strong>Gram-negative (<span class="bacteria-gram-negative">G-</span>)</strong>: thin peptidoglycan cell wall that does not trap crystal violet but does retain pink/red counterstain; includes <span class="bacteria-psa">PsA</span> and <span class="bacteria-esbl">ESBLs</span></li>
+                                    <li><strong><span class="bacteria-anaerobe">Anaerobes</span></strong>: thrive in environments with little or no oxygen; includes gut flora like <i>Bacteroides</i>, <i>Clostridium</i>, and <i>Fusobacterium</i></li>
+                                    <li><strong><span class="bacteria-atypical">Atypicals</span></strong>: poorly Gram stained due to atypical/absent cell wall or intracellular dwelling; includes <i>Mycoplasma</i>, <i>Chlamydia</i>, and <i>Legionella</i></li>
+                                    <li><strong>Methicillin-resistant <i>Staphylococcus aureus</i> (<span class="bacteria-mrsa">MRSA</span>)</strong>: <span class="bacteria-gram-positive">G+</span> coccus resistant to methicillin and other beta-lactam antibiotics due to a modified penicillin-binding protein (PBP), encoded by <i>mecA</i> gene</li>
+                                    <li><strong><i>Pseudomonas aeruginosa</i> (<span class="bacteria-psa">PsA</span>)</strong>: <span class="bacteria-gram-negative">G-</span> rod with predilection for water and humid conditions (e.g., hot tubs, lakes, contaminated contact lens solution); risk factors include cystic fibrosis, diabetes, indwelling catheters, mechanical ventilation (VAP), IVDU (endocarditis/osteomyelitis), and burn wounds (SSTI)</li>
+                                    <li><strong>Vancomycin-resistant <i>Enterococcus</i> (<span class="bacteria-vre">VRE</span>)</strong>: <i>E. faecalis</i> and <i>E. faecium</i> resistant to vancomycin by acquisition of <i>van</i> genes</li>
+                                    <li><strong>Extended-spectrum beta-lactamases (<span class="bacteria-esbl">ESBLs</span>)</strong>: usually <span class="bacteria-gram-negative">G-</span> rods (e.g., <i>Escherichia coli</i>, <i>Klebsiella</i> spp.) that produce beta-lactamases that cleave beta-lactam antibiotics (penicillins, cephalosporins, and rarely carbapenems)</li>
                                 </ul>
+                                We could discuss endlessly the nuances of these classes (as well as many others not covered), but the basics above are sufficient for our purposes here.
                             </p>
 
                             <h3>Overview to Antibiotics</h3>
@@ -118,11 +119,14 @@
                             <p>
                                 In the panels below, bacterial classes are color-coded; when following "~", 
                                 this indicates that the preceding antibiotic(s) provides appropriate coverage of that class, 
-                                and when following "∅", this indicates inadequate coverage. 
+                                and when following "<span class="no-coverage">∅</span>", this indicates inadequate coverage. 
                                 We will start by reviewing the constituents of two major classes of β-lactam antibiotics, 
                                 followed by the coverage options for the common bacterial classes explored above. 
-                                For the purpose of discussing common coverage patterns (particularly the gaps in such regimens), 
-                                we will exclude VRE and ESBLs as these classes tend to be less common and more severe in presentation than the others.
+                                For the purpose of discussing common coverage patterns (particularly the gaps in a given regimen), 
+                                we will exclude <span class="bacteria-vre">VRE</span> and <span class="bacteria-esbl">ESBLs</span> as these classes tend to be less common and more severe in presentation than the others. 
+                                Therefore, our simplified framework will consist of six main bacterial classes: 
+                                <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-atypical">atypicals</span>, <span class="bacteria-mrsa">MRSA</span>, and <span class="bacteria-psa">PsA</span>. 
+                                When recalling the coverage pattern of a specific antibiotic or regimen, think about which of these classes it covers and which of these it doesn't.
                             </p>
 
                             <!-- Expand/collapse all buttons -->
@@ -142,13 +146,13 @@
                                         <div class="accordion-body">
                                             <ul>
                                                 <li><strong>Penicillin</strong>: IM PCN only for syphilis</li>
-                                                <li><strong>Amoxicillin, ampicillin</strong>: <i>Strep</i>, otitis, etc.; ampicillin-sensitive <i>Enterococcus</i></li>
+                                                <li><strong>Amoxicillin, ampicillin</strong>: strep throat (GAS pharyngitis), otitis, etc.; ampicillin-sensitive <i>Enterococcus</i>; <i>Listeria</i> meningitis</li>
                                                 <li><strong>Methicillin, oxacillin, dicloxacillin, nafcillin</strong>: MSSA<br></li>
                                                 <li><strong>Amoxicillin/clavulanate (PO Augmentin), ampicillin/sulbactam (IV Unasyn)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span></li>
                                                 <ul class="no-coverage"><li>∅ MRSA, PsA, atypicals</li></ul>
-                                                <li><strong>Piperacillin/tazobactam (IV Zosyn)</strong>: adds PsA coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span></li>
+                                                <li><strong>Piperacillin/tazobactam (IV Zosyn)</strong>: adds <span class="bacteria-psa">PsA</span> coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span></li>
                                                 <ul class="no-coverage"><li>∅ MRSA, atypicals</li></ul>
-                                                <ul><li>NB: Pip/tazo confers anaerobic coverage, while cefepime does not</li></ul>
+                                                <ul><li>NB: Pip/tazo confers <span class="bacteria-anaerobe">anaerobic</span> coverage, while cefepime does not</li></ul>
                                                 <li><em>"Broad spectrum"</em> = <strong>vancomycin + piperacillin/tazobactam</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span></li>
                                                 <ul class="no-coverage"><li>∅ atypicals</li></ul>
                                             </ul>
@@ -164,18 +168,19 @@
                                     </h2>
                                     <div id="collapseCephalosporin" class="accordion-collapse collapse">
                                         <div class="accordion-body">
+                                            Note that the earlier generations predominantly cover <span class="bacteria-gram-positive">G+</span> cocci, while latter generations add <span class="bacteria-gram-negative">G-</span> rods (including <span class="bacteria-psa">PsA</span>).
                                             <ul>
                                                 <li><em>1st generation.</em> <strong>Cephalexin (PO Keflex), cefazolin (IV Ancef)</strong> ~ <span class="bacteria-gram-positive">G+</span> (<i>Strep</i>, MSSA)</li>
                                                 <li><em>2nd generation.</em> <strong>Cefotetan (IV/IM), cefuroxime (PO/IV)</strong>: not routinely used, adds some <span class="bacteria-gram-negative">G-</span> coverage</li>
                                                 <li><em>3rd generation.</em> <strong>Cefpodoxime (PO), ceftriaxone (IV; abbrev. CTX)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span></li>
-                                                <ul class="no-coverage"><li>∅ MRSA, PsA, anaerobes, atypicals</li></ul>
+                                                <ul class="no-coverage"><li>∅ PsA, MRSA, anaerobes, atypicals</li></ul>
                                                 <li><em>4th generation.</em> <strong>Cefepime</strong>: adds <span class="bacteria-psa">PsA</span> coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-psa">PsA</span></li>
                                                 <ul class="no-coverage"><li>∅ MRSA, anaerobes, atypicals</li></ul>
-                                                <ul><li>NB: Pip/tazo confers anaerobic coverage, while cefepime does not</li></ul>
-                                                <li><em>"Broad spectrum"</em> = <strong>vancomycin + cefepime + metronidazole</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <ul><li>NB: Pip/tazo confers <span class="bacteria-anaerobe">anaerobic</span> coverage, while cefepime does not</li></ul>
+                                                <li><em>"Broad spectrum"</em> = <strong>vancomycin + cefepime + metronidazole</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span>, <span class="bacteria-anaerobe">anaerobes</span></li>
                                                 <ul class="no-coverage"><li>∅ atypicals</li></ul>
                                                 <ul><li>Analogous to vanc + pip/tazo</li></ul>
-                                                <li><em>5th generation.</em> <strong>Ceftaroline</strong>: adds <span class="bacteria-mrsa">MRSA</span> coverage, loses <span class="bacteria-psa">PsA</span> coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-mrsa">MRSA</span></li>
+                                                <li><em>5th generation.</em> <strong>Ceftaroline</strong>: compared to cefepime, adds <span class="bacteria-mrsa">MRSA</span> coverage but loses <span class="bacteria-psa">PsA</span> coverage ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-mrsa">MRSA</span></li>
                                                 <ul class="no-coverage"><li>∅ PsA, anaerobes, atypicals</li></ul>
                                                 <li><em>*3rd generation.</em> <strong>Ceftazidime</strong>: compared to cefpo and CTX, adds <span class="bacteria-psa">PsA</span> coverage but loses <span class="bacteria-gram-positive">G+</span> coverage ~ <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-psa">PsA</span></li>
                                                 <ul class="no-coverage"><li>∅ G+, MRSA, anaerobes, atypicals</li></ul>
@@ -193,10 +198,10 @@
                                     <div id="collapseAnaerobe" class="accordion-collapse collapse">
                                         <div class="accordion-body">
                                             <ul>
-                                                <li><strong>Clindamycin</strong>: covers infections <u>above</u> the diaphragm</li>
+                                                <li><strong>Clindamycin (PO/IV)</strong>: covers infections <u>above</u> the diaphragm</li>
                                                 <ul><li>Increases <i>C. diff</i> risk</li></ul>
-                                                <ul><li>Bacteriostatic&mdash;inhibits toxin synthesis (along with linezolid), e.g., <i>Strep</i> and <i>Staph</i> infections complicated by necrotizing fasciitis or toxic shock syndrome</li></ul>
-                                                <li><strong>Metronidazole (PO Flagyl; abbrev. MTZ)</strong>: covers infections <u>below</u> the diaphragm</li>
+                                                <ul><li>Bacteriostatic&mdash;inhibits toxin synthesis (like linezolid), e.g., <i>Strep</i> and <i>Staph</i> infections complicated by necrotizing fasciitis or toxic shock syndrome</li></ul>
+                                                <li><strong>Metronidazole (PO/IV Flagyl; abbrev. MTZ)</strong>: covers infections <u>below</u> the diaphragm</li>
                                                 <ul><li>Can be used as treatment for <i>C. diff</i> infection (usually second-line tx; first-line = PO fidaxomicin or PO vancomycin)</li></ul>
                                             </ul>
                                         </div>
@@ -224,7 +229,7 @@
                                                 <ul><li>Does not increase <i>C. diff</i> risk but does not cover <i>Legionella</i> (vs. azithro)</li></ul>
                                                 <ul><li>Adverse effects: photosensitivity, pill esophagitis; in children: inhibition of bone growth, ?discoloration of teeth</li></ul>
                                             </ul>
-                                            CAP coverage: e.g., CTX + azithro &nbsp;-or-&nbsp; CTX + doxy ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-atypical">atypicals</span>
+                                            CAP coverage: e.g., [CTX + azithro] or [CTX + doxy] ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-atypical">atypicals</span>
                                         </div>
                                     </div>
                                 </div>
@@ -247,8 +252,8 @@
                                             Outpatient / Community
                                             <ol style="font-weight: bold;">
                                                 <li>Bactrim</li>
-                                                <li>Doxycycline</li>
                                                 <li>Clindamycin</li>
+                                                <li>Doxycycline</li>
                                             </ol>
 
                                             Others
@@ -271,7 +276,22 @@
                                     </h2>
                                     <div id="collapsePsA" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            Consider reviewing the rest of the panels before returning to this one, as <span class="bacteria-psa">PsA</span> coverage is best remembered by antibiotic class.
+                                            <ul>
+                                                <li><em>PCNs</em>: <strong>pip/tazo</strong></li>
+                                                <li><em>Cephalosporins</em>: <strong>cefepime, ceftazidime</strong> (<em>not</em> ceftaroline)</li>
+                                                <li><em>FQs</em>: <strong>ciprofloxacin, levofloxacin</strong> (<em>not</em> moxifloxacin)</li>
+                                                <ul><li>These are the only PO options</li></ul>
+                                                <li><em>Carbapenems</em>: <strong>meropenem, imipenem, doripenem</strong> (<em>not</em> ertapenem)</li>
+                                                <li><em>Aminoglycosides</em>: <strong>gentamicin, amikacin, tobramycin</strong> (<em>not</em> streptomycin)</li>
+                                                <li><strong>Aztreonam</strong>: covers <span class="bacteria-gram-negative">G-</span> aerobes and <span class="bacteria-psa">PsA</span>, use when pt has a PCN allergy (no cross-reactivity with PCNs as it is a monobactam)</li>
+                                            </ul>
+                                            Mnemonic: <span style="font-weight: bold; color: blue;">MAFIA Pseudomonas Challenges Clinicians</span><br>
+                                            <span style="padding: 2rem;">
+                                                <span style="font-weight: bold; color: blue;">M</span>eropenem <span style="font-weight: bold; color: blue;">A</span>ztreonam <span style="font-weight: bold; color: blue;">F</span>Qs (not moxi) 
+                                                <span style="font-weight: bold; color: blue;">I</span>mipenem <span style="font-weight: bold; color: blue;">A</span>minoglycosides <span style="font-weight: bold; color: blue;">P</span>ip-tazo 
+                                                <span style="font-weight: bold; color: blue;">C</span>efepime <span style="font-weight: bold; color: blue;">C</span>eftazidime
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -284,7 +304,14 @@
                                     </h2>
                                     <div id="collapseVRE" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            <ul>
+                                                <li><strong>Daptomycin</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-mrsa">MRSA</span>, <span class="bacteria-vre">VRE</span></li>
+                                                <ul><li>No lung coverage (e.g., PNA) d/t inactivation by surfactant</li></ul>
+                                                <ul><li>Adverse effect: rhabdomyolysis (trend CK)</li></ul>
+                                                <li><strong>Linezolid (PO/IV)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-mrsa">MRSA</span>, <span class="bacteria-vre">VRE</span></li>
+                                                <ul><li>Bacteriostatic&mdash;antitoxin effect (like clindamycin)</li></ul>
+                                                <ul><li>Adverse effects: pancytopenia (esp. tcp) 2/2 bone marrow suppression, serotonin syndrome (nonselective MAOI)</li></ul>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -297,7 +324,14 @@
                                     </h2>
                                     <div id="collapseESBL" class="accordion-collapse collapse">
                                         <div class="accordion-body">
-                                            <!--  -->
+                                            <ul>
+                                                <li><em>Carbapenems</em>: <strong>meropenem, imipenem, doripenem</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-esbl">ESBLs</span></li>
+                                                <li><em>Carbapenems</em>: <strong>ertapenem</strong>: does <em>not</em> cover <span class="bacteria-psa">PsA</span> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-esbl">ESBLs</span></li>
+                                                <ul><li>qDaily IV dosing (vs. meropenem q8h)</li></ul>
+                                                <li><em>"Broad spectrum"</em> = <strong>vancomycin + carbapenem (<u>except</u> ertapenem)</strong> ~ <span class="bacteria-gram-positive">G+</span>, <span class="bacteria-gram-negative">G-</span>, <span class="bacteria-anaerobe">anaerobes</span>, <span class="bacteria-psa">PsA</span>, <span class="bacteria-mrsa">MRSA</span>, <span class="bacteria-esbl">ESBLs</span></li>
+                                                <ul class="no-coverage"><li>∅ atypicals</li></ul>
+                                                <ul><li>NB: This regimen covers <span class="bacteria-esbl">ESBLs</span>, unlike [vanc + Zosyn] and [vanc + cefepime + Flagyl]</li></ul>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -316,21 +350,21 @@
                                     </div>
                                 </div> -->
 
+                                <br>
 
                             </div>
 
 
 
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Covers Gram-positive bacteria">
+                            <!-- Sample button with hover to reveal text -->
+                            <!-- <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Covers Gram-positive bacteria">
                                 Penicillin
-                            </button>
+                            </button> -->
                             
 
 
-                            <h3>Closing Thoughts</h3>
-                            <p></p>
-
-                            <div class="row">
+                            <!-- Sample summary cards -->
+                            <!-- <div class="row">
                                 <div class="col-md-4">
                                     <div class="card antibiotic-penicillin">
                                         <div class="card-body">
@@ -355,7 +389,18 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
+
+                            <h3>Closing Thoughts</h3>
+                            <p>
+                                There exists no shortage of charts, articles, and textbooks expounding on every last clinical 
+                                and biochemical detail of the above antibiotics (and many others not explicated). The goal of this 
+                                beginner's guide is practicality and clarity: you must memorize these basics to make basic clinical 
+                                decisions involving antibiotics and to develop a more advanced understanding of these drugs and the 
+                                organisms they target. I hope this concise framework empowers you with the confidence to do these things. 
+                                I urge you to learn the fundamentals with sufficient familiarity that you may teach your own medical students 
+                                and juniors this content from memory, incorporated with your own clinical experience and pearls.
+                            </p>
 
                             <h3>Further Reading</h3>
                             <p>
@@ -377,11 +422,10 @@
                 <!-- Sidebar -->
                 <aside class="col-lg-4">
                     <div class="sidebar">
-                        <h5>Related Posts</h5>
+                        <h5>Related</h5>
                         <ul class="list-unstyled">
-                            <li><a href="#">Related Blog Title 1</a></li>
-                            <li><a href="#">Related Blog Title 2</a></li>
-                            <li><a href="#">Related Blog Title 3</a></li>
+                            <li><a href="/abx/BugDrugDX.html">BugDrugDX</a></li>
+                            <li><a href="/abx/TMC-antimicrobial-treatment-and-dosing-guide.html">TMC Antimicrobial Treatment and Dosing Guide</a></li>
                         </ul>
 
                         <h5>Tags</h5>

@@ -53,13 +53,16 @@ header {
 .article-card a {
     display: block;
     text-decoration: none;
-    color: #0078d7;
+    /* color: #0078d7; */
+    color: var(--primary-color);
     margin: 0.5rem;
     font-weight: bold;
 }
 .toggle-banner {
-    background-color: #0078d7;
-    color: white;
+    /* background-color: #0078d7; */
+    background-color: var(--secondary-color);
+    /* color: white; */
+    color: black;
     padding: 1rem;
     text-align: center;
     cursor: pointer;

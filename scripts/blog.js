@@ -10,7 +10,7 @@ const blogPosts = [
         title: 'Doxologies',
         tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
         content: 'Doxologies and prayers from the Bible',
-        image: '/assets/images/blog/placeholder',
+        image: '/assets/images/blog/doxologies.jpg',
         url: '/blog/doxologies.html'
     },
     {
@@ -28,7 +28,7 @@ const blogPosts = [
         url: '/blog/freebies.html'
     },
     {
-        title: 'Antibiotics',
+        title: 'A Practical Guide to Antibiotics',
         tag: ['Medicine'],
         content: 'A practical guide to antibiotics by an internal medicine resident',
         image: '/assets/images/blog/antibiotics-teachIM.jpg',
@@ -42,7 +42,7 @@ const blogPosts = [
         url: '/blog/scripture-memorization.html'
     },
     {
-        title: 'Welcome',
+        title: 'Esordio',
         tag: ['Miscellaneous'],
         content: 'Welcome!',
         image: '/assets/images/writing-quill.png',
