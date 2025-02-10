@@ -21,6 +21,36 @@
         <link rel="stylesheet" href="/styles/fonts.css">
         <link rel="stylesheet" href="/styles/style.css">
         <link rel="stylesheet" href="/styles/writing.css">
+        <style>
+            .navigate {
+                color: darkgray;
+                /* font-family: 'LXGW WenKai Mono TC'; */
+            }
+
+            .navigate a:link {
+                color: darkgray;
+                text-decoration: none;
+            }
+
+            /* .navigate a:visited {
+                color: black;
+            } */
+
+            .navigate a:hover {
+                color: white;
+            }
+
+            .navigate a:active {
+                color: var(--primary-color);
+            }
+
+            /* Flexbox */
+            .header-container {
+                display: flex;
+                align-items: center; /* Aligns text and div vertically */
+                gap: 10px; /* Adds spacing between h1 and div */
+            }
+        </style>
     </head>
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
@@ -29,21 +59,37 @@
             <!-- Theme selector buttons (see theme-buttons.html) -->
             <div id="theme-buttons-container"></div>
 
+            <div class="header-container">
+                <h1>Writing</h1>
+                <div class="navigate">
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="#prose">Prose</a> › 
+                    <a href="#poetry">Poetry</a> › 
+                    <a href="#song">Song</a> › 
+                    <a href="#theology">Theology</a> › 
+                    <a href="#original">Original</a>
+                </div>
+            </div>
+
             <div class="container">
                 <!-- Prose Section -->
                 <div class="category">
-                    <h3>Prose</h3>
+                    <h3 id="prose">Prose</h3>
                     <ul>
                         <li class="writing-item">
+                            <img src="/assets/images/writing/dubliners.webp" alt="Thumbnail" class="thumbnail">
+                            <a href="/writing/prose/the-dead.html">The Dead (1914)</a>
+                        </li>
+                        <li class="writing-item">
                             <img src="/assets/images/writing/new-yorker-19950925.webp" alt="Thumbnail" class="thumbnail">
-                            <a href="/writing/prose/bullet-in-the-brain.html">Bullet in the Brain</a> &nbsp; - Beautiful prose.
+                            <a href="/writing/prose/bullet-in-the-brain.html">Bullet in the Brain (1995)</a> &nbsp; - Beautiful prose.
                         </li>
                     </ul>
                 </div>
         
                 <!-- Poetry Section -->
                 <div class="category">
-                    <h3>Poetry</h3>
+                    <h3 id="poetry">Poetry</h3>
                     <ul>
                         <li class="writing-item">
                             <img src="/assets/images/writing/izumi-shikibu.png" alt="Thumbnail" class="thumbnail">
@@ -142,7 +188,7 @@
                 
                 <!-- Song Section -->
                 <div class="category">
-                    <h3>Song</h3>
+                    <h3 id="song">Song</h3>
                     <ul>
                         <li class="writing-item">
                             <img src="/assets/images/writing/for-christmas-day.webp" alt="Thumbnail" class="thumbnail">
@@ -153,7 +199,7 @@
 
                 <!-- Theology Section -->
                 <div class="category">
-                    <h3>Theology</h3>
+                    <h3 id="theology">Theology</h3>
                     <ul>
                         <li class="writing-item">
                             <img src="/assets/images/writing/sun-rays-rainbow.webp" alt="Thumbnail" class="thumbnail">
@@ -163,11 +209,12 @@
                             <img src="/assets/images/writing/the-valley-of-vision.jpg" alt="Thumbnail" class="thumbnail">
                             <a href="/writing/theology/the-valley-of-vision.html">The Valley of Vision</a>
                         </li>
+                    </ul>
                 </div>
         
                 <!-- Original Writing Section -->
                 <div class="category">
-                    <h3>Original</h3>
+                    <h3 id="original">Original</h3>
                     <ul>
                         <li class="writing-item">
                             <img src="/assets/images/writing/a-mothership.webp" alt="Thumbnail" class="thumbnail">

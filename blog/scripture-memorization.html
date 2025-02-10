@@ -23,6 +23,7 @@
         <link rel="stylesheet" href="/styles/blog.css">
         <!-- Add additional stylesheets here to override original styles as needed -->
         <style>
+            /* Cards for passages */
             .custom-card {
                 margin-bottom: 1.5rem;
             }
@@ -35,6 +36,44 @@
                 color: var(--primary-color) !important;
                 background-color: transparent; /* if you want to remove any background color */
                 border-color: transparent;     /* if you want to remove any border color */
+            }
+
+
+            /* Blockquotes for in-text passages */
+            div:has(> blockquote) {
+                background-color: #ededed;
+                margin: 10px auto;
+                padding: 15px;
+                border-radius: 5px;
+            }
+
+            /* open quote */
+            /* blockquote p::before {
+                content: '\201C';
+            } */
+
+            /* end quote */
+            /* blockquote p::after {
+                content: '\201D';
+            } */
+
+            blockquote + p {
+                text-align: right;
+            }
+
+
+            /* Custom ol numbering formatted as "1.)", "2.)", etc. */
+            .verse-list ol {
+                list-style: none; /* Removes default numbering */
+                counter-reset: list-counter; /* Initializes counter */
+            }
+
+            .verse-list ol li {
+                counter-increment: list-counter; /* Increments counter */
+            }
+
+            .verse-list ol li::before {
+                content: counter(list-counter) ".) "; /* Adds custom numbering format */
             }
         </style>
     </head>
@@ -73,7 +112,7 @@
                                 <div><a href="#4">4. Strategy</a></div>
                                 <div><a href="#5">5. First steps</a></div>
                                 <div><a href="#6">6. Next steps</a></div>
-                                <div><a href="#7">Notes</a></div>
+                                <div><a href="#7">7. Notes</a></div>
                             </h5>
                         </div>
 
@@ -89,7 +128,8 @@
                             
                             <h3 id="1">1. Biblical basis</h3>
                             <p>
-                                What does Scripture command about knowing Scripture?
+                                What does Scripture teach us about itself? What does Scripture command about knowing Scripture? 
+                                Review an abridged collection of relevant texts below.
                             </p>
 
                             <h4>Old Testament</h4>
@@ -312,31 +352,232 @@
 
                             <h3 id="2">2. Purpose</h3>
                             <p>
-                                <em>Why memorize?</em> We naturally memorize what we love and immerse ourselves in. 
+                                <em>Why memorize?</em> We naturally learn and memorize what we immerse ourselves in. 
                                 And immersing our minds in memorized Scripture naturally leads to love for the Word.
                             </p>
 
-                            <p>
+                            <div>
                                 <blockquote>
                                     <p>
-                                    but in your hearts honor Christ the Lord as holy, always being prepared to make a defense to anyone who asks you for a reason for the hope that is in you; yet do it with gentleness and respect,
+                                        Oh how I love your law!<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;It is my meditation all the day.<br>
+                                        Your commandment makes me wiser than my enemies,<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;for it is ever with me.<br>
+                                        I have more understanding than all my teachers,<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;for your testimonies are my meditation.
                                     </p>
                                 </blockquote>
-                                —1 Peter 3:15 (ESV)</p>
+                                <p>—Psalm 119:97-99 <span class="small-caps">esv</span></p>
+                            </div>
+
+                            <p>
+                                Love for the Word leads to Wisdom (in the Solomonic sense), which necessitates fear of the <span class="small-caps">Lord</span>.
+                            </p>
+
+                            <div>
+                                <blockquote>
+                                    <p>
+                                        The fear of the Lord is the beginning of knowledge;<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;fools despise wisdom and instruction.
+                                    </p>
+                                </blockquote>
+                                <p>—Proverbs 1:7 <span class="small-caps">esv</span></p>
+                            </div>
+
+                            <div>
+                                <blockquote>
+                                    <p>
+                                        The fear of the Lord is the beginning of wisdom,<br>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;and the knowledge of the Holy One is insight.
+                                    </p>
+                                </blockquote>
+                                <p>—Proverbs 9:10 <span class="small-caps">esv</span></p>
+                            </div>
+
+                            <p>
+                                Our recitation of the Word, particularly verbatim, provides the basis for relational evangelism, 
+                                personal and community discipleship, and apologetic defense of the faith.
+                            </p>
+
+                            <div>
+                                <blockquote>
+                                    <p>
+                                        but in your hearts honor Christ the Lord as holy, always being prepared to make a defense to anyone who asks you for a reason for the hope that is in you; yet do it with gentleness and respect,
+                                    </p>
+                                </blockquote>
+                                <p>—1 Peter 3:15 <span class="small-caps">esv</span></p>
+                            </div>
 
                             <h3 id="3">3. Aim</h3>
-                            <p>Practical goals</p>
+                            <p>
+                                I suggest a pragmatic approach to Scripture memorization. God's Word deserves more than our very best, 
+                                so you may be tempted to approach it with a perfectionist mindset. However, I would argue that your 
+                                growth would be optimized and God's glory maximized by a more practical methodology that emphasizes breadth 
+                                of memorization over perfect recall. ***
+                            </p>
 
                             <h3 id="4">4. Strategy</h3>
-                            <p></p>
+                            <p>
+                                Start by memorizing well with as close to perfect recall as possible. Then can allow for some decay over time but continue active recall testing and spaced repetition (the key concepts of <a href="https://apps.ankiweb.net/">Anki</a>). ***
+                            </p>
+                            <p>
+                                Routine/discipline. Accountability/memorizing with a partner or small group (I recommend a max of 2-3 people).
+                            </p>
+                            <p>
+                                <em>A word about translations.</em> 
+                                Overall balance of formal equivalence (i.e., literal) vs dynamic equivalence (i.e., interpreted): ESV
+                                Beauty of language: KJV/NKJV. 
+                                Formal equivalence: NASB. 
+                                Dynamic equivalence: NIV. For purposes of memorization, I do not recommend translations of more extreme dynamic equivalence than the NIV (and I prefer to avoid the NIV for most situations other than those in which certain familiar phrases have entered the common English lexicon)***
+                            </p>
 
                             <h3 id="5">5. First steps</h3>
-                            <p></p>
+                            <p>
+                                To get started, use the <a href="/verse-vault.html">Verse Vault</a> and the <a href="/bible-memory.html">Scripture Memory Tool</a>. 
+                                I recommend starting with the following passages: 
+
+                                <div class="card custom-card">
+
+                                    <div class="card-header" id="myTab">
+                                        <ul class="nav nav-tabs card-header-tabs">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="c0-tab" data-bs-toggle="tab" href="#c0">
+                                                    [ 50 ]
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="c1-tab" data-bs-toggle="tab" href="#c1">
+                                                    [ 25 ]
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="c2-tab" data-bs-toggle="tab" href="#c2">
+                                                    [ 15 ]
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="card-body verse-list"> <!-- class verse-list used only for custom <ol> numbering -->
+                                        <div class="tab-content" id="myTabContent">
+                                            <div class="tab-pane fade show active" id="c0">
+                                                <ol>
+                                                    <li>Genesis 1:1-2</li>
+                                                    <li>Genesis 1:27</li>
+                                                    <li>Exodus 3:14</li>
+                                                    <li>Numbers 6:24-26</li>
+                                                    <li>Deuteronomy 6:4-5</li>
+                                                    <li>Joshua 1:8-9</li>
+                                                    <li>Job 1:21</li>
+                                                    <li>Psalm 23</li>
+                                                    <li>Proverbs 1:7</li>
+                                                    <li>Proverbs 3:5-6</li>
+                                                    <li>Isaiah 43:7</li>
+                                                    <li>Micah 6:8</li>
+                                                    <li>Matthew 6:9-13</li>
+                                                    <li>Matthew 19:26</li>
+                                                    <li>Matthew 28:18-20</li>
+                                                    <li>Mark 12:29-31</li>
+                                                    <li>John 1:1</li>
+                                                    <li>John 1:14</li>
+                                                    <li>John 3:16-17</li>
+                                                    <li>John 6:44</li>
+                                                    <li>John 13:34-35</li>
+                                                    <li>John 14:6</li>
+                                                    <li>John 17:3</li>
+                                                    <li>Acts 1:8</li>
+                                                    <li>Acts 4:12</li>
+                                                    <li>Romans 1:16-17</li>
+                                                    <li>Romans 1:18-20</li>
+                                                    <li>Romans 3:10</li>
+                                                    <li>Romans 3:23</li>
+                                                    <li>Romans 5:8</li>
+                                                    <li>Romans 6:23</li>
+                                                    <li>Romans 8:28</li>
+                                                    <li>Romans 10:9-10</li>
+                                                    <li>Romans 12:1-2</li>
+                                                    <li>1 Corinthians 10:13</li>
+                                                    <li>1 Corinthians 10:31</li>
+                                                    <li>1 Corinthians 11:23-26</li>
+                                                    <li>2 Corinthians 5:17</li>
+                                                    <li>Galatians 1:10</li>
+                                                    <li>Galatians 5:22-23</li>
+                                                    <li>Ephesians 2:8-9</li>
+                                                    <li>Philippians 1:21</li>
+                                                    <li>Philippians 4:6-7</li>
+                                                    <li>Colossians 3:17</li>
+                                                    <li>1 Thessalonians 5:16-18</li>
+                                                    <li>2 Timothy 3:16-17</li>
+                                                    <li>James 1:5</li>
+                                                    <li>1 John 1:9</li>
+                                                    <li>1 John 3:16</li>
+                                                    <li>Jude 1:24-25</li>
+                                                </ol>
+                                            </div>
+                                            
+                                            <div class="tab-pane fade" id="c1">
+                                                <ol>
+                                                    <li>Genesis 1:1-2</li>
+                                                    <li>Genesis 1:27</li>
+                                                    <li>Numbers 6:24-26</li>
+                                                    <li>Joshua 1:8-9</li>
+                                                    <li>Psalm 23</li>
+                                                    <li>Proverbs 3:5-6</li>
+                                                    <li>Matthew 6:9-13</li>
+                                                    <li>Matthew 28:18-20</li>
+                                                    <li>Mark 12:29-31</li>
+                                                    <li>John 1:14</li>
+                                                    <li>John 3:16-17</li>
+                                                    <li>John 14:6</li>
+                                                    <li>Acts 1:8</li>
+                                                    <li>Acts 4:12</li>
+                                                    <li>Romans 1:16-17</li>
+                                                    <li>Romans 3:23</li>
+                                                    <li>Romans 5:8</li>
+                                                    <li>Romans 6:23</li>
+                                                    <li>Romans 10:9-10</li>
+                                                    <li>1 Corinthians 10:31</li>
+                                                    <li>2 Corinthians 5:17</li>
+                                                    <li>Galatians 5:22-23</li>
+                                                    <li>Ephesians 2:8-9</li>
+                                                    <li>1 Thessalonians 5:16-18</li>
+                                                    <li>2 Timothy 3:16-17</li>
+                                                </ol>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="c2">
+                                                <ol>
+                                                    <li>Genesis 1:1-2</li>
+                                                    <li>Joshua 1:8-9</li>
+                                                    <li>Psalm 23</li>
+                                                    <li>Proverbs 3:5-6</li>
+                                                    <li>Matthew 6:9-13</li>
+                                                    <li>Matthew 28:18-20</li>
+                                                    <li>Mark 12:29-31</li>
+                                                    <li>John 3:16-17</li>
+                                                    <li>Acts 1:8</li>
+                                                    <li>Romans 6:23</li>
+                                                    <li>Romans 10:9-10</li>
+                                                    <li>1 Corinthians 10:31</li>
+                                                    <li>Galatians 5:22-23</li>
+                                                    <li>Ephesians 2:8-9</li>
+                                                    <li>2 Timothy 3:16-17</li>
+                                                </ol>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+                            </p>
 
                             <h3 id="6">6. Next steps</h3>
                             <p></p>
 
-                            <h3 id="7">Notes</h3>
+                            <h3 id="7">7. Notes</h3>
                             <p>
                                 My personal notes are located <a href="/assets/pdf/Scripture-Memorization-20250128.pdf">here</a>.
                             </p>
@@ -355,9 +596,8 @@
                     <div class="sidebar">
                         <h5>Related</h5>
                         <ul class="list-unstyled">
-                            <li><a href="#">Related Blog Title 1</a></li>
-                            <li><a href="#">Related Blog Title 2</a></li>
-                            <li><a href="#">Related Blog Title 3</a></li>
+                            <li><a href="/bible-memory.html">Scripture Memory Tool</a></li>
+                            <li><a href="/verse-vault.html">Verse Vault</a></li>
                         </ul>
 
                         <h5>Tags</h5>
