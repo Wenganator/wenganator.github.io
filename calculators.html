@@ -83,9 +83,9 @@
                             <ul>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('bmi')">BMI</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('calciumCorrection')">Calcium Correction</a></li>
+                                <li><a href="#" class="calculator-link" onclick="showCalculator('childPugh')">Child-Pugh Score</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('qtc')">Corrected QT Interval</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('freeWaterDeficit')">Free Water Deficit</a></li>
-                                <li><a href="#" class="calculator-link" onclick="showCalculator('childPugh')">Child-Pugh Score</a></li>
                             </ul>
                         </div>
                     </div>
@@ -137,8 +137,8 @@
                 if (calcType === 'permutationsCombinations') {
                     calculatorTitle.textContent = 'Permutations & Combinations';
                     calculatorContent.innerHTML = `<p>Enter values for <code>n</code> and <code>r</code>:</p>
-                        <input type='number' id='n' placeholder='n'>
-                        <input type='number' id='r' placeholder='r'>
+                        <input type='number' id='n' class="form-control mb-2" placeholder='n'>
+                        <input type='number' id='r' class="form-control mb-2" placeholder='r'>
                         <button class="btn btn-primary" onclick='calculatePermutations(); calculateCombinations()'>Calculate</button>
                         <p>Permutations <code><i><sub>n</sub>P<sub>r</sub></i></code>: <span id='permutationsResult'></span></p>
                         <p>Combinations <code><i><sub>n</sub>C<sub>r</sub></i></code>: <span id='combinationsResult'></span></p>
@@ -148,7 +148,7 @@
                 if (calcType === 'descriptiveStats') {
                     calculatorTitle.textContent = 'Descriptive Statistics';
                     calculatorContent.innerHTML = `<p>Enter a comma-separated list of numbers:</p>
-                        <input type='text' id='statsInput' placeholder='e.g., 1,2,3,4,5'>
+                        <input type='text' id='statsInput' class="form-control mb-2" placeholder='e.g., 1,2,3,4,5'>
                         <button class="btn btn-primary" onclick='calculateDescriptiveStats()'>Calculate</button>
                         <p>Sum: <span id='sumResult'></span></p>
                         <p>Mean: <span id='meanResult'></span></p>
@@ -159,6 +159,7 @@
                         <p>Range: <span id='rangeResult'></span></p>
                         <p>Standard Deviation: <span id='stdDevResult'></span></p>
                         <p>Variance: <span id='varianceResult'></span></p>
+                        <canvas id="statsChart"></canvas>
                     `;
                 }
 
@@ -168,15 +169,36 @@
                 if (calcType === 'timeValueMoney') {
                     calculatorTitle.textContent = 'Time Value of Money (Future Value)';
                     calculatorContent.innerHTML = `
-                        <p>This calculator determines the future value of an investment given interest rate and time.</p>
-                        <label for="principal">Initial Investment:</label>
-                        <input type="number" id="principal" class="form-control mb-2">
-                        <label for="rate">Annual Interest Rate (%):</label>
-                        <input type="number" id="rate" class="form-control mb-2">
-                        <label for="years">Number of Years:</label>
-                        <input type="number" id="years" class="form-control mb-2">
+                        <p>This calculator determines the future value of an investment with compound interest.</p>
+                        <p><code>FV = PV(1 + r/n)^(nt)</code></p>
+                        <ul>
+                            <li>Initial Investment (Present Value, PV, or Principal, P): The starting amount of money.</li>
+                            <li>Annual Interest Rate (r): The interest rate per year as a percentage (e.g., enter 5 for 5%).</li>
+                            <li>Number of Years (t): The duration in years.</li>
+                            <li>Compounding Frequency (n):</li>
+                            <ul>
+                                <li>1 for yearly</li>
+                                <li>4 for quarterly</li>
+                                <li>12 for monthly</li>
+                                <li>365 for daily</li>
+                            </ul>
+                        </ul>
+                        <label for="principal">Initial Investment (PV or P):</label>
+                        <input type="number" id="principal" class="form-control mb-2" placeholder="Enter initial investment amount">
+                        
+                        <label for="rate">Annual Interest Rate (r), %:</label>
+                        <input type="number" id="rate" class="form-control mb-2" placeholder="Enter percentage, e.g., 5 for 5%">
+                        
+                        <label for="years">Number of Years (t):</label>
+                        <input type="number" id="years" class="form-control mb-2" placeholder="Enter the duration in years">
+                        
+                        <label for="compounding">Compounding Frequency (n):</label>
+                        <input type="number" id="compounding" class="form-control mb-2" placeholder="Enter 1 for yearly, 4 for quarterly, 12 for monthly, or 365 for daily">
+                        </select>
+                        
                         <button class="btn btn-primary" onclick="calculateTimeValue()">Calculate</button>
                         <p>Future Value: <span id="futureValueResult"></span></p>
+                        <canvas id="futureValueChart"></canvas>
                     `;
                 }
 
@@ -187,12 +209,93 @@
                     calculatorTitle.textContent = 'Body Mass Index (BMI)';
                     calculatorContent.innerHTML = `
                         <p>This calculator computes Body Mass Index (BMI).</p>
+                        <p><code>BMI = weight [kg] / height^2 [m^2]</code></p>
                         <label for="weight">Weight (kg):</label>
                         <input type="number" id="weight" class="form-control mb-2" required>
                         <label for="height">Height (m):</label>
                         <input type="number" id="height" class="form-control mb-2" required>
                         <button class="btn btn-primary" onclick="calculateBMI()">Calculate</button>
                         <p>BMI: <span id="bmiResult"></span></p>
+                    `;
+                }
+
+                if (calcType === 'calciumCorrection') {
+                    calculatorTitle.textContent = 'Calcium Correction';
+                    calculatorContent.innerHTML = `
+                        <p>Corrects calcium level based on albumin.</p>
+                        <p><code>Corrected Ca = Serum Ca + 0.8 × (Normal Albumin - Measured Albumin)</code>, where <code>Normal Albumin</code> is typically 4 g/dL.</p>
+                        <label for="calcium">Measured (Serum) Calcium (mg/dL):</label>
+                        <input type="number" id="calcium" class="form-control mb-2">
+                        
+                        <label for="albumin">Measured Albumin (g/dL):</label>
+                        <input type="number" id="albumin" class="form-control mb-2">
+                        
+                        <button class="btn btn-primary" onclick="calculateCalcium()">Calculate</button>
+                        <p>Corrected Calcium: <span id="calciumResult"></span></p>
+                    `;
+                }
+
+                if (calcType === 'childPugh') {
+                    calculatorTitle.textContent = 'Child-Pugh Score';
+                    calculatorContent.innerHTML = `
+                        <p>Assesses chronic liver disease severity.</p>
+
+                        <label for="bilirubin">Bilirubin (mg/dL):</label>
+                        <input type="number" id="bilirubin" class="form-control mb-2">
+
+                        <label for="albumin">Albumin (g/dL):</label>
+                        <input type="number" id="albumin" class="form-control mb-2">
+
+                        <label for="inr">INR:</label>
+                        <input type="number" id="inr" class="form-control mb-2">
+
+                        <label for="ascites">Ascites:</label>
+                        <select id="ascites" class="form-control mb-2">
+                            <option value="1">None</option>
+                            <option value="2">Mild</option>
+                            <option value="3">Moderate/Severe</option>
+                        </select>
+
+                        <label for="hepatic">Hepatic Encephalopathy:</label>
+                        <select id="hepatic" class="form-control mb-2">
+                            <option value="1">None</option>
+                            <option value="2">Grade 1-2</option>
+                            <option value="3">Grade 3-4</option>
+                        </select>
+
+                        <button class="btn btn-primary" onclick="calculateChildPugh()">Calculate</button>
+                        <p>Total Score: <span id="childPughResult"></span></p>
+                        <p>Child-Pugh Class: <span id="childPughClass"></span></p>
+                    `;
+                }
+
+                if (calcType === 'freeWaterDeficit') {
+                    calculatorTitle.textContent = 'Free Water Deficit';
+                    calculatorContent.innerHTML = `
+                        <p>Calculates free water deficit in hypernatremia. See <a href="https://www.mdcalc.com/calc/113/free-water-deficit-hypernatremia#evidence">here</a> for more nuanced calculations.</p>
+                        <p><code>Free Water Deficit = Total Body Water × (Na<sub>current</sub>/140 - 1)</code></p>
+                        <ul>
+                            <li>TBW estimation:</li>
+                            <ul>
+                                <li>Men: <code>TBW = 0.6 × Weight</code></li>
+                                <li>Women: <code>TBW = 0.5 × Weight</code></li>
+                            </ul>
+                            <li>Ideal Na assumed to be 140 mEq/L</li>
+                        </ul>
+                        <label for="weight">Weight (kg):</label>
+                        <input type="number" id="weight" class="form-control mb-2">
+                        
+                        <label for="sodium">Current Serum Sodium (mEq/L):</label>
+                        <input type="number" id="sodium" class="form-control mb-2">
+                        
+                        <label for="sex">Sex:</label>
+                        <select id="sex" class="form-control mb-2">
+                            <option value="0.6">Male</option>
+                            <option value="0.5">Female</option>
+                        </select>
+                        
+                        <button class="btn btn-primary" onclick="calculateWaterDeficit()">Calculate</button>
+                        <p>Free Water Deficit: <span id="waterDeficitResult"></span> L</p>
                     `;
                 }
 
@@ -259,6 +362,51 @@
                 document.getElementById('rangeResult').textContent = range;
                 document.getElementById('stdDevResult').textContent = stdDev;
                 document.getElementById('varianceResult').textContent = variance;
+
+                // Create frequency distribution
+                let freqMap = {};
+                input.forEach(num => freqMap[num] = (freqMap[num] || 0) + 1);
+
+                let labels = Object.keys(freqMap).sort((a, b) => a - b);
+                let data = labels.map(num => freqMap[num]);
+
+                // Destroy existing chart if it exists
+                if (window.statsChart instanceof Chart) {
+                    window.statsChart.destroy();
+                }
+
+                // Draw new frequency bar chart
+                let ctx = document.getElementById('statsChart').getContext('2d');
+                window.statsChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency',
+                            data: data,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Value'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Frequency'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
             }
 
             //
@@ -270,8 +418,51 @@
                 let P = parseFloat(document.getElementById('principal').value);
                 let r = parseFloat(document.getElementById('rate').value) / 100;
                 let t = parseFloat(document.getElementById('years').value);
-                let FV = P * Math.pow(1 + r, t);
+                let n = parseInt(document.getElementById('compounding').value);
+
+                let FV = P * Math.pow(1 + (r / n), n * t);
                 document.getElementById('futureValueResult').textContent = FV.toFixed(2);
+
+                // Graph
+                let yearsArray = [...Array(t + 1).keys()];
+                let valuesArray = yearsArray.map(year => P * Math.pow(1 + (r / n), n * year));
+
+                // Destroy existing chart if it exists
+                if (window.statsChart instanceof Chart) {
+                    window.statsChart.destroy();
+                }
+
+                let ctx = document.getElementById('futureValueChart').getContext('2d');
+                window.statsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: yearsArray,
+                        datasets: [{
+                            label: 'Future Value Over Time',
+                            data: valuesArray,
+                            borderColor: 'blue',
+                            backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Future Value'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
             }
 
             //
@@ -284,6 +475,43 @@
                 let height = parseFloat(document.getElementById('height').value);
                 let bmi = weight / (height * height);
                 document.getElementById('bmiResult').textContent = bmi.toFixed(2);
+            }
+
+            // calcType === 'calciumCorrection' 
+            function calculateCalcium() {
+                let calcium = parseFloat(document.getElementById('calcium').value);
+                let albumin = parseFloat(document.getElementById('albumin').value);
+                let correctedCalcium = calcium + 0.8 * (4 - albumin);
+                document.getElementById('calciumResult').textContent = correctedCalcium.toFixed(2);
+            }
+
+            // calcType === 'childPugh'
+            function calculateChildPugh() {
+                let bilirubin = parseFloat(document.getElementById('bilirubin').value);
+                let albumin = parseFloat(document.getElementById('albumin').value);
+                let inr = parseFloat(document.getElementById('inr').value);
+                let ascites = parseInt(document.getElementById('ascites').value);
+                let hepatic = parseInt(document.getElementById('hepatic').value);
+
+                let bilirubinScore = bilirubin < 2 ? 1 : (bilirubin <= 3 ? 2 : 3);
+                let albuminScore = albumin > 3.5 ? 1 : (albumin >= 2.8 ? 2 : 3);
+                let inrScore = inr < 1.7 ? 1 : (inr <= 2.3 ? 2 : 3);
+
+                let totalScore = bilirubinScore + albuminScore + inrScore + ascites + hepatic;
+                document.getElementById('childPughResult').textContent = totalScore;
+
+                let classification = totalScore <= 6 ? 'Class A' : (totalScore <= 9 ? 'Class B' : 'Class C');
+                document.getElementById('childPughClass').textContent = classification;
+            }
+
+            // calcType === 'freeWaterDeficit'
+            function calculateWaterDeficit() {
+                let weight = parseFloat(document.getElementById('weight').value);
+                let sodium = parseFloat(document.getElementById('sodium').value);
+                let factor = parseFloat(document.getElementById('sex').value);
+                let TBW = factor * weight;
+                let deficit = TBW * ((sodium / 140) - 1);
+                document.getElementById('waterDeficitResult').textContent = deficit.toFixed(2);
             }
 
             // calcType === 'qtc'
