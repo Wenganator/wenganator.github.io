@@ -83,9 +83,13 @@
                             <ul>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('bmi')">BMI</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('calciumCorrection')">Calcium Correction</a></li>
+                                <li><a href="#" class="calculator-link" onclick="showCalculator('cha2ds2vasc')">CHA₂DS₂-VASc Score</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('childPugh')">Child-Pugh Score</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('qtc')">Corrected QT Interval</a></li>
+                                <li><a href="#" class="calculator-link" onclick="showCalculator('fib4')">FIB-4 Index</a></li>
                                 <li><a href="#" class="calculator-link" onclick="showCalculator('freeWaterDeficit')">Free Water Deficit</a></li>
+                                <li><a href="#" class="calculator-link" onclick="showCalculator('lightsCriteria')">Light's Criteria</a></li>
+                                <li><a href="#" class="calculator-link" onclick="showCalculator('phq9')">PHQ-9 Depression Scale</a></li>
                             </ul>
                         </div>
                     </div>
@@ -235,6 +239,27 @@
                     `;
                 }
 
+                if (calcType === 'cha2ds2vasc') {
+                    calculatorTitle.textContent = 'CHA₂DS₂-VASc Score';
+                    calculatorContent.innerHTML = `
+                        <p>Estimates stroke risk in patients with atrial fibrillation.</p>
+                        
+                        <label><input type="checkbox" id="chf"> Congestive heart failure</label><br>
+                        <label><input type="checkbox" id="htn"> Hypertension</label><br>
+                        <label><input type="checkbox" id="diabetes"> Diabetes mellitus</label><br>
+                        <label><input type="checkbox" id="stroke"> Prior Stroke/TIA/thromboembolism</label><br>
+                        <label><input type="checkbox" id="vascular"> Vascular disease (prior MI, peripheral artery disease, or aortic plaque)</label><br>
+                        <label><input type="checkbox" id="female"> Female</label><br>
+                        
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" class="form-control mb-2">
+                        
+                        <button class="btn btn-primary" onclick="calculateCHA2DS2VASc()">Calculate</button>
+                        <p>Total Score: <span id="cha2ds2vascResult"></span></p>
+                        <p>Associated Stroke Risk: <span id="cha2ds2vascRisk"></span></p>
+                    `;
+                }
+
                 if (calcType === 'childPugh') {
                     calculatorTitle.textContent = 'Child-Pugh Score';
                     calculatorContent.innerHTML = `
@@ -266,6 +291,30 @@
                         <button class="btn btn-primary" onclick="calculateChildPugh()">Calculate</button>
                         <p>Total Score: <span id="childPughResult"></span></p>
                         <p>Child-Pugh Class: <span id="childPughClass"></span></p>
+                    `;
+                }
+
+                if (calcType === 'fib4') {
+                    calculatorTitle.textContent = "FIB-4 Index Calculator";
+                    calculatorContent.innerHTML = `
+                        <p>Estimates hepatic fibrosis severity.</p>
+                        <p><code> FIB-4 Index = (Age * AST) / (Plt * sqrt(ALT))</code></p>
+
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" class="form-control mb-2">
+
+                        <label for="ast">AST (U/L):</label>
+                        <input type="number" id="ast" class="form-control mb-2">
+
+                        <label for="alt">ALT (U/L):</label>
+                        <input type="number" id="alt" class="form-control mb-2">
+
+                        <label for="platelet">Platelet Count (10⁹/L):</label>
+                        <input type="number" id="platelet" class="form-control mb-2">
+
+                        <button class="btn btn-primary" onclick="calculateFIB4()">Calculate</button>
+                        <p>FIB-4 Index: <span id="fib4Result"></span></p>
+                        <p>Interpretation: <span id="fib4Commentary"></span></p>
                     `;
                 }
 
@@ -316,6 +365,61 @@
                         <p>Corrected QTc: <span id="qtcResultHR"></span></p>
                     `;
                 }
+
+                if (calcType === 'lightsCriteria') {
+                    calculatorTitle.textContent = "Light's Criteria";
+                    calculatorContent.innerHTML = `
+                        <p>Determines if pleural effusion is exudative or transudative.</p>
+
+                        <label for="pleuralProtein">Pleural Fluid Protein (g/dL):</label>
+                        <input type="number" id="pleuralProtein" class="form-control mb-2">
+
+                        <label for="serumProtein">Serum Protein (g/dL):</label>
+                        <input type="number" id="serumProtein" class="form-control mb-2">
+
+                        <label for="pleuralLDH">Pleural Fluid LDH:</label>
+                        <input type="number" id="pleuralLDH" class="form-control mb-2">
+
+                        <label for="serumLDH">Serum LDH:</label>
+                        <input type="number" id="serumLDH" class="form-control mb-2">
+
+                        <button class="btn btn-primary" onclick="calculateLightsCriteria()">Calculate</button>
+                        <p>Effusion Type: <span id="lightsResult"></span></p>
+                    `;
+                }
+
+                if (calcType === 'phq9') {
+                    calculatorTitle.textContent = "PHQ-9 Depression Scale";
+                    calculatorContent.innerHTML = `
+                        <p>Rates depression severity based on the last 2 weeks.</p>
+
+                        ${[
+                            "Little interest or pleasure in doing things?",
+                            "Feeling down, depressed, or hopeless?",
+                            "Trouble falling/staying asleep or sleeping too much?",
+                            "Feeling tired or having little energy?",
+                            "Poor appetite or overeating?",
+                            "Feeling bad about yourself or that you are a failure?",
+                            "Trouble concentrating on things?",
+                            "Moving/speaking slowly or being overly fidgety?",
+                            "Thoughts of self-harm or suicidal ideation?"
+                        ].map((question, i) => `
+                            <label>${i + 1}. ${question}</label>
+                            <select id="phq${i}" class="form-control mb-2">
+                                <option value="0">Not at all</option>
+                                <option value="1">Several days</option>
+                                <option value="2">More than half the days</option>
+                                <option value="3">Nearly every day</option>
+                            </select>
+                        `).join('')}
+
+                        <button class="btn btn-primary" onclick="calculatePHQ9()">Calculate</button>
+                        <p>Total Score: <span id="phq9Result"></span></p>
+                        <p>Depression Severity: <span id="phq9Severity"></span></p>
+                        <p>Clinical Recommendation: <span id="phq9Recommendation"></span></p>
+                    `;
+                }
+
 
                 // Other
 
@@ -485,6 +589,38 @@
                 document.getElementById('calciumResult').textContent = correctedCalcium.toFixed(2);
             }
 
+            // calcType === 'cha2ds2vasc'
+            function calculateCHA2DS2VASc() {
+                let score = 0;
+                if (document.getElementById('chf').checked) score += 1;
+                if (document.getElementById('htn').checked) score += 1;
+                if (document.getElementById('diabetes').checked) score += 1;
+                if (document.getElementById('stroke').checked) score += 2;
+                if (document.getElementById('vascular').checked) score += 1;
+                if (document.getElementById('female').checked) score += 1;
+                
+                let age = parseInt(document.getElementById('age').value);
+                if (age >= 75) score += 2;
+                else if (age >= 65) score += 1;
+
+                document.getElementById('cha2ds2vascResult').textContent = score;
+
+                // Evidence-based commentary
+                const riskData = {
+                    0: "0.2% per year",
+                    1: "0.6% per year",
+                    2: "2.2% per year",
+                    3: "3.2% per year",
+                    4: "4.8% per year",
+                    5: "7.2% per year",
+                    6: "9.7% per year",
+                    7: "11.2% per year",
+                    8: "10.8% per year",
+                    9: "12.2% per year"
+                };
+                document.getElementById('cha2ds2vascRisk').textContent = riskData[score] || "Data not available";
+            }
+
             // calcType === 'childPugh'
             function calculateChildPugh() {
                 let bilirubin = parseFloat(document.getElementById('bilirubin').value);
@@ -502,6 +638,20 @@
 
                 let classification = totalScore <= 6 ? 'Class A' : (totalScore <= 9 ? 'Class B' : 'Class C');
                 document.getElementById('childPughClass').textContent = classification;
+            }
+
+            // calcType === 'fib4'
+            function calculateFIB4() {
+                let age = parseInt(document.getElementById('age').value);
+                let ast = parseInt(document.getElementById('ast').value);
+                let alt = parseInt(document.getElementById('alt').value);
+                let platelet = parseInt(document.getElementById('platelet').value);
+
+                let fib4 = (age * ast) / (platelet * Math.sqrt(alt));
+                document.getElementById('fib4Result').textContent = fib4.toFixed(2);
+
+                let interpretation = fib4 < 1.45 ? "Unlikely advanced fibrosis" : fib4 > 3.25 ? "Likely advanced fibrosis" : "Indeterminate";
+                document.getElementById('fib4Commentary').textContent = interpretation;
             }
 
             // calcType === 'freeWaterDeficit'
@@ -528,6 +678,49 @@
                 let rr = 60 / hr;
                 let qtc = qt / Math.sqrt(rr);
                 document.getElementById('qtcResultHR').textContent = qtc.toFixed(2);
+            }
+
+            // calcType === 'lightsCriteria'
+            function calculateLightsCriteria() {
+                let pleuralProtein = parseFloat(document.getElementById('pleuralProtein').value);
+                let serumProtein = parseFloat(document.getElementById('serumProtein').value);
+                let pleuralLDH = parseFloat(document.getElementById('pleuralLDH').value);
+                let serumLDH = parseFloat(document.getElementById('serumLDH').value);
+
+                let criteria1 = (pleuralProtein / serumProtein) > 0.5;
+                let criteria2 = (pleuralLDH / serumLDH) > 0.6;
+                let criteria3 = pleuralLDH > (2 / 3) * serumLDH;
+
+                let isExudative = criteria1 || criteria2 || criteria3;
+                document.getElementById('lightsResult').textContent = isExudative ? "Exudative" : "Transudative";
+            }
+
+            // calcType === 'phq9'
+            function calculatePHQ9() {
+                let total = [...Array(9)].reduce((sum, _, i) => sum + parseInt(document.getElementById(`phq${i}`).value), 0);
+                document.getElementById('phq9Result').textContent = total;
+
+                // Determine severity level
+                let severity, recommendation;
+                if (total >= 20) {
+                    severity = "Severe Depression";
+                    recommendation = "Immediate psychiatric intervention needed.";
+                } else if (total >= 15) {
+                    severity = "Moderately Severe Depression";
+                    recommendation = "Psychotherapy and/or medication should be strongly considered.";
+                } else if (total >= 10) {
+                    severity = "Moderate Depression";
+                    recommendation = "Consider therapy and monitoring.";
+                } else if (total >= 5) {
+                    severity = "Mild Depression";
+                    recommendation = "Monitor symptoms, reassess later.";
+                } else {
+                    severity = "Minimal or No Depression";
+                    recommendation = "No intervention required.";
+                }
+
+                document.getElementById('phq9Severity').textContent = severity;
+                document.getElementById('phq9Recommendation').textContent = recommendation;
             }
 
             //
