@@ -37,7 +37,7 @@ const blogPosts = [
     {
         title: 'Scripture Memorization',
         tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
-        content: 'A basic guide to Scripture memorization',
+        content: 'A beginner\'s guide to Scripture memorization',
         image: '/assets/images/blog/scripture-memorization.webp',
         url: '/blog/scripture-memorization.html'
     },
