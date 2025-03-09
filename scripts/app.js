@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', event => {
 
         // Dynamically generate navigation bar (at top of page)
         // To add more pages, create a new HTML file in the root directory; then add the new page to the 'pages' array below. The navigation bar will automatically update.
+        // Update search.html with new pages
         const pages = [
             // { name: "Home", url: "/index.html" },
             // { name: "About", url: "/about.html" },
@@ -23,6 +24,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Books", url: "/books.html" },
             { name: "Writing", url: "/writing.html" },
             { name: "Blog", url: "/blog.html" },
+            { name: "Gallery", url: "/gallery.html" },
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },
                 { name: "Notes App", url: "/notes.html" },
