@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', event => {
                 { name: "Calculators", url: "/calculators.html" },
                 { name: "Notes App", url: "/notes.html" },
                 { name: "Price Pilot", url: "/price-pilot.html" },
+                { name: "Tier List Maker", url: "/tier-list.html" },
                 { name: "Word Wizard", url: "/word-wizard.html" },
             ]},
             { name: "Contact", url: "/contact.html" },
