@@ -1,17 +1,36 @@
+// Preset tier data
+const tierData = {
+  "S": [
+    { name: "Item 1", img: "https://placehold.co/100/orange/fff", note: "My top pick!" },
+    { name: "Item 2", img: "https://placehold.co/200/dodgerblue/fff", note: "My second pick!" }
+  ],
+  "A": [
+    { name: "Item 3", img: "https://placehold.co/150x100/green/fff", note: "Great choice overall." }
+  ],
+  "B": [],
+  "C": [],
+  "D": []
+};
+
+
 const colors = [
-    "#FF7F7F",
-    "#FFBF7F",
-    "#FFDF7F",
-    "#FFFF7F",
-    "#BFFF7F",
-    "#7FFF7F",
-    "#7FFFFF",
-    "#7FBFFF",
-    "#7F7FFF",
-    "#FF7FFF",
-    "#BF7FBF",
-    "#CFCFCF",
+  "#FF7F7F",
+  "#FFBF7F",
+  "#FFDF7F",
+  "#FFFF7F",
+  "#BFFF7F",
+  "#7FFF7F",
+  "#7FFFFF",
+  "#7FBFFF",
+  "#7F7FFF",
+  "#FF7FFF",
+  "#BF7FBF",
+  "#CFCFCF",
 ];
+
+
+const tooltip = document.getElementById("tooltip");
+
 
 
 const settingsModal = document.querySelector(".settings-modal");
@@ -105,7 +124,7 @@ const handleDrop = (event) => {
   event.preventDefault(); // prevent default browser handling
 };
 
-const createTier = (label = "Change me") => {
+const createTier = (label = "Change me", items = []) => {
   const tierColor = colors[tiersContainer.children.length % colors.length];
 
   const tier = document.createElement("div");
@@ -119,20 +138,43 @@ const createTier = (label = "Change me") => {
     <button class="settings"><i class="bi bi-gear-fill"></i></button>
     <button class="moveup"><i class="bi bi-chevron-up"></i></button>
     <button class="movedown"><i class="bi bi-chevron-down"></i></button>
-  </div>`;
+  </div>
+  `;
 
-  // Attach event listeners
-  tier
-    .querySelector(".settings")
-    .addEventListener("click", () => handleSettingsClick(tier));
-  tier
-    .querySelector(".moveup")
-    .addEventListener("click", () => handleMoveTier(tier, "up"));
-  tier
-    .querySelector(".movedown")
-    .addEventListener("click", () => handleMoveTier(tier, "down"));
+  // Attach event listeners for tier controls
+  tier.querySelector(".settings").addEventListener("click", () => handleSettingsClick(tier));
+  tier.querySelector(".moveup").addEventListener("click", () => handleMoveTier(tier, "up"));
+  tier.querySelector(".movedown").addEventListener("click", () => handleMoveTier(tier, "down"));
   tier.querySelector(".items").addEventListener("dragover", handleDragover);
   tier.querySelector(".items").addEventListener("drop", handleDrop);
+
+  // If there are preset items, add them to the tier
+  if (items.length > 0) {
+    const itemsContainer = tier.querySelector(".items");
+    items.forEach(item => {
+      const img = document.createElement("img");
+      img.src = item.img;
+      img.alt = item.name;
+      img.draggable = true;
+      // Drag event listeners (same as in initDraggables)
+      img.addEventListener("dragstart", (e) => {
+         e.dataTransfer.setData("text/plain", "");
+         img.classList.add("dragging");
+      });
+      img.addEventListener("dragend", () => img.classList.remove("dragging"));
+      // Tooltip event listeners
+      img.addEventListener("mouseenter", (e) => {
+         tooltip.innerText = item.note;
+         tooltip.style.display = "block";
+         tooltip.style.left = `${e.pageX + 10}px`;
+         tooltip.style.top = `${e.pageY + 10}px`;
+      });
+      img.addEventListener("mouseleave", () => {
+         tooltip.style.display = "none";
+      });
+      itemsContainer.appendChild(img);
+    });
+  }
 
   return tier;
 };
@@ -175,10 +217,12 @@ imageUpload.addEventListener("change", (event) => {
 });
 
 const initDefaultTierList = () => {
-  ["S", "A", "B", "C", "D"].forEach((label) => {
-    tiersContainer.appendChild(createTier(label));
+  // Instead of using an array of labels, iterate over your preset tierData keys
+  Object.keys(tierData).forEach(label => {
+    tiersContainer.appendChild(createTier(label, tierData[label]));
   });
 };
+
 
 const initDraggables = () => {
   const images = cardsContainer.querySelectorAll("img");
@@ -207,9 +251,10 @@ initColorOptions();
 
 //* event listeners
 
-document.querySelector("h1").addEventListener("click", () => {
-  tiersContainer.appendChild(createTier());
-});
+// Event listener that creates a new tier when the h1 is clicked
+// document.querySelector("h1").addEventListener("click", () => {
+//   tiersContainer.appendChild(createTier());
+// });
 
 settingsModal.addEventListener("click", (event) => {
   // if the clicked element is the settings modal then close it
