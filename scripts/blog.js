@@ -21,7 +21,7 @@ const blogPosts = [
         url: '/blog/worship-sets.html'
     },
     {
-        title: 'Freebies', 
+        title: 'Freebies!', 
         tag: ['Games', 'Technology', 'Miscellaneous'],
         content: 'Freebies (or something close)',
         image: '/assets/images/blog/freebies.svg',
