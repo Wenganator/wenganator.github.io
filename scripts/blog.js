@@ -3,9 +3,16 @@
 // From newest to oldest posts (so newest posts will display at the top)
 // TO-DO: Standardize sizing of images to e.g., 350x200?
 
-// Tags: Bible, Books, Christianity, Cooking, Games, Medicine, Memory, Music, Sports, 
+// Tags: Bible, Books, Christianity, Cooking, Entertainment, Games, Medicine, Memory, Music, Sports, 
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
+    {
+        title: 'Movie Tier List',
+        tag: ['Entertainment', 'Technology'],
+        content: 'A thorough, very subjective tier list of movies',
+        image: '/assets/images/blog/movie-tier-list.webp',
+        url: '/blog/movie-tier-list.html'
+    },
     {
         title: 'Doxologies',
         tag: ['Bible', 'Christianity', 'Memory', 'Theology', 'Worship'],
