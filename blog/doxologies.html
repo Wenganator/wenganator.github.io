@@ -22,6 +22,100 @@
         <link rel="stylesheet" href="/styles/style.css">
         <link rel="stylesheet" href="/styles/blog.css">
         <!-- Add additional stylesheets here to override original styles as needed -->
+        <style>
+            /* Use CSS columns for masonry layout */
+            .masonry {
+                column-count: 3;  /* Adjust this to control number of columns */
+                column-gap: 16px;
+                padding: 20px;
+            }
+
+            /* Make each card inline-block so they flow within columns */
+            .flip-card {
+                display: inline-block;
+                width: 100%;
+                margin-bottom: 16px;
+                perspective: 1000px;
+            }
+
+            .flip-card-inner {
+                width: 100%;
+                position: relative;
+                transform-style: preserve-3d;
+                transition: transform 0.6s;
+            }
+
+            .flip-card:hover .flip-card-inner {
+                transform: rotateY(180deg);
+            }
+
+            .flip-card-front,
+            .flip-card-back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                padding: 16px;
+                /* font-size: 18px; */
+                background-color: #fff;
+                border: 1px solid #ddd;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .flip-card-front {
+                background-color: #f8f9fa;
+                /* font-weight: bold; */
+                font-family: 'Playfair Display', serif;
+                font-size: 1.2rem;
+            }
+
+            .flip-card-back {
+                background-color: #fff;
+                transform: rotateY(180deg);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: flex-start;
+                text-align: left;
+                overflow-y: auto;
+                max-height: 400px;
+
+                font-family: 'Merriweather', serif;
+                font-size: 1rem;
+            }
+
+            /* Ensuring the card height adjusts dynamically */
+            .flip-card-inner,
+            .flip-card-front,
+            .flip-card-back {
+                min-height: 50px;
+            }
+
+            /* Small caps styling without causing line breaks */
+            .small-caps {
+                font-variant: small-caps;
+                display: inline; /* Ensures text stays inline */
+            }
+
+            /* Custom scrollbar */
+            .flip-card-back::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .flip-card-back::-webkit-scrollbar-thumb {
+                background: #bbb;
+                border-radius: 10px;
+            }
+
+            .flip-card-back::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+        </style>
     </head>
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
@@ -54,16 +148,184 @@
                                 The word comes from the Greek word δοξολογία (<i>doxologia</i>), 
                                 which comprises δόξα (<i>doxa</i>) meaning "glory," and λογία (<i>logia</i>), meaning "saying." 
                                 The Bible is rife with doxology formulations, whether in the form of a prayer, a song, or a benediction. 
-                                We'll explore some of these here.
+                                We'll explore some of these here. I have also included exhortations adjacent to the doxologies where applicable.
                             </p>
+
+                            <div class="masonry">
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Deuteronomy 6:4-15 (NKJV)</div>
+                                        <div class="flip-card-back">
+                                            <p>“Hear, O Israel: The <span class="small-caps">Lord</span> our God, the <span class="small-caps">Lord</span> is one! You shall love the <span class="small-caps">Lord</span> your God with all your heart, with all your soul, and with all your strength.</p>
+                                            <p>“And these words which I command you today shall be in your heart. You shall teach them diligently to your children, and shall talk of them when you sit in your house, when you walk by the way, when you lie down, and when you rise up. You shall bind them as a sign on your hand, and they shall be as frontlets between your eyes. You shall write them on the doorposts of your house and on your gates.</p>
+                                            <p>“So it shall be, when the <span class="small-caps">Lord</span> your God brings you into the land of which He swore to your fathers, to Abraham, Isaac, and Jacob, to give you large and beautiful cities which you did not build, houses full of all good things, which you did not fill, hewn-out wells which you did not dig, vineyards and olive trees which you did not plant—when you have eaten and are full— then beware, lest you forget the <span class="small-caps">Lord</span> who brought you out of the land of Egypt, from the house of bondage. You shall fear the <span class="small-caps">Lord</span> your God and serve Him, and shall take oaths in His name. You shall not go after other gods, the gods of the peoples who are all around you (for the <span class="small-caps">Lord</span> your God is a jealous God among you), lest the anger of the <span class="small-caps">Lord</span> your God be aroused against you and destroy you from the face of the earth.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Philippians 4:13</div>
+                                        <div class="flip-card-back">
+                                            I can do all things through Christ who strengthens me.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">Psalm 23:1</div>
+                                        <div class="flip-card-back">
+                                            The Lord is my shepherd; I shall not want.
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                    
+
+
+
+                            <p>Deuteronomy 6:4-15 (NKJV)</p>
                             <p>Numbers 6:24-26 (NKJV)</p>
+                            <p>1 Chronicles 16:8-36 (ESV); Psalm 96 (ESV)</p>
                             <p>1 Chronicles 29:10-13 (ESV)</p>
                             <p>Job 1:21 (NKJV)</p>
                             <p>Psalm 8 (ESV)</p>
                             <p>Psalm 24:7-10 (ESV)</p>
                             <p>Psalm 29:1-2 (ESV)</p>
+                            <p>Psalm 150 (ESV)</p>
+                            *** other Psalms ***
                             <p>Romans 8:37-39 (ESV)</p>
                             <p>Romans 11:33-36 (ESV)</p>
+                            <p>Romans 16:25-27 (NKJV; ESV)</p>
+                            <p>2 Corinthians 13:14 (ESV; KJV)</p>
                             <p>Ephesians 1:3-14 (ESV)</p>
                             <p>Ephesians 3:14-21 (ESV)</p>
                             <p>Philippians 2:5-11 (ESV)</p>
@@ -122,5 +384,30 @@
         <script src="/scripts/blog.js" defer></script>
         <script src="/scripts/blog-sidebar.js" defer></script>
         <!-- Add additional JS here as needed -->
+        
+        <!-- JavaScript to adjust the height of each flip card -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+            const flipCards = document.querySelectorAll('.flip-card');
+            flipCards.forEach(card => {
+                const inner = card.querySelector('.flip-card-inner');
+                const front = card.querySelector('.flip-card-front');
+                const back = card.querySelector('.flip-card-back');
+                // Temporarily remove absolute positioning to measure natural heights
+                front.style.position = 'relative';
+                back.style.position = 'relative';
+                const frontHeight = front.offsetHeight;
+                const backHeight = back.offsetHeight;
+                // Determine the desired height: the taller face, capped at 600px
+                const desiredHeight = Math.min(Math.max(frontHeight, backHeight), 600);
+                // Set the height on the flip-card-inner so both faces are fixed to that height
+                inner.style.height = desiredHeight + 'px';
+                // Restore absolute positioning for the flip effect
+                front.style.position = 'absolute';
+                back.style.position = 'absolute';
+            });
+            });
+        </script>
+
     </body>
 </html>

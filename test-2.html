@@ -1,91 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess Play & Analysis</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/css/chessboard-1.0.0.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboardjs/1.0.0/js/chessboard-1.0.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stockfish/15.1.0/stockfish.js"></script>
-    <style>
-        #board {
-            max-width: 100%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bible Verse Flip Cards</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Masonry grid layout */
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      padding: 20px;
+    }
+    .flip-card {
+      perspective: 1000px;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    /* The flip-card-inner’s height will be set dynamically */
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    /* Both faces are absolutely positioned so they perfectly overlap */
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      padding: 16px;
+      font-size: 18px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      overflow-y: auto;
+    }
+    .flip-card-front {
+      background-color: #f8f9fa;
+      font-weight: bold;
+      text-align: center;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+      text-align: left;
+      line-height: 1.4;
+    }
+    /* Flip effect on hover */
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    /* Force small-caps spans to remain inline */
+    .small-caps {
+      font-variant: small-caps;
+      display: inline !important;
+    }
+  </style>
 </head>
 <body>
-    <div class="container mt-4 text-center">
-        <h2>Chess Play & Analysis</h2>
-        <div id="board" style="width: 400px; margin: auto;"></div>
-        <button id="flipBoard" class="btn btn-secondary mt-3">Flip Board</button>
-        <button id="startGame" class="btn btn-primary mt-3">Restart Game</button>
-        
-        <h4 class="mt-4">PGN Input</h4>
-        <textarea id="pgnInput" class="form-control" rows="4" placeholder="Paste PGN here..."></textarea>
-        <button id="loadPgn" class="btn btn-success mt-2">Load PGN</button>
-        <button id="exportPgn" class="btn btn-info mt-2">Export PGN</button>
-        
-        <h4 class="mt-4">Stockfish Analysis</h4>
-        <button id="analyze" class="btn btn-warning">Analyze Position</button>
-        <p id="engineOutput" class="mt-2"></p>
+  <div class="masonry">
+    <!-- Card 1: Deuteronomy 6:4-15 (NKJV) -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          Deuteronomy 6:4-15 (NKJV)
+        </div>
+        <div class="flip-card-back">
+          <p>“Hear, O Israel: The <span class="small-caps">Lord</span> our God, the <span class="small-caps">Lord</span> is one! You shall love the <span class="small-caps">Lord</span> your God with all your heart, with all your soul, and with all your strength.</p>
+          <p>“And these words which I command you today shall be in your heart. You shall teach them diligently to your children, and shall talk of them when you sit in your house, when you walk by the way, when you lie down, and when you rise up. You shall bind them as a sign on your hand, and they shall be as frontlets between your eyes. You shall write them on the doorposts of your house and on your gates.</p>
+          <p>“So it shall be, when the <span class="small-caps">Lord</span> your God brings you into the land of which He swore to your fathers, to Abraham, Isaac, and Jacob, to give you large and beautiful cities which you did not build, houses full of all good things, which you did not fill, hewn-out wells which you did not dig, vineyards and olive trees which you did not plant—when you have eaten and are full— then beware, lest you forget the <span class="small-caps">Lord</span> who brought you out of the land of Egypt, from the house of bondage.</p>
+        </div>
+      </div>
     </div>
-    
-    <script>
-        window.onload = function() {
-            var game = new Chess();
-            var stockfish = new Worker("https://cdnjs.cloudflare.com/ajax/libs/stockfish/15.1.0/stockfish.js");
-            var board = Chessboard('board', {
-                draggable: true,
-                position: 'start',
-                onDrop: function(source, target) {
-                    var move = game.move({ from: source, to: target, promotion: 'q' });
-                    if (move === null) return 'snapback';
-                    board.position(game.fen());
-                }
-            });
-            
-            document.getElementById('flipBoard').addEventListener('click', function() {
-                board.flip();
-            });
-            
-            document.getElementById('startGame').addEventListener('click', function() {
-                game.reset();
-                board.position('start');
-            });
-            
-            document.getElementById('loadPgn').addEventListener('click', function() {
-                var pgn = document.getElementById('pgnInput').value;
-                if (game.load_pgn(pgn)) {
-                    board.position(game.fen());
-                } else {
-                    alert("Invalid PGN. Please check your input.");
-                }
-            });
-            
-            document.getElementById('exportPgn').addEventListener('click', function() {
-                alert("Exported PGN:\n" + game.pgn());
-            });
-            
-            document.getElementById('analyze').addEventListener('click', function() {
-                if (game.game_over()) {
-                    document.getElementById('engineOutput').innerText = "Game over.";
-                    return;
-                }
-                
-                stockfish.postMessage("uci");
-                stockfish.postMessage("position fen " + game.fen());
-                stockfish.postMessage("go depth 15");
-            });
-            
-            stockfish.onmessage = function(event) {
-                if (event.data.includes("bestmove")) {
-                    document.getElementById('engineOutput').innerText = "Stockfish suggests: " + event.data;
-                }
-            };
-        };
-    </script>
+
+    <!-- Card 2: Philippians 4:13 -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          Philippians 4:13
+        </div>
+        <div class="flip-card-back">
+          I can do all things through Christ who strengthens me.
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Psalm 23:1 -->
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          Psalm 23:1
+        </div>
+        <div class="flip-card-back">
+          The <span class="small-caps">Lord</span> is my shepherd; I shall not want.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript to adjust the height of each flip card -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const flipCards = document.querySelectorAll('.flip-card');
+      flipCards.forEach(card => {
+          const inner = card.querySelector('.flip-card-inner');
+          const front = card.querySelector('.flip-card-front');
+          const back = card.querySelector('.flip-card-back');
+          // Temporarily remove absolute positioning to measure natural heights
+          front.style.position = 'relative';
+          back.style.position = 'relative';
+          const frontHeight = front.offsetHeight;
+          const backHeight = back.offsetHeight;
+          // Determine the desired height: the taller face, capped at 600px
+          const desiredHeight = Math.min(Math.max(frontHeight, backHeight), 600);
+          // Set the height on the flip-card-inner so both faces are fixed to that height
+          inner.style.height = desiredHeight + 'px';
+          // Restore absolute positioning for the flip effect
+          front.style.position = 'absolute';
+          back.style.position = 'absolute';
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

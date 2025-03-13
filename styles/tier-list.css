@@ -103,6 +103,7 @@ button {
 .items {
   display: flex;
   align-items: flex-start;
+  /* align-items: center; */
   flex-wrap: wrap;
   flex: 1;
 }
