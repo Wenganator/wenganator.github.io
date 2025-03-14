@@ -64,8 +64,8 @@ footer {
     margin-top: auto;
 }
 
-/* Class dropcap for dropped capitals at the beginning of a paragraph or section */
-.dropcap::first-letter {
+/* Class drop-cap for dropped capitals at the beginning of a paragraph or section */
+.drop-cap::first-letter {
     font-size: 4em; /* Adjust the size as needed */
     font-weight: normal;
     font-style: italic;
@@ -83,6 +83,19 @@ footer {
 /* Class small caps */
 .small-caps {
     font-variant: small-caps;
+}
+
+/* Eliminate text wrapping from buttons */
+.btn-no-wrap {
+    white-space: nowrap;
+}
+
+/* Smaller than Bootstrap's .btn-sm */
+.btn-tiny {
+    padding: 0.25rem 0.5rem; /* Adjust vertical and horizontal padding */
+    font-size: 0.8rem;       /* Smaller text */
+    line-height: 1;          /* Tighter line-height */
+    border-radius: 0.2rem;   /* Slightly smaller border radius */
 }
 
 
