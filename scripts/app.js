@@ -15,8 +15,9 @@ window.addEventListener('DOMContentLoaded', event => {
             // { name: "About", url: "/about.html" },
             { name: "Bible", group: true, children: [
                 { name: "Passage Search", url: "/bible-search.html" },
-                { name: "Bible Memory", url: "/bible-memory.html" },
+                { name: "Memory Tools", url: "/bible-memory.html" },
                 { name: "Verse Vault", url: "/verse-vault.html" },
+                { name: "Bible Board", url: "/bible-board.html" },
             ]},
             { name: "Medicine", url: "/medicine.html" },
             { name: "Music", url: "/music.html" },
