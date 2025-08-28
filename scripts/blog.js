@@ -7,6 +7,13 @@
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
     {
+        title: '<i>Trust</i>: A Review',
+        tag: ['Books', 'Writing'],
+        content: 'A brief review of Hernan Diaz\'s <i>Trust</i>',
+        image: '/assets/images/writing/trust.jpg',
+        url: '/blog/trust-review.html'
+    },
+    {
         title: 'Movie Tier List',
         tag: ['Entertainment', 'Technology'],
         content: 'A thorough, very subjective tier list of movies',

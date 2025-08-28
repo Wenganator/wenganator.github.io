@@ -1,168 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible Verse Flip Cards</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Use CSS columns for masonry layout */
-        .masonry {
-            column-count: 3;  /* Adjust this to control number of columns */
-            column-gap: 16px;
-            padding: 20px;
-        }
-
-        /* Make each card inline-block so they flow within columns */
-        .flip-card {
-            display: inline-block;
-            width: 100%;
-            margin-bottom: 16px;
-            perspective: 1000px;
-        }
-
-        .flip-card-inner {
-            width: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-        }
-
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .flip-card-front,
-        .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            padding: 16px;
-            font-size: 18px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .flip-card-front {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        .flip-card-back {
-            background-color: #fff;
-            transform: rotateY(180deg);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-            text-align: left;
-            overflow-y: auto;
-            max-height: 400px;
-        }
-
-        /* Ensuring the card height adjusts dynamically */
-        .flip-card-inner,
-        .flip-card-front,
-        .flip-card-back {
-            min-height: 50px;
-        }
-
-        /* Small caps styling without causing line breaks */
-        .small-caps {
-            font-variant: small-caps;
-            display: inline; /* Ensures text stays inline */
-        }
-
-        /* Custom scrollbar */
-        .flip-card-back::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .flip-card-back::-webkit-scrollbar-thumb {
-            background: #bbb;
-            border-radius: 10px;
-        }
-
-        .flip-card-back::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>E-Book Reader</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    #pdfCanvas { border: 1px solid #ccc; }
+    .reader-container { position: relative; }
+    .nav-button { position: absolute; top: 50%; transform: translateY(-50%); cursor: pointer; }
+    .nav-left { left: 10px; }
+    .nav-right { right: 10px; }
+  </style>
 </head>
 <body>
-
-    <div class="masonry">
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">Deuteronomy 6:4-15 (NKJV)</div>
-                <div class="flip-card-back">
-                    <p>“Hear, O Israel: The <span class="small-caps">Lord</span> our God, the <span class="small-caps">Lord</span> is one! You shall love the <span class="small-caps">Lord</span> your God with all your heart, with all your soul, and with all your strength.</p>
-                    <p>“And these words which I command you today shall be in your heart. You shall teach them diligently to your children, and shall talk of them when you sit in your house, when you walk by the way, when you lie down, and when you rise up. You shall bind them as a sign on your hand, and they shall be as frontlets between your eyes. You shall write them on the doorposts of your house and on your gates.</p>
-                    <p>“So it shall be, when the <span class="small-caps">Lord</span> your God brings you into the land of which He swore to your fathers, to Abraham, Isaac, and Jacob, to give you large and beautiful cities which you did not build, houses full of all good things, which you did not fill, hewn-out wells which you did not dig, vineyards and olive trees which you did not plant—when you have eaten and are full— then beware, lest you forget the <span class="small-caps">Lord</span> who brought you out of the land of Egypt, from the house of bondage.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">Philippians 4:13</div>
-                <div class="flip-card-back">I can do all things through Christ who strengthens me.</div>
-            </div>
-        </div>
-
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">Psalm 23:1</div>
-                <div class="flip-card-back">The Lord is my shepherd; I shall not want.</div>
-            </div>
-        </div>
-
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">Psalm 23:1</div>
-                <div class="flip-card-back">The Lord is my shepherd; I shall not want.</div>
-            </div>
-        </div>
-
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">Psalm 23:1</div>
-                <div class="flip-card-back">The Lord is my shepherd; I shall not want.</div>
-            </div>
-        </div>
-
+  <div class="container">
+    <!-- Book Selection -->
+    <div class="form-group">
+      <label for="bookSelect">Select a book:</label>
+      <select id="bookSelect" class="form-control">
+        <option value="/assets/pdf/Scripture-Memorization.pdf">Book 1</option>
+        <option value="book2.pdf">Book 2</option>
+        <!-- Add more options -->
+      </select>
     </div>
+    
+    <!-- Navigation Options -->
+    <div class="form-group">
+      <label>Navigation Orientation:</label>
+      <div>
+        <input type="radio" name="navOrientation" id="vertical" value="vertical" checked>
+        <label for="vertical">Vertical</label>
+        <input type="radio" name="navOrientation" id="horizontal" value="horizontal">
+        <label for="horizontal">Horizontal</label>
+      </div>
+    </div>
+    
+    <!-- Page Jump -->
+    <div class="form-group">
+      <label for="pageInput">Jump to page:</label>
+      <input type="number" id="pageInput" class="form-control" min="1">
+      <button id="jumpButton" class="btn btn-primary mt-2">Go</button>
+    </div>
+    
+    <!-- PDF Viewer -->
+    <div class="reader-container">
+      <canvas id="pdfCanvas"></canvas>
+      <!-- Navigation Arrows -->
+      <div class="nav-button nav-left" id="prevPage">&larr;</div>
+      <div class="nav-button nav-right" id="nextPage">&rarr;</div>
+    </div>
+    
+    <!-- Bookmark Panel -->
+    <div id="bookmarkPanel" class="mt-4">
+      <h5>Bookmarks</h5>
+      <ul id="bookmarkList" class="list-group"></ul>
+    </div>
+  </div>
+  
+  <!-- Include PDF.js Library -->
+  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <!-- Your custom JS file -->
+  <script>
+    // Configure PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
 
-    <!-- JavaScript to adjust the height of each flip card -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-        const flipCards = document.querySelectorAll('.flip-card');
-        flipCards.forEach(card => {
-            const inner = card.querySelector('.flip-card-inner');
-            const front = card.querySelector('.flip-card-front');
-            const back = card.querySelector('.flip-card-back');
-            // Temporarily remove absolute positioning to measure natural heights
-            front.style.position = 'relative';
-            back.style.position = 'relative';
-            const frontHeight = front.offsetHeight;
-            const backHeight = back.offsetHeight;
-            // Determine the desired height: the taller face, capped at 600px
-            const desiredHeight = Math.min(Math.max(frontHeight, backHeight), 600);
-            // Set the height on the flip-card-inner so both faces are fixed to that height
-            inner.style.height = desiredHeight + 'px';
-            // Restore absolute positioning for the flip effect
-            front.style.position = 'absolute';
-            back.style.position = 'absolute';
-        });
-        });
-    </script>
+let pdfDoc = null;
+let currentPage = 1;
+let totalPages = 0;
+const canvas = document.getElementById('pdfCanvas');
+const ctx = canvas.getContext('2d');
+const scale = 1.5; // Adjust for your needs
 
+// Load a PDF document
+function loadPDF(url) {
+  pdfjsLib.getDocument(url).promise.then(doc => {
+    pdfDoc = doc;
+    totalPages = doc.numPages;
+    currentPage = 1;
+    renderPage(currentPage);
+  });
+}
 
+// Render a page
+function renderPage(pageNumber) {
+  pdfDoc.getPage(pageNumber).then(page => {
+    const viewport = page.getViewport({ scale: scale });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    const renderContext = {
+      canvasContext: ctx,
+      viewport: viewport,
+    };
+    page.render(renderContext);
+  });
+}
+
+// Event listeners for navigation
+document.getElementById('prevPage').addEventListener('click', () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderPage(currentPage);
+  }
+});
+document.getElementById('nextPage').addEventListener('click', () => {
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderPage(currentPage);
+  }
+});
+
+// Handle page jump
+document.getElementById('jumpButton').addEventListener('click', () => {
+  const pageInput = document.getElementById('pageInput').value;
+  const pageNumber = parseInt(pageInput);
+  if (pageNumber >= 1 && pageNumber <= totalPages) {
+    currentPage = pageNumber;
+    renderPage(currentPage);
+  }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  // For both vertical and horizontal navigation, adapt based on selected orientation
+  const navOrientation = document.querySelector('input[name="navOrientation"]:checked').value;
+  if ((navOrientation === 'vertical' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) ||
+      (navOrientation === 'horizontal' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))) {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      if (currentPage > 1) { currentPage--; renderPage(currentPage); }
+    } else {
+      if (currentPage < totalPages) { currentPage++; renderPage(currentPage); }
+    }
+  }
+});
+
+// Example: Book selection
+document.getElementById('bookSelect').addEventListener('change', (e) => {
+  loadPDF(e.target.value);
+});
+
+// Initialize with first book
+window.addEventListener('load', () => {
+  loadPDF(document.getElementById('bookSelect').value);
+});
+
+// Bookmarking functions (saving and retrieving from local storage)
+const storageKey = 'ebookBookmarks_YourUniqueAppName';
+
+function saveBookmark(book, page) {
+  const bookmarks = JSON.parse(localStorage.getItem(storageKey)) || {};
+  bookmarks[book] = bookmarks[book] || [];
+  if (!bookmarks[book].includes(page)) {
+    bookmarks[book].push(page);
+    localStorage.setItem(storageKey, JSON.stringify(bookmarks));
+    updateBookmarkList(book);
+  }
+}
+
+function updateBookmarkList(book) {
+  const bookmarks = JSON.parse(localStorage.getItem(storageKey)) || {};
+  const list = document.getElementById('bookmarkList');
+  list.innerHTML = '';
+  (bookmarks[book] || []).forEach(page => {
+    const li = document.createElement('li');
+    li.textContent = `Page ${page}`;
+    li.className = 'list-group-item';
+    li.addEventListener('click', () => {
+      currentPage = page;
+      renderPage(currentPage);
+    });
+    list.appendChild(li);
+  });
+}
+
+// Example: Add bookmark button (you could place this on your UI)
+const bookmarkBtn = document.createElement('button');
+bookmarkBtn.textContent = 'Bookmark this page';
+bookmarkBtn.className = 'btn btn-secondary mt-2';
+bookmarkBtn.addEventListener('click', () => {
+  const book = document.getElementById('bookSelect').value;
+  saveBookmark(book, currentPage);
+});
+document.querySelector('.container').appendChild(bookmarkBtn);
+
+  </script>
 </body>
 </html>

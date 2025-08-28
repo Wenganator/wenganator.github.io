@@ -25,7 +25,7 @@ const genres = {
         { cover: 'assets/images/books/station-eleven.jpg', title: 'Station Eleven', author: 'Emily St. John Mandel', notes: 'Notes for Fiction Book 2' },
         { cover: 'assets/images/books/enders-game.jpg', title: 'Ender\'s Game', author: 'Orson Scott Card', notes: 'Notes for Fiction Book 3' },
         { cover: 'assets/images/books/sherlock-holmes.jpg', title: 'The Adventures of Sherlock Holmes', author: 'Sir Arthur Conan Doyle', notes: 'Notes for Fiction Book 4' },
-        // { cover: 'placeholder.jpg', title: 'Fiction Book 5', author: 'Author J', notes: 'Notes for Fiction Book 5' },
+        { cover: 'assets/images/writing/trust.jpg', title: 'Trust', author: 'Hernan Diaz', notes: 'Notes for Fiction Book 5' },
         // { cover: 'placeholder.jpg', title: 'Fiction Book 6', author: 'Author K', notes: 'Notes for Fiction Book 6' },
         // { cover: 'placeholder.jpg', title: 'Fiction Book 7', author: 'Author L', notes: 'Notes for Fiction Book 7' },
         // { cover: 'placeholder.jpg', title: 'Fiction Book 8', author: 'Author M', notes: 'Notes for Fiction Book 8' }
