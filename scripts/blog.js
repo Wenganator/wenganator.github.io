@@ -7,10 +7,17 @@
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
     {
+        title: '<i>Never Let Me Go</i>: A Review',
+        tag: ['Books', 'Writing'],
+        content: 'A brief review of Kazuo Ishiguro\'s <i>Never Let Me Go</i>',
+        image: '/assets/images/blog/never-let-me-go.jpg',
+        url: '/blog/never-let-me-go-review.html'
+    },
+    {
         title: '<i>Trust</i>: A Review',
         tag: ['Books', 'Writing'],
         content: 'A brief review of Hernan Diaz\'s <i>Trust</i>',
-        image: '/assets/images/writing/trust.jpg',
+        image: '/assets/images/blog/trust.jpg',
         url: '/blog/trust-review.html'
     },
     {
