@@ -7,6 +7,13 @@
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
     {
+        title: 'Chocolate Chip Cookies Recipe',
+        tag: ['Cooking'],
+        content: 'A delicious recipe for classic chocolate chip cookies.',
+        image: '/assets/images/blog/chocolate-chip-cookie.png',
+        url: '/blog/chocolate-chip-cookies-recipe.html'
+    },
+    {
         title: '<i>Never Let Me Go</i>: A Review',
         tag: ['Books', 'Writing'],
         content: 'A brief review of Kazuo Ishiguro\'s <i>Never Let Me Go</i>',
