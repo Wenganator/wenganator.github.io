@@ -13,7 +13,7 @@ const genres = {
     Nonfiction: [
         { cover: 'assets/images/books/in-cold-blood.jpg', title: 'In Cold Blood', author: 'Truman Capote', notes: 'Notes for Nonfiction Book 1' },
         { cover: 'assets/images/books/thinking-fast-and-slow.jpg', title: 'Thinking, Fast and Slow', author: 'Daniel Kahneman', notes: 'Notes for Nonfiction Book 2' },
-        // { cover: 'placeholder.jpg', title: 'Nonfiction Book 3', author: 'Author C', notes: 'Notes for Nonfiction Book 3' },
+        { cover: 'assets/images/books/the-emperor-of-all-maladies.jpg', title: 'The Emperor of All Maladies: A Biography of Cancer', author: 'Siddhartha Mukherjee', notes: 'Notes for Nonfiction Book 3' },
         // { cover: 'placeholder.jpg', title: 'Nonfiction Book 4', author: 'Author D', notes: 'Notes for Nonfiction Book 4' },
         // { cover: 'placeholder.jpg', title: 'Nonfiction Book 5', author: 'Author E', notes: 'Notes for Nonfiction Book 5' },
         // { cover: 'placeholder.jpg', title: 'Nonfiction Book 6', author: 'Author F', notes: 'Notes for Nonfiction Book 6' },
