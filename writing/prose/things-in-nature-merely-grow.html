@@ -46,9 +46,11 @@
             h4 {font-size: 125%;}
             h5 {font-size: 100%;}
 
+            /* set maximum text width for large screens, automatically fill available space on mobile with small padding on sides */
             .text {
-                margin-left: 25%;
-                margin-right: 25%;   
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 0 1rem;
             }
 
             /* remove spacing above and below paragraphs tagged <p> */
@@ -62,7 +64,15 @@
                 text-indent: 2em;
             }
 
-            /* Contents navigation */
+            /* responsive images that resize based on screen width */
+            .responsive-img {
+                display: block;
+                margin: 0 auto;
+                max-width: 100%;
+                height: auto;
+            }
+
+            /* contents navigation */
             .navigate {
                 color: darkgray;
             }
@@ -87,7 +97,7 @@
             <!-- Theme selector buttons (see theme-buttons.html) -->
             <div id="theme-buttons-container"></div>
 
-            <img src="/assets/images/writing/things-in-nature-merely-grow.jpg" width="200" style="display: block; margin: 0 auto;">
+            <img src="/assets/images/writing/things-in-nature-merely-grow.jpg" width="250" class="responsive-img">
 
             <div class="text">
 

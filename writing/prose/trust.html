@@ -49,10 +49,11 @@
             h5 {font-size: 100%;}
 
 
-            /* margin control for text */
+            /* set maximum text width for large screens, automatically fill available space on mobile with small padding on sides */
             .text {
-                margin-left: 20%;
-                margin-right: 20%;   
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 0 1rem;
             }
 
 
@@ -62,7 +63,16 @@
             }
 
 
-            /* Contents navigation */
+            /* responsive images that resize based on screen width */
+            .responsive-img {
+                display: block;
+                margin: 0 auto;
+                max-width: 100%;
+                height: auto;
+            }
+
+
+            /* contents navigation */
             .navigate {
                 color: darkgray;
             }
@@ -94,7 +104,7 @@
             <!-- Theme selector buttons (see theme-buttons.html) -->
             <div id="theme-buttons-container"></div>
 
-            <img src="/assets/images/writing/trust.jpg" width="200" style="display: block; margin: 0 auto;">
+            <img src="/assets/images/writing/trust.jpg" width="250" class="responsive-img">
 
             <div class="text">
 
