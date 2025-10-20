@@ -45,97 +45,105 @@
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
 
+        <div class="content">            
+          <div class="py-3 rounded" style="background-color: rgba(0, 0, 0, 0.6)">
+
         
-        <div class="container mt-5">
-            <h1 class="text-center">Medicine Resources</h1>
+            <div class="container mt-5">
+                <h1 class="text-center">Medicine Resources</h1>
+                <br><br>
 
-            <!-- Bootstrap Carousel -->
-            <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
-              <div class="carousel-inner">
+                <!-- Bootstrap Carousel -->
+                <div id="documentCarousel" class="carousel slide" data-bs-ride="carousel">
+                  <div class="carousel-inner">
 
-                <!-- Slide 1 -->
-                <div class="carousel-item active"> <!-- First slide is class "carousel-item active"; rest are "carousel-item" -->
-                    <iframe 
-                      src="https://drive.google.com/file/d/1dnF81DyKaE4my8ibmV9L0ae7yL5LUgaq/preview" 
-                      class="d-block w-100" 
-                      allowfullscreen>
-                    </iframe>
-                    <button class="btn btn-primary mt-2 d-block mx-auto" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#documentModal" 
-                            data-doc-url="https://drive.google.com/file/d/1dnF81DyKaE4my8ibmV9L0ae7yL5LUgaq/preview">
-                      View Full Document
-                    </button>
+                    <!-- Slide 1 -->
+                    <div class="carousel-item active"> <!-- First slide is class "carousel-item active"; rest are "carousel-item" -->
+                        <iframe 
+                          src="https://drive.google.com/file/d/1dnF81DyKaE4my8ibmV9L0ae7yL5LUgaq/preview" 
+                          class="d-block w-100" 
+                          allowfullscreen>
+                        </iframe>
+                        <button class="btn btn-primary mt-2 d-block mx-auto" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#documentModal" 
+                                data-doc-url="https://drive.google.com/file/d/1dnF81DyKaE4my8ibmV9L0ae7yL5LUgaq/preview">
+                          View Full Document
+                        </button>
+                      </div>
+                    
+                    <!-- Slide 2 -->
+                    <div class="carousel-item">
+                      <iframe 
+                        src="https://drive.google.com/file/d/1d9p9C4xxgH3232tYpNn8ghI36rfzFyM8/preview" 
+                        class="d-block w-100" 
+                        allowfullscreen>
+                      </iframe>
+                      <button class="btn btn-primary mt-2 d-block mx-auto" 
+                              data-bs-toggle="modal" 
+                              data-bs-target="#documentModal" 
+                              data-doc-url="https://drive.google.com/file/d/1d9p9C4xxgH3232tYpNn8ghI36rfzFyM8/preview">
+                        View Full Document
+                      </button>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="carousel-item">
+                      <iframe 
+                        src="https://drive.google.com/file/d/1zAmR85p3lxOgUNSkRTnnqRlsmOBJfPUR/preview" 
+                        class="d-block w-100" 
+                        allowfullscreen>
+                      </iframe>
+                      <button class="btn btn-primary mt-2 d-block mx-auto" 
+                              data-bs-toggle="modal" 
+                              data-bs-target="#documentModal" 
+                              data-doc-url="https://drive.google.com/file/d/1zAmR85p3lxOgUNSkRTnnqRlsmOBJfPUR/preview">
+                        View Full Document
+                      </button>
+                    </div>
+                    
+                    <!-- Add more slides as needed -->
+
                   </div>
-                
-                <!-- Slide 2 -->
-                <div class="carousel-item">
-                  <iframe 
-                    src="https://drive.google.com/file/d/1d9p9C4xxgH3232tYpNn8ghI36rfzFyM8/preview" 
-                    class="d-block w-100" 
-                    allowfullscreen>
-                  </iframe>
-                  <button class="btn btn-primary mt-2 d-block mx-auto" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#documentModal" 
-                          data-doc-url="https://drive.google.com/file/d/1d9p9C4xxgH3232tYpNn8ghI36rfzFyM8/preview">
-                    View Full Document
+              
+                  <!-- Carousel Controls -->
+                  <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
                   </button>
                 </div>
+            </div>
 
-                <!-- Slide 3 -->
-                <div class="carousel-item">
-                  <iframe 
-                    src="https://drive.google.com/file/d/1zAmR85p3lxOgUNSkRTnnqRlsmOBJfPUR/preview" 
-                    class="d-block w-100" 
-                    allowfullscreen>
-                  </iframe>
-                  <button class="btn btn-primary mt-2 d-block mx-auto" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#documentModal" 
-                          data-doc-url="https://drive.google.com/file/d/1zAmR85p3lxOgUNSkRTnnqRlsmOBJfPUR/preview">
-                    View Full Document
-                  </button>
+            <!-- Modal for Full-Size Document Viewer -->
+            <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="documentModalLabel">Full Document Viewer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
-                <!-- Add more slides as needed -->
+                <div class="modal-body">
+                    <iframe src="" id="documentViewer" frameborder="0" allowfullscreen></iframe>
+                </div>
+                </div>
+            </div>
+            </div>
 
-              </div>
+
+            <!-- Antibiotics: BugDrugDX -->
+            <div class="container mt-5 mb-5">
+                <h3>Antibiotics</h3>
+                <p><a href="/abx/BugDrugDX.html">BugDrugDX</a></p>
+                <p><a href="/abx/TMC-antimicrobial-treatment-and-dosing-guide.html">TMC Antimicrobial Treatment and Dosing Guide</a></p>
+                <p><a href="/blog/antibiotics.html">[Blog] A Practical Guide to Antibiotics</a></p>
+            </div>
+
           
-              <!-- Carousel Controls -->
-              <button class="carousel-control-prev" type="button" data-bs-target="#documentCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-              </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#documentCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-              </button>
-            </div>
-        </div>
-
-        <!-- Modal for Full-Size Document Viewer -->
-        <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="documentModalLabel">Full Document Viewer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <iframe src="" id="documentViewer" frameborder="0" allowfullscreen></iframe>
-            </div>
-            </div>
-        </div>
-        </div>
-
-
-        <!-- Antibiotics: BugDrugDX -->
-        <div class="container mt-5 mb-5">
-            <h3>Antibiotics</h3>
-            <p><a href="/abx/BugDrugDX.html">BugDrugDX</a></p>
-            <p><a href="/abx/TMC-antimicrobial-treatment-and-dosing-guide.html">TMC Antimicrobial Treatment and Dosing Guide</a></p>
-            <p><a href="/blog/antibiotics.html">[Blog] A Practical Guide to Antibiotics</a></p>
+          </div>
         </div>
 
 
