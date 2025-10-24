@@ -16,6 +16,11 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+/* Set font for main content (not including header, footer) */
+main {
+    font-family: 'Lora', 'Times New Roman', Times, serif;
+}
+
 
 
 /* Styling for writing.html */
