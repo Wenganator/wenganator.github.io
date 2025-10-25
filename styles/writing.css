@@ -112,3 +112,15 @@ main {
 .btn:hover {
     opacity: 0.9;
 }
+
+.btn-day-bg {
+    background-color: #87ceeb; /* sky blue */
+    color: #ffdf00;
+    border-color: #ffdf00;
+}
+
+.btn-night-bg {
+    background-color: #191970; /* midnight blue */
+    color: #c7d6cf;
+    border-color: #c7d6cf;
+}

@@ -7,6 +7,11 @@
 // Scripts for buttons to change theme
 const changeTheme = (theme) => {
     const root = document.documentElement;
+    const body = document.body;
+
+    // Clear any background image and stored background mode
+    body.style.backgroundImage = "";
+    localStorage.removeItem('selectedBackground');
     
     // Save the selected theme to localStorage
     localStorage.setItem('selectedTheme', theme);
@@ -36,10 +41,42 @@ const changeTheme = (theme) => {
     }
 };
 
-// Apply the saved theme on page load
+// Function to change background image (day/night)
+const changeBackground = (mode) => {
+    const body = document.body;
+    const root = document.documentElement;
+
+    // Clear any saved theme color (so this takes priority)
+    localStorage.removeItem('selectedTheme');
+
+    if (mode === 'day') {
+        body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/assets/images/landscape-day-sky-2.png')";
+        root.style.setProperty("--background-color", "transparent");
+        root.style.setProperty("--text-color", "#ffffff");
+    } else if (mode === 'night') {
+        body.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/assets/images/landscape-night-sky-2.png')";
+        root.style.setProperty("--background-color", "transparent");
+        root.style.setProperty("--text-color", "#ffffff");
+    }
+
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundRepeat = 'no-repeat';
+    body.style.backgroundAttachment = 'fixed';
+    body.style.backgroundPosition = 'center';
+
+    // Save the chosen background
+    localStorage.setItem('selectedBackground', mode);
+};
+
+// Apply the previously selected theme or background on page load
 window.addEventListener('DOMContentLoaded', () => {
+    const savedBackground = localStorage.getItem('selectedBackground');
     const savedTheme = localStorage.getItem('selectedTheme');
-    if (savedTheme) {
+
+    // Priority: background > theme
+    if (savedBackground) {
+        changeBackground(savedBackground);
+    } else if (savedTheme) {
         changeTheme(savedTheme);
     }
 });
