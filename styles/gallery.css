@@ -19,6 +19,7 @@
     grid-template-areas: 
     "img1 img2 img3 img4"
     "img5 img6 img3 img7"
+    "img8 img8 img9 img9"
     ;
 }
 
@@ -70,6 +71,14 @@
 #index-gallery .img7 {
     grid-area: img7;
     background-image: url("/assets/images/gallery/thumbs/img7.jpg");
+}
+#index-gallery .img8 {
+    grid-area: img8;
+    background-image: url("/assets/images/gallery/thumbs/img8.jpg");
+}
+#index-gallery .img9 {
+    grid-area: img9;
+    background-image: url("/assets/images/gallery/thumbs/img9.jpg");
 }
 
 
