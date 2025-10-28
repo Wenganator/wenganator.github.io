@@ -1,80 +1,595 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scripture Display</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        .masonry {
-            column-count: 3;
-            column-gap: 1rem;
-        }
-        .flip-card {
-            background-color: transparent;
-            width: 100%;
-            height: 200px;
-            perspective: 1000px;
-            margin-bottom: 1rem;
-        }
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .flip-card:hover .flip-card-inner, .flip-card:focus-within .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
-        .flip-card-front {
-            background: #f8f9fa;
-            font-weight: bold;
-        }
-        .flip-card-back {
-            background: #fff;
-            transform: rotateY(180deg);
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gale–Shapley Interactive Visualizer — Fixed</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Sortable.js (UMD build — exposes global `Sortable`) -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+  <style>
+    :root{ --box-w:120px; --box-h:70px; }
+    body { background:#f4f6fb; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .top-bar { margin: 18px 0; }
+    .pane { background: #fff; border-radius: 10px; padding: 12px; box-shadow: 0 6px 18px rgba(30,40,60,.06); }
+    .prefs-column { max-height: 420px; overflow:auto; padding:8px; }
+    .pref-list { list-style:none; padding:6px; margin:6px 0; border-radius:8px; background:#fbfdff; }
+    .pref-item { padding:6px 8px; border-radius:6px; margin:4px 0; background: #fff; border:1px solid #e6eefc; cursor:grab; }
+    .entity { width:var(--box-w); height:var(--box-h); border-radius:10px; background:#fff; display:flex;flex-direction:column;align-items:center;justify-content:center; font-weight:600; box-shadow:0 4px 10px rgba(12,40,90,0.06); transition: transform .25s, background .25s, border-color .25s; border:2px solid transparent; }
+    .entity.free { background:#fff; border-color:#d0d7e8; }
+    .entity.active { background:#e6f0ff; transform: scale(1.05); border-color:#3b82f6; }
+    .entity.matched { background:#e6fff3; border-color:#10b981; transform:scale(1.03) }
+    .entity.rejected { background:#fff1f2; border-color:#ef4444; transform:scale(1.02) }
+    .visual-row { display:flex; gap:30px; align-items:center; justify-content:center; padding:18px 6px; }
+    .visual-column { display:flex; flex-direction:column; gap:12px; align-items:center; }
+    .svg-overlay { position:absolute; left:0; top:0; pointer-events:none; }
+    .control-btn { min-width:88px; }
+    .log-box { height:560px; overflow:auto; background:#0b1220; color:#e6eefc; padding:10px; border-radius:8px; font-family: monospace; font-size:0.9rem; }
+    .small-input { width:110px; display:inline-block; }
+    .label-muted { color:#6b7280; font-size:0.9rem; }
+    @media(max-width:980px){ .visual-row { flex-direction:column; gap:12px; } }
+  </style>
 </head>
 <body>
-    <div class="container py-5">
-        <h2 class="text-center mb-4">Bible Verses</h2>
-        <div class="masonry">
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">John 3:16</div>
-                    <div class="flip-card-back">For God so loved the world that he gave his only Son...</div>
-                </div>
-            </div>
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">Philippians 4:13</div>
-                    <div class="flip-card-back">I can do all things through Christ who strengthens me.</div>
-                </div>
-            </div>
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">Psalm 23:1</div>
-                    <div class="flip-card-back">The Lord is my shepherd; I shall not want.</div>
-                </div>
-            </div>
-        </div>
+
+<div class="container-fluid px-4 py-4">
+  <h2 class="mb-2">Gale–Shapley Interactive Visualizer</h2>
+  <p class="text-muted mb-3">Drag to reorder preferences, rename participants, pick strategies and watch proposals animate. Use the log at right to follow every step.</p>
+
+  <div class="row top-bar g-3 mb-3">
+    <div class="col-auto">
+      <div class="input-group">
+        <label class="input-group-text">Applicants</label>
+        <select id="nApplicants" class="form-select small-input">
+          <option value="3" selected>3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+        </select>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="col-auto">
+      <div class="input-group">
+        <label class="input-group-text">Programs</label>
+        <select id="nPrograms" class="form-select small-input">
+          <option value="3" selected>3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-auto">
+      <button id="generateBtn" class="btn btn-outline-primary">Generate</button>
+      <button id="randomizeBtn" class="btn btn-outline-secondary ms-2">Randomize Prefs</button>
+    </div>
+
+    <div class="col-auto ms-auto">
+      <button id="playBtn" class="btn btn-primary control-btn">Play ▶</button>
+      <button id="stepBtn" class="btn btn-outline-primary control-btn">Step</button>
+      <button id="pauseBtn" class="btn btn-outline-warning control-btn">Pause ■</button>
+      <button id="resetBtn" class="btn btn-outline-danger control-btn">Reset</button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <div class="pane">
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Applicants</h6>
+            <div id="appPrefsArea" class="prefs-column"></div>
+          </div>
+
+          <div class="col-md-6">
+            <h6>Programs & Strategies</h6>
+            <div id="progPrefsArea" class="prefs-column"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="pane" style="position:relative; height:640px;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <span class="label-muted">Animation speed (ms/step):</span>
+            <input id="speedInput" type="number" class="form-control d-inline-block ms-2" value="700" style="width:120px;">
+          </div>
+          <div>
+            <span class="label-muted me-2">Strategy preview:</span>
+            <button id="applyStrategyBtn" class="btn btn-outline-success btn-sm">Apply Chosen Strategy</button>
+          </div>
+        </div>
+
+        <div id="visualContainer" style="position:relative; height:560px; border-radius:10px; background: linear-gradient(180deg,#ffffff,#f7fbff); padding:12px;">
+          <svg id="svg" class="svg-overlay" width="100%" height="100%" style="position:absolute; left:0; top:0; z-index:1;"></svg>
+          <div id="visualRow" class="visual-row" style="position:relative; z-index:2;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-3">
+    <div class="col-lg-8">
+      <div class="pane">
+        <h6>Notes & Controls</h6>
+        <p class="small text-muted">Rename participants by changing the name fields. Drag preference items to reorder. Choose a strategy for any program. Click <strong>Apply Chosen Strategy</strong> to preview changes before running. Use <strong>Step</strong> to advance one proposal at a time or <strong>Play</strong> to animate.</p>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="pane">
+        <h6>Event Log</h6>
+        <div id="log" class="log-box"></div>
+        <div class="mt-2 text-end"><small class="text-muted">Log auto-scrolls as events appear.</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* -------------
+   Wait until DOM ready
+   ------------- */
+document.addEventListener("DOMContentLoaded", ()=>{
+  try {
+    mainInit();
+  } catch(err){
+    console.error("Initialization error:", err);
+    const log = document.getElementById("log");
+    log.innerHTML += "<div style='color:#ffb4b4'>Init error — see console</div>";
+  }
+});
+
+/* -------------
+   Main code (same as earlier, shifted into function)
+   ------------- */
+function mainInit(){
+  // Globals & helpers
+  let applicants = [];
+  let programs = [];
+  let nApplicants = 3, nPrograms = 3;
+  let applicantPrefs = {}, programPrefs = {}, programPrefsCurrent = {};
+  let programStrategy = {}, nameMap = { applicants: {}, programs: {} };
+  let sortableInstances = [];
+  const MAX_N = 8;
+  let playing=false, paused=false, stepGenerator=null, currentMatches={}, svgEl=null, visualRow=null;
+
+  function $(id){ return document.getElementById(id); }
+  function logEvent(text){
+    const log = $("log");
+    const t = new Date().toLocaleTimeString();
+    const entry = document.createElement("div");
+    entry.innerHTML = `<span style="color:#9fb6ff">[${t}]</span> ${text}`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+  }
+  function deepCopy(o){ return JSON.parse(JSON.stringify(o)); }
+  function makeDefaultLabels(n,prefix){ const out=[]; for(let i=1;i<=n;i++) out.push(prefix+i); return out; }
+  function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+
+  /* Generate / render */
+  function generateParticipants(){
+    nApplicants = parseInt($("nApplicants").value);
+    nPrograms = parseInt($("nPrograms").value);
+    if(nApplicants>MAX_N) nApplicants=MAX_N;
+    if(nPrograms>MAX_N) nPrograms=MAX_N;
+    applicants = makeDefaultLabels(nApplicants,"A");
+    programs = makeDefaultLabels(nPrograms,"P");
+    nameMap = { applicants:{}, programs:{} };
+    applicants.forEach(a=>nameMap.applicants[a]=a);
+    programs.forEach(p=>nameMap.programs[p]=p);
+
+    applicantPrefs = {}; programPrefs = {};
+    for(const a of applicants) applicantPrefs[a] = [...programs];
+    for(const p of programs) programPrefs[p] = [...applicants];
+
+    programPrefsCurrent = deepCopy(programPrefs);
+    programStrategy = {}; programs.forEach(p=>programStrategy[p]="truthful");
+    renderPrefsEditors();
+    createVisualBoxes();
+    resetState();
+    logEvent(`Generated ${nApplicants} applicants and ${nPrograms} programs.`);
+  }
+
+  function renderPrefsEditors(){
+    // destroy old sortables if any
+    sortableInstances.forEach(s=> s && s.destroy && s.destroy());
+    sortableInstances = [];
+    const appArea = $("appPrefsArea"), progArea = $("progPrefsArea");
+    appArea.innerHTML = ""; progArea.innerHTML = "";
+
+    // applicants
+    for(const a of applicants){
+      const wrapper = document.createElement("div");
+      wrapper.className = "mb-3";
+      wrapper.innerHTML = `
+        <div class="d-flex align-items-center mb-1">
+          <input data-type="app-name" data-id="${a}" class="form-control form-control-sm me-2" value="${nameMap.applicants[a]}" />
+          <button class="btn btn-sm btn-outline-secondary edit-reset" data-id="${a}">Reset</button>
+        </div>
+        <ul id="list-${a}" class="pref-list"></ul>
+      `;
+      appArea.appendChild(wrapper);
+      const ul = wrapper.querySelector(`#list-${a}`);
+      for(const p of applicantPrefs[a]) {
+        const li = document.createElement("li");
+        li.className = "pref-item"; li.dataset.value = p; li.innerText = nameMap.programs[p]||p;
+        ul.appendChild(li);
+      }
+      const s = Sortable.create(ul, { animation: 150, draggable: ".pref-item" });
+      sortableInstances.push(s);
+    }
+
+    // programs
+    for(const p of programs){
+      const wrapper = document.createElement("div");
+      wrapper.className = "mb-3";
+      wrapper.innerHTML = `
+        <div class="d-flex align-items-center mb-1">
+          <input data-type="prog-name" data-id="${p}" class="form-control form-control-sm me-2" value="${nameMap.programs[p]}" />
+          <select id="strat-${p}" class="form-select form-select-sm me-2" style="width:170px;">
+            <option value="truthful">Truthful</option>
+            <option value="random">Random</option>
+            <option value="greedy">Greedy</option>
+            <option value="strategic">Strategic (single-swap)</option>
+          </select>
+          <button class="btn btn-sm btn-outline-secondary strat-preview" data-id="${p}">Preview</button>
+        </div>
+        <ul id="list-${p}" class="pref-list"></ul>
+      `;
+      progArea.appendChild(wrapper);
+      const ul = wrapper.querySelector(`#list-${p}`);
+      for(const a of programPrefs[p]){
+        const li = document.createElement("li");
+        li.className = "pref-item"; li.dataset.value = a; li.innerText = nameMap.applicants[a]||a;
+        ul.appendChild(li);
+      }
+      const s = Sortable.create(ul, { animation: 150, draggable: ".pref-item" });
+      sortableInstances.push(s);
+    }
+
+    // handlers
+    document.querySelectorAll('input[data-type="app-name"]').forEach(inp=>{
+      inp.addEventListener("change", e=>{
+        const id=e.target.dataset.id; nameMap.applicants[id]= e.target.value || id; refreshPrefLabels(); createVisualBoxes();
+      });
+    });
+    document.querySelectorAll('input[data-type="prog-name"]').forEach(inp=>{
+      inp.addEventListener("change", e=>{
+        const id=e.target.dataset.id; nameMap.programs[id]= e.target.value || id; refreshPrefLabels(); createVisualBoxes();
+      });
+    });
+    document.querySelectorAll('.edit-reset').forEach(btn=> btn.addEventListener("click", e=>{
+      const id = e.target.dataset.id; applicantPrefs[id] = [...programs]; renderPrefsEditors();
+    }));
+    document.querySelectorAll('.strat-preview').forEach(btn=> btn.addEventListener("click", e=>{
+      previewStrategyFor(e.target.dataset.id);
+    }));
+    for(const p of programs){
+      const sel = $(`strat-${p}`);
+      sel.value = programStrategy[p]||"truthful";
+      sel.addEventListener("change", (ev)=>{ programStrategy[p]=ev.target.value; });
+    }
+  }
+
+  function refreshPrefLabels(){
+    for(const a of applicants){
+      const ul = $(`list-${a}`); if(!ul) continue;
+      Array.from(ul.children).forEach(li=>{ const pid = li.dataset.value; li.innerText = nameMap.programs[pid] || pid; });
+    }
+    for(const p of programs){
+      const ul = $(`list-${p}`); if(!ul) continue;
+      Array.from(ul.children).forEach(li=>{ const aid = li.dataset.value; li.innerText = nameMap.applicants[aid] || aid; });
+    }
+  }
+
+  function createVisualBoxes(){
+    visualRow = $("visualRow"); svgEl = $("svg");
+    visualRow.innerHTML = "";
+    const leftCol = document.createElement("div"); leftCol.className="visual-column"; leftCol.style.minWidth="200px";
+    applicants.forEach(a=>{ const div=document.createElement("div"); div.className="entity free"; div.id=`vis-${a}`; div.innerHTML=`<div>${nameMap.applicants[a]||a}</div><div style="font-size:0.8rem;color:#6b7280" id="vis-${a}-sub">Free</div>`; leftCol.appendChild(div); });
+    const rightCol = document.createElement("div"); rightCol.className="visual-column"; rightCol.style.minWidth="200px";
+    programs.forEach(p=>{ const div=document.createElement("div"); div.className="entity free"; div.id=`vis-${p}`; div.innerHTML=`<div>${nameMap.programs[p]||p}</div><div style="font-size:0.8rem;color:#6b7280" id="vis-${p}-sub">Free</div>`; rightCol.appendChild(div); });
+    visualRow.appendChild(leftCol);
+    const centerCol = document.createElement("div"); centerCol.style.display="flex"; centerCol.style.flexDirection="column"; centerCol.style.alignItems="center"; centerCol.style.justifyContent="center"; centerCol.style.width="140px"; centerCol.innerHTML=`<div style="font-weight:600; color:#64748b;">Proposals →</div><div style="height:20px"></div>`;
+    visualRow.appendChild(centerCol); visualRow.appendChild(rightCol);
+
+    // SVG defs
+    svgEl.innerHTML = "";
+    const ns = "http://www.w3.org/2000/svg";
+    const defs = document.createElementNS(ns,"defs");
+    const marker = document.createElementNS(ns,"marker");
+    marker.setAttribute("id","arrow");
+    marker.setAttribute("markerWidth","8");
+    marker.setAttribute("markerHeight","8");
+    marker.setAttribute("refX","6");
+    marker.setAttribute("refY","3");
+    marker.setAttribute("orient","auto");
+    const path = document.createElementNS(ns,"path");
+    path.setAttribute("d","M0,0 L6,3 L0,6 L2,3 z");
+    path.setAttribute("fill","#0366d6");
+    marker.appendChild(path);
+    defs.appendChild(marker);
+    svgEl.appendChild(defs);
+  }
+
+  // helper: refresh DOM -> data
+function refreshPrefsFromDOM(){
+  // read applicant preference lists from DOM into applicantPrefs
+  for(const a of applicants){
+    const ul = $(`list-${a}`);
+    if(!ul) continue;
+    const items = Array.from(ul.children).map(li=>li.dataset.value);
+    applicantPrefs[a] = programs.filter(p=>items.includes(p)).concat(programs.filter(p=>!items.includes(p)));
+  }
+
+  // read program preference lists from DOM into programPrefs
+  for(const p of programs){
+    const ul = $(`list-${p}`);
+    if(!ul) continue;
+    const items = Array.from(ul.children).map(li=>li.dataset.value);
+    programPrefs[p] = applicants.filter(a=>items.includes(a)).concat(applicants.filter(a=>!items.includes(a)));
+  }
+
+  // IMPORTANT: do NOT overwrite programPrefsCurrent here.
+  // programPrefsCurrent should only be modified when applying strategies or explicitly resetting.
+}
+
+  function applyStrategy(programId, strat){
+    if(strat==="truthful"){ programPrefsCurrent[programId] = deepCopy(programPrefs[programId]); return; }
+    if(strat==="random"){ programPrefsCurrent[programId] = shuffle(deepCopy(programPrefs[programId])); return; }
+    if(strat==="greedy"){
+      let bestA=null, bestRank=Infinity;
+      for(const a of applicants){ const rank = applicantPrefs[a].indexOf(programId); if(rank>=0 && rank<bestRank){ bestRank=rank; bestA=a; } }
+      if(bestA){ const arr = programPrefs[programId].filter(x=>x!==bestA); arr.unshift(bestA); programPrefsCurrent[programId]=arr; return; }
+      programPrefsCurrent[programId] = deepCopy(programPrefs[programId]); return;
+    }
+    if(strat==="strategic"){
+      const base = deepCopy(programPrefs[programId]);
+      let bestList = base.slice(); let bestScore = Infinity;
+      const simulateWithList = (candidateList) => {
+        const cand = deepCopy(programPrefs);
+        cand[programId] = candidateList.slice();
+        const result = galeShapleySimulate(applicantPrefs, cand);
+        const partner = Object.entries(result).find(([a,p])=>p===programId);
+        if(!partner) return Infinity;
+        return base.indexOf(partner[0]);
+      };
+      bestScore = simulateWithList(base);
+      for(let i=0;i<base.length;i++){
+        for(let j=i+1;j<base.length;j++){
+          const cand = base.slice(); [cand[i],cand[j]]=[cand[j],cand[i]];
+          const sc = simulateWithList(cand);
+          if(sc < bestScore){ bestScore = sc; bestList = cand.slice(); }
+        }
+      }
+      programPrefsCurrent[programId] = bestList.slice(); return;
+    }
+  }
+
+  function previewStrategyFor(pid){
+    refreshPrefsFromDOM();
+    const sel = $(`strat-${pid}`);
+    const strat = sel ? sel.value : "truthful";
+    // programPrefsCurrent = deepCopy(programPrefs);
+    applyStrategy(pid,strat);
+    // update DOM label orders
+    for(const p of programs){
+      const ul = $(`list-${p}`); if(!ul) continue;
+      ul.innerHTML = "";
+      for(const a of programPrefsCurrent[p]){
+        const li=document.createElement("li"); li.className="pref-item"; li.dataset.value=a; li.innerText = nameMap.applicants[a]||a; ul.appendChild(li);
+      }
+    }
+    logEvent(`Previewed strategy "${strat}" for ${nameMap.programs[pid]||pid}`);
+  }
+
+  function applyAllSelectedStrategies(){
+    // Ensure we use current DOM prefs for both applicants and programs
+    refreshPrefsFromDOM();
+    // Preserve any strategy-adjusted prefs
+    for (const p of programs) {
+    const strat = $(`strat-${p}`).value;
+    applyStrategy(p, strat);
+    }
+    for(const p of programs){
+      const ul = $(`list-${p}`); if(!ul) continue; ul.innerHTML=""; for(const a of programPrefsCurrent[p]){ const li=document.createElement("li"); li.className="pref-item"; li.dataset.value=a; li.innerText=nameMap.applicants[a]||a; ul.appendChild(li); }
+    }
+    logEvent("Applied selected strategies to programs (preview updated).");
+  }
+
+  function resetState(){
+    playing=false; paused=false; stepGenerator=null; currentMatches={};
+    // reset visuals
+    for(const a of applicants){ const el = $(`vis-${a}`); if(el){ el.className="entity free"; el.querySelector('div+div').innerText="Free"; } }
+    for(const p of programs){ const el = $(`vis-${p}`); if(el){ el.className="entity free"; el.querySelector('div+div').innerText="Free"; } }
+    $("log").innerHTML="";
+  }
+
+  function galeShapleySimulate(appPrefsIn, progPrefsIn){
+    const appPrefsC = deepCopy(appPrefsIn), progPrefsC = deepCopy(progPrefsIn);
+    const free = Object.keys(appPrefsC);
+    const appNext = Object.fromEntries(Object.keys(appPrefsC).map(a=>[a,0]));
+    const progMatchesSim = Object.fromEntries(Object.keys(progPrefsC).map(p=>[p,null]));
+    const appMatches = {};
+    while(free.length>0){
+      const a = free.shift();
+      if(appNext[a] >= appPrefsC[a].length) continue;
+      const p = appPrefsC[a][appNext[a]++];
+      const cur = progMatchesSim[p];
+      if(!cur){
+        progMatchesSim[p]=a; appMatches[a]=p;
+      } else {
+        const pref = progPrefsC[p];
+        if(pref.indexOf(a) < pref.indexOf(cur)){
+          progMatchesSim[p]=a; appMatches[a]=p; free.push(cur); delete appMatches[cur];
+        } else { free.push(a); }
+      }
+    }
+    return appMatches;
+  }
+
+  function* galeShapleyStepGenerator(appPrefsIn, progPrefsIn){
+    const appPrefsC = deepCopy(appPrefsIn), progPrefsC = deepCopy(progPrefsIn);
+    const free = Object.keys(appPrefsC);
+    const appNext = Object.fromEntries(Object.keys(appPrefsC).map(a=>[a,0]));
+    const progMatchesSim = Object.fromEntries(Object.keys(progPrefsC).map(p=>[p,null]));
+    while(free.length>0){
+      const a = free.shift();
+      if(appNext[a] >= appPrefsC[a].length) continue;
+      const p = appPrefsC[a][appNext[a]++];
+      yield { type:"propose", applicant:a, program:p };
+      const cur = progMatchesSim[p];
+      if(!cur){
+        progMatchesSim[p]=a; yield { type:"accept", applicant:a, program:p };
+      } else {
+        const pref = progPrefsC[p];
+        if(pref.indexOf(a) < pref.indexOf(cur)){
+          progMatchesSim[p]=a; free.push(cur); yield { type:"switch", applicant:a, program:p, replaced:cur };
+        } else { free.push(a); yield { type:"reject", applicant:a, program:p }; }
+      }
+    }
+    yield { type:"done", matches: deepCopy(progMatchesSim) };
+  }
+
+  function clearSVG(){
+    // keep defs if any
+    const defs = svgEl.querySelector("defs");
+    svgEl.innerHTML = defs ? defs.outerHTML : "";
+  }
+
+  function lineBetween(elemFrom, elemTo, color="#0366d6", id=null){
+    const svgRect = svgEl.getBoundingClientRect();
+    const r1 = elemFrom.getBoundingClientRect();
+    const r2 = elemTo.getBoundingClientRect();
+    const x1 = r1.left + r1.width;
+    const y1 = r1.top + r1.height/2;
+    const x2 = r2.left;
+    const y2 = r2.top + r2.height/2;
+    const sx = x1 - svgRect.left;
+    const sy = y1 - svgRect.top;
+    const tx = x2 - svgRect.left;
+    const ty = y2 - svgRect.top;
+    const ns="http://www.w3.org/2000/svg";
+    const path = document.createElementNS(ns,"path");
+    const d = `M ${sx} ${sy} C ${sx+40} ${sy} ${tx-40} ${ty} ${tx} ${ty}`;
+    path.setAttribute("d", d); path.setAttribute("stroke", color); path.setAttribute("stroke-width", "3"); path.setAttribute("fill","none"); path.setAttribute("marker-end","url(#arrow)");
+    if(id) path.id = id;
+    svgEl.appendChild(path);
+    return path;
+  }
+
+  async function animateStep(step){
+    if(step.type === "propose"){
+      const a = step.applicant, p = step.program;
+      const aEl = $(`vis-${a}`), pEl = $(`vis-${p}`);
+      if(!aEl||!pEl) return;
+      aEl.classList.add("active"); pEl.classList.add("active");
+      logEvent(`${nameMap.applicants[a]||a} proposes to ${nameMap.programs[p]||p}`);
+      clearSVG();
+      const path = lineBetween(aEl, pEl, "#0366d6", `line-${a}-${p}`);
+      await sleep(250);
+      aEl.classList.remove("active"); pEl.classList.remove("active");
+    } else if(step.type === "accept"){
+      const a = step.applicant, p = step.program;
+      currentMatches[p]=a;
+      $(`vis-${a}`).className="entity matched"; $(`vis-${a}-sub`).innerText=`Matched → ${nameMap.programs[p]||p}`;
+      $(`vis-${p}`).className="entity matched"; $(`vis-${p}-sub`).innerText=`Matched ← ${nameMap.applicants[a]||a}`;
+      logEvent(`${nameMap.programs[p]||p} accepts ${nameMap.applicants[a]||a} (was free)`);
+    } else if(step.type === "reject"){
+      const a = step.applicant, p = step.program;
+      $(`vis-${a}`).className="entity rejected"; $(`vis-${a}-sub`).innerText=`Rejected`;
+      logEvent(`${nameMap.programs[p]||p} rejects ${nameMap.applicants[a]||a}`);
+      await sleep(200);
+      $(`vis-${a}`).className="entity free"; $(`vis-${a}-sub`).innerText="Free";
+    } else if(step.type === "switch"){
+      const a=step.applicant, p=step.program, replaced=step.replaced;
+      currentMatches[p]=a;
+      $(`vis-${a}`).className="entity matched"; $(`vis-${a}-sub`).innerText=`Matched → ${nameMap.programs[p]||p}`;
+      $(`vis-${p}`).className="entity matched"; $(`vis-${p}-sub`).innerText=`Matched ← ${nameMap.applicants[a]||a}`;
+      $(`vis-${replaced}`).className="entity rejected"; $(`vis-${replaced}-sub`).innerText="Rejected";
+      logEvent(`${nameMap.programs[p]||p} switches to ${nameMap.applicants[a]||a}, rejects ${nameMap.applicants[replaced]||replaced}`);
+      await sleep(200);
+      $(`vis-${replaced}`).className="entity free"; $(`vis-${replaced}-sub`).innerText="Free";
+    } else if(step.type === "done"){
+      logEvent("Matching complete. Final matches:");
+      for(const [p,a] of Object.entries(step.matches)){ if(a){ logEvent(`   ${nameMap.applicants[a]||a} — ${nameMap.programs[p]||p}`); } }
+      clearSVG();
+      for(const [p,a] of Object.entries(step.matches)){ if(a){ const aEl=$(`vis-${a}`), pEl=$(`vis-${p}`); if(aEl && pEl) lineBetween(aEl,pEl,"#10b981",`final-${a}-${p}`); } }
+    }
+  }
+
+  function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+//   function previewStrategyFor(pid){ refreshPrefsFromDOM(); const sel = $(`strat-${pid}`); const strat = sel ? sel.value : "truthful"; programPrefsCurrent = deepCopy(programPrefs); applyStrategy(pid,strat); for(const p of programs){ const ul=$(`list-${p}`); if(!ul) continue; ul.innerHTML=""; for(const a of programPrefsCurrent[p]){ const li=document.createElement("li"); li.className="pref-item"; li.dataset.value=a; li.innerText=nameMap.applicants[a]||a; ul.appendChild(li); } } logEvent(`Previewed strategy "${strat}" for ${nameMap.programs[pid]||pid}`); }
+
+  // Controls wiring
+  $("generateBtn").addEventListener("click", ()=> generateParticipants());
+  $("randomizeBtn").addEventListener("click", ()=> {
+    generateParticipants();
+    for(const a of applicants) applicantPrefs[a]=shuffle([...programs]);
+    for(const p of programs) programPrefs[p]=shuffle([...applicants]);
+    programPrefsCurrent = deepCopy(programPrefs);
+    renderPrefsEditors(); createVisualBoxes(); logEvent("Randomized preferences.");
+  });
+
+  $("applyStrategyBtn").addEventListener("click", ()=> { refreshPrefsFromDOM(); applyAllSelectedStrategies(); createVisualBoxes(); logEvent("Applied strategies and updated preference lists visually."); });
+
+  $("playBtn").addEventListener("click", async () => {
+    if (playing) return;
+    playing = true;
+    paused = false;
+
+    // ✅ capture latest DOM changes
+    refreshPrefsFromDOM();
+
+    // ✅ do NOT overwrite programPrefsCurrent — use what’s already set
+    if (!stepGenerator) {
+        stepGenerator = galeShapleyStepGenerator(applicantPrefs, programPrefsCurrent);
+    }
+
+    const speed = parseInt($("speedInput").value) || 700;
+
+    async function run() {
+        let next = stepGenerator.next();
+        while (!next.done && playing && !paused) {
+        await animateStep(next.value);
+        next = stepGenerator.next();
+        await sleep(speed);
+        }
+        if (next.done) await animateStep(next.value);
+        playing = false;
+    }
+
+    run();
+    });
+
+
+
+  $("stepBtn").addEventListener("click", async ()=>{
+    if(!stepGenerator){ refreshPrefsFromDOM(); applyAllSelectedStrategies(); resetState(); clearSVG(); stepGenerator = galeShapleyStepGenerator(applicantPrefs, programPrefsCurrent); }
+    if(playing){ paused=true; playing=false; }
+    const next = stepGenerator.next();
+    if(next.done){ logEvent("No more steps."); return; }
+    await animateStep(next.value);
+  });
+
+  $("pauseBtn").addEventListener("click", ()=>{ if(playing){ paused=true; playing=false; logEvent("Paused."); } });
+
+  $("resetBtn").addEventListener("click", ()=>{ refreshPrefsFromDOM(); programPrefsCurrent = deepCopy(programPrefs); renderPrefsEditors(); createVisualBoxes(); resetState(); clearSVG(); logEvent("Reset simulation."); });
+
+  // helper: refresh DOM -> data
+//   function refreshPrefsFromDOM(){
+//     for(const a of applicants){ const ul=$(`list-${a}`); if(!ul) continue; const items=Array.from(ul.children).map(li=>li.dataset.value); applicantPrefs[a] = programs.filter(p=>items.includes(p)).concat(programs.filter(p=>!items.includes(p))); }
+//     for(const p of programs){ const ul=$(`list-${p}`); if(!ul) continue; const items=Array.from(ul.children).map(li=>li.dataset.value); programPrefs[p] = applicants.filter(a=>items.includes(a)).concat(applicants.filter(a=>!items.includes(a))); }
+//     programPrefsCurrent = deepCopy(programPrefs);
+//   }
+
+  // initial generation
+  generateParticipants();
+}
+</script>
 </body>
 </html>

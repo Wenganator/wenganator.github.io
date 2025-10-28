@@ -2,130 +2,230 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bible Verse Flip Cards</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gale–Shapley Stable Matching Visualizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
-    /* Masonry grid layout */
-    .masonry {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-      padding: 20px;
+    body { background-color: #f8f9fa; }
+    .entity-box { background: white; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .entity-header { font-weight: bold; text-align: center; }
+    .list-group-item { cursor: grab; }
+    #visualization { min-height: 400px; border: 2px dashed #ccc; border-radius: 10px; position: relative; overflow: hidden; }
+    .applicant, .program {
+      position: absolute; padding: 0.5rem 1rem; border-radius: 6px; color: white;
+      transition: all 0.8s ease;
     }
-    .flip-card {
-      perspective: 1000px;
-      width: 100%;
-      margin-bottom: 16px;
-    }
-    /* The flip-card-inner’s height will be set dynamically */
-    .flip-card-inner {
-      position: relative;
-      width: 100%;
-      transition: transform 0.6s;
-      transform-style: preserve-3d;
-    }
-    /* Both faces are absolutely positioned so they perfectly overlap */
-    .flip-card-front,
-    .flip-card-back {
-      position: absolute;
-      width: 100%;
-      top: 0;
-      left: 0;
-      backface-visibility: hidden;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      padding: 16px;
-      font-size: 18px;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      overflow-y: auto;
-    }
-    .flip-card-front {
-      background-color: #f8f9fa;
-      font-weight: bold;
-      text-align: center;
-    }
-    .flip-card-back {
-      transform: rotateY(180deg);
-      text-align: left;
-      line-height: 1.4;
-    }
-    /* Flip effect on hover */
-    .flip-card:hover .flip-card-inner {
-      transform: rotateY(180deg);
-    }
-    /* Force small-caps spans to remain inline */
-    .small-caps {
-      font-variant: small-caps;
-      display: inline !important;
-    }
+    .applicant { background: #0d6efd; }
+    .program { background: #20c997; }
+    #log { height: 200px; overflow-y: auto; background: #000; color: #0f0; font-family: monospace; padding: 0.5rem; border-radius: 8px; }
   </style>
 </head>
-<body>
-  <div class="masonry">
-    <!-- Card 1: Deuteronomy 6:4-15 (NKJV) -->
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          Deuteronomy 6:4-15 (NKJV)
-        </div>
-        <div class="flip-card-back">
-          <p>“Hear, O Israel: The <span class="small-caps">Lord</span> our God, the <span class="small-caps">Lord</span> is one! You shall love the <span class="small-caps">Lord</span> your God with all your heart, with all your soul, and with all your strength.</p>
-          <p>“And these words which I command you today shall be in your heart. You shall teach them diligently to your children, and shall talk of them when you sit in your house, when you walk by the way, when you lie down, and when you rise up. You shall bind them as a sign on your hand, and they shall be as frontlets between your eyes. You shall write them on the doorposts of your house and on your gates.</p>
-          <p>“So it shall be, when the <span class="small-caps">Lord</span> your God brings you into the land of which He swore to your fathers, to Abraham, Isaac, and Jacob, to give you large and beautiful cities which you did not build, houses full of all good things, which you did not fill, hewn-out wells which you did not dig, vineyards and olive trees which you did not plant—when you have eaten and are full— then beware, lest you forget the <span class="small-caps">Lord</span> who brought you out of the land of Egypt, from the house of bondage.</p>
-        </div>
+<body class="container py-4">
+  <h1 class="text-center mb-4">Gale–Shapley Stable Matching Visualizer</h1>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div id="applicants" class="entity-box">
+        <div class="entity-header">Applicants</div>
+        <div id="applicantList"></div>
+        <button id="addApplicant" class="btn btn-sm btn-outline-primary mt-2 w-100">+ Add Applicant</button>
       </div>
     </div>
 
-    <!-- Card 2: Philippians 4:13 -->
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          Philippians 4:13
-        </div>
-        <div class="flip-card-back">
-          I can do all things through Christ who strengthens me.
-        </div>
+    <div class="col-md-4">
+      <div id="programs" class="entity-box">
+        <div class="entity-header">Programs</div>
+        <div id="programList"></div>
+        <button id="addProgram" class="btn btn-sm btn-outline-primary mt-2 w-100">+ Add Program</button>
       </div>
     </div>
 
-    <!-- Card 3: Psalm 23:1 -->
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          Psalm 23:1
-        </div>
-        <div class="flip-card-back">
-          The <span class="small-caps">Lord</span> is my shepherd; I shall not want.
+    <div class="col-md-4">
+      <div id="controls" class="entity-box">
+        <div class="entity-header">Controls</div>
+        <div class="d-grid gap-2">
+          <button id="play" class="btn btn-success">▶ Play</button>
+          <button id="step" class="btn btn-secondary">⏩ Step</button>
+          <button id="pause" class="btn btn-warning">⏸ Pause</button>
+          <button id="reset" class="btn btn-danger">🔄 Reset</button>
+          <button id="randomize" class="btn btn-info">🎲 Randomize Preferences</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- JavaScript to adjust the height of each flip card -->
+  <h4>Visualization</h4>
+  <div id="visualization"></div>
+
+  <h4 class="mt-4">Log</h4>
+  <div id="log"></div>
+
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const flipCards = document.querySelectorAll('.flip-card');
-      flipCards.forEach(card => {
-          const inner = card.querySelector('.flip-card-inner');
-          const front = card.querySelector('.flip-card-front');
-          const back = card.querySelector('.flip-card-back');
-          // Temporarily remove absolute positioning to measure natural heights
-          front.style.position = 'relative';
-          back.style.position = 'relative';
-          const frontHeight = front.offsetHeight;
-          const backHeight = back.offsetHeight;
-          // Determine the desired height: the taller face, capped at 600px
-          const desiredHeight = Math.min(Math.max(frontHeight, backHeight), 600);
-          // Set the height on the flip-card-inner so both faces are fixed to that height
-          inner.style.height = desiredHeight + 'px';
-          // Restore absolute positioning for the flip effect
-          front.style.position = 'absolute';
-          back.style.position = 'absolute';
+    // ---- Data Structures ----
+    let applicants = [];
+    let programs = [];
+    let matches = {};
+    let running = false, stepMode = false, stepIndex = 0, logEl = document.getElementById('log');
+
+    // ---- Helper Functions ----
+    const log = msg => {
+      logEl.innerHTML += msg + "<br>";
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    const createEntity = (name, listId, onRename) => {
+      const div = document.createElement('div');
+      div.classList.add('mb-3');
+      div.innerHTML = `
+        <input type="text" class="form-control mb-2 entity-name" value="${name}">
+        <ul class="list-group sortable"></ul>
+      `;
+      document.getElementById(listId).appendChild(div);
+      div.querySelector('.entity-name').addEventListener('input', e => onRename(e.target.value));
+      return div;
+    };
+
+    const createSortable = (ul, items) => {
+      ul.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.textContent = item;
+        ul.appendChild(li);
       });
-    });
+      Sortable.create(ul, { animation: 150 });
+    };
+
+    const initDefaults = () => {
+      applicants = ["A1", "A2", "A3"];
+      programs = ["P1", "P2", "P3"];
+      renderEntities();
+    };
+
+    const renderEntities = () => {
+      document.getElementById('applicantList').innerHTML = "";
+      document.getElementById('programList').innerHTML = "";
+      applicants.forEach(a => {
+        const div = createEntity(a, "applicantList", newName => {
+          applicants[applicants.indexOf(a)] = newName;
+        });
+        createSortable(div.querySelector('.sortable'), [...programs]);
+      });
+      programs.forEach(p => {
+        const div = createEntity(p, "programList", newName => {
+          programs[programs.indexOf(p)] = newName;
+        });
+        createSortable(div.querySelector('.sortable'), [...applicants]);
+      });
+    };
+
+    const getPreferences = () => {
+      const applicantPrefs = {};
+      document.querySelectorAll('#applicantList .mb-3').forEach((div, i) => {
+        applicantPrefs[applicants[i]] = [...div.querySelectorAll('.list-group-item')].map(li => li.textContent);
+      });
+      const programPrefs = {};
+      document.querySelectorAll('#programList .mb-3').forEach((div, i) => {
+        programPrefs[programs[i]] = [...div.querySelectorAll('.list-group-item')].map(li => li.textContent);
+      });
+      return { applicantPrefs, programPrefs };
+    };
+
+    const randomizePrefs = () => {
+      const shuffle = arr => arr.sort(() => Math.random() - 0.5);
+      document.querySelectorAll('#applicantList .sortable').forEach(ul => createSortable(ul, shuffle([...programs])));
+      document.querySelectorAll('#programList .sortable').forEach(ul => createSortable(ul, shuffle([...applicants])));
+      log("Preferences randomized.");
+    };
+
+    const drawVisualization = () => {
+      const vis = document.getElementById('visualization');
+      vis.innerHTML = "";
+      applicants.forEach((a, i) => {
+        const el = document.createElement('div');
+        el.className = 'applicant';
+        el.textContent = a;
+        el.style.left = "10%";
+        el.style.top = `${(i + 1) * 80}px`;
+        vis.appendChild(el);
+      });
+      programs.forEach((p, i) => {
+        const el = document.createElement('div');
+        el.className = 'program';
+        el.textContent = p;
+        el.style.right = "10%";
+        el.style.top = `${(i + 1) * 80}px`;
+        vis.appendChild(el);
+      });
+    };
+
+    const animateProposal = async (a, p) => {
+      const vis = document.getElementById('visualization');
+      const applicantEl = [...vis.querySelectorAll('.applicant')].find(el => el.textContent === a);
+      const programEl = [...vis.querySelectorAll('.program')].find(el => el.textContent === p);
+      if (!applicantEl || !programEl) return;
+      const origLeft = applicantEl.style.left;
+      applicantEl.style.left = "45%";
+      applicantEl.style.top = programEl.style.top;
+      await new Promise(res => setTimeout(res, 1000));
+      applicantEl.style.left = origLeft;
+      applicantEl.style.top = programEl.style.top;
+    };
+
+    // ---- Gale–Shapley Algorithm ----
+    const galeShapley = async (applicantPrefs, programPrefs) => {
+      matches = {};
+      const free = [...applicants];
+      const proposals = {};
+      applicants.forEach(a => proposals[a] = []);
+      while (free.length && running) {
+        const a = free[0];
+        const prefs = applicantPrefs[a];
+        const p = prefs.find(choice => !proposals[a].includes(choice));
+        proposals[a].push(p);
+        await animateProposal(a, p);
+        log(`${a} proposes to ${p}`);
+        const current = matches[p];
+        if (!current) {
+          matches[p] = a;
+          free.shift();
+          log(`${p} accepts ${a}`);
+        } else {
+          const pref = programPrefs[p];
+          if (pref.indexOf(a) < pref.indexOf(current)) {
+            matches[p] = a;
+            free.shift();
+            free.push(current);
+            log(`${p} prefers ${a} over ${current}; ${current} becomes free`);
+          } else {
+            log(`${p} rejects ${a} (prefers ${current})`);
+          }
+        }
+        await new Promise(res => setTimeout(res, 1000));
+      }
+      log("<strong>Final matches:</strong>");
+      Object.entries(matches).forEach(([p, a]) => log(`${p} ↔ ${a}`));
+    };
+
+    // ---- Event Listeners ----
+    document.getElementById('play').onclick = async () => {
+      running = true;
+      logEl.innerHTML = "";
+      const { applicantPrefs, programPrefs } = getPreferences();
+      drawVisualization();
+      galeShapley(applicantPrefs, programPrefs);
+    };
+
+    document.getElementById('pause').onclick = () => running = false;
+    document.getElementById('reset').onclick = () => { logEl.innerHTML = ""; drawVisualization(); };
+    document.getElementById('randomize').onclick = randomizePrefs;
+    document.getElementById('addApplicant').onclick = () => { applicants.push(`A${applicants.length + 1}`); renderEntities(); };
+    document.getElementById('addProgram').onclick = () => { programs.push(`P${programs.length + 1}`); renderEntities(); };
+
+    // ---- Init ----
+    initDefaults();
+    drawVisualization();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -7,11 +7,25 @@
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
     {
+        title: 'Playlists',
+        tag: ['Christianity', 'Entertainment', 'Music', 'Technology', 'Worship'],
+        content: 'A collection of playlists',
+        image: '/assets/images/blog/playlists.png',
+        url: '/blog/playlists.html'
+    },
+    {
         title: 'Chocolate Chip Cookies Recipe',
         tag: ['Cooking'],
         content: 'A delicious recipe for classic chocolate chip cookies.',
         image: '/assets/images/blog/chocolate-chip-cookie.png',
         url: '/blog/chocolate-chip-cookies-recipe.html'
+    },
+    {
+        title: 'Movie Tier List',
+        tag: ['Entertainment', 'Technology'],
+        content: 'A thorough, very subjective tier list of movies',
+        image: '/assets/images/blog/movie-tier-list.webp',
+        url: '/blog/movie-tier-list.html'
     },
     {
         title: '<i>Never Let Me Go</i>: A Review',
@@ -26,13 +40,6 @@ const blogPosts = [
         content: 'A brief review of Hernan Diaz\'s <i>Trust</i>',
         image: '/assets/images/blog/trust.jpg',
         url: '/blog/trust-review.html'
-    },
-    {
-        title: 'Movie Tier List',
-        tag: ['Entertainment', 'Technology'],
-        content: 'A thorough, very subjective tier list of movies',
-        image: '/assets/images/blog/movie-tier-list.webp',
-        url: '/blog/movie-tier-list.html'
     },
     {
         title: 'Doxologies',
