@@ -28,6 +28,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Gallery", url: "/gallery.html" },
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },
+                { name: "Chess", url: "/chess.html" },
                 { name: "Notes App", url: "/notes.html" },
                 { name: "Price Pilot", url: "/price-pilot.html" },
                 { name: "Tier List Maker", url: "/tier-list.html" },
