@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Music", url: "/music.html" },
             { name: "Wikipedia", url: "/wikipedia.html" },
             { name: "Books", url: "/books.html" },
-            { name: "Writing", url: "/writing.html" },
+            { name: "Library", url: "/library.html" },
             { name: "Blog", url: "/blog.html" },
             { name: "Gallery", url: "/gallery.html" },
             { name: "Tools", group: true, children: [
