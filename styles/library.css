@@ -1,14 +1,14 @@
-/* :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
+:root {
+    /* --primary-color: #2c3e50; */
+    /* --secondary-color: #3498db; */
+    /* --accent-color: #e74c3c; */
     --card-hover: #f8f9fa;
     --bg-color: #f5f5f5;
     --card-bg: white;
     --text-color: #333;
     --text-muted: #666;
     --border-color: #ddd;
-} */
+}
 
 body {
     background: var(--bg-color);
@@ -66,6 +66,15 @@ body.dark-mode .btn-outline-primary:hover,
 body.dark-mode .btn-outline-danger:hover {
     background: var(--secondary-color);
     color: white;
+}
+
+/* Override Bootstrap's .text-muted class */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+body.dark-mode .text-muted {
+    color: var(--text-muted) !important;
 }
 
 /* Stats Bar */
@@ -250,6 +259,19 @@ body.dark-mode .btn-outline-danger:hover {
     height: 250px;
 }
 
+/* Modify links to look like cards */
+a.writing-card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+a.list-item {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+}
+
 .card-content {
     padding: 20px;
 }
@@ -361,11 +383,11 @@ body.dark-mode .btn-outline-danger:hover {
 .timeline-line {
     position: absolute;
     top: 50%;
-    left: 0;
-    right: 0;
+    /* left: 20px; */
     height: 3px;
     background: var(--secondary-color);
-    z-index: 0;
+    z-index: -1;
+    width: calc(100% - 40px);
 }
 
 .timeline-items {
@@ -374,6 +396,7 @@ body.dark-mode .btn-outline-danger:hover {
     padding: 0 20px;
     position: relative;
     z-index: 1;
+    width: max-content;
 }
 
 .timeline-item {

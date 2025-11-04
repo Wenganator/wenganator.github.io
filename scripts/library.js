@@ -192,12 +192,12 @@ function renderWritings() {
 
     noResults.style.display = 'none';
     container.innerHTML = filtered.map(w => `
-        <div class="writing-card ${readItems.includes(w.id) ? 'read' : ''}" onclick="navigateToWriting(${w.id})">
+        <a href="${w.url}" class="writing-card ${readItems.includes(w.id) ? 'read' : ''}" data-id="${w.id}">
             <button class="favorite-btn ${favorites.includes(w.id) ? 'active' : ''}" 
-                    onclick="event.stopPropagation(); toggleFavorite(${w.id})">
+                    onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite(${w.id})">
                 ${favorites.includes(w.id) ? '❤️' : '🤍'}
             </button>
-            <button class="share-btn" onclick="event.stopPropagation(); openShareModal(${w.id})">
+            <button class="share-btn" onclick="event.preventDefault(); event.stopPropagation(); openShareModal(${w.id})">
                 🔗
             </button>
             <img src="${w.image}" alt="${w.title}">
@@ -205,12 +205,26 @@ function renderWritings() {
                 <div class="card-title">${w.title}</div>
                 <div class="card-author">${w.author} (${w.year})</div>
                 <div class="card-tags">
-                    <span class="card-tag" onclick="event.stopPropagation(); filterByCategory('${w.category}')">${w.category}</span>
-                    ${w.tags.map(tag => `<span class="card-tag" onclick="event.stopPropagation(); filterByTag('${tag}')">${tag}</span>`).join('')}
+                    <span class="card-tag" onclick="event.preventDefault(); event.stopPropagation(); filterByCategory('${w.category}')">${w.category}</span>
+                    ${w.tags.map(tag => `<span class="card-tag" onclick="event.preventDefault(); event.stopPropagation(); filterByTag('${tag}')">${tag}</span>`).join('')}
                 </div>
             </div>
-        </div>
-    `            ).join('');
+        </a>
+    `).join('');
+
+    // Mark as read when clicking (any mouse button)
+    document.querySelectorAll('.writing-card').forEach(card => {
+        const id = parseInt(card.dataset.id);
+        card.addEventListener('mousedown', (e) => {
+            // Mark as read for left, middle, or right click
+            if (e.button === 0 || e.button === 1 || e.button === 2) {
+                if (!readItems.includes(id)) {
+                    readItems.push(id);
+                    localStorage.setItem('writingRead', JSON.stringify(readItems));
+                }
+            }
+        });
+    });
 }
 
 // Render list view
@@ -227,7 +241,7 @@ function renderList() {
 
     noResults.style.display = 'none';
     container.innerHTML = filtered.map(w => `
-        <div class="list-item ${readItems.includes(w.id) ? 'read' : ''}" onclick="navigateToWriting(${w.id})">
+        <a href="${w.url}" class="list-item ${readItems.includes(w.id) ? 'read' : ''}" data-id="${w.id}">
             ${readItems.includes(w.id) ? '<div class="list-item-badge">✓ Read</div>' : ''}
             <img src="${w.image}" alt="${w.title}" class="list-item-image">
             <div class="list-item-content">
@@ -235,26 +249,40 @@ function renderList() {
                 <div class="list-item-author">${w.author}</div>
                 <div class="list-item-meta">
                     <span class="list-item-year">${w.year}</span>
-                    <span class="list-item-category" onclick="event.stopPropagation(); filterByCategory('${w.category}'); return false;">${w.category}</span>
+                    <span class="list-item-category" onclick="event.preventDefault(); event.stopPropagation(); filterByCategory('${w.category}');">${w.category}</span>
                     <div class="list-item-tags">
-                        ${w.tags.map(tag => `<span class="list-item-tag" onclick="event.stopPropagation(); filterByTag('${tag}'); return false;">${tag}</span>`).join('')}
+                        ${w.tags.map(tag => `<span class="list-item-tag" onclick="event.preventDefault(); event.stopPropagation(); filterByTag('${tag}');">${tag}</span>`).join('')}
                     </div>
                 </div>
             </div>
             <div class="list-item-actions">
                 <button class="list-item-btn favorite ${favorites.includes(w.id) ? 'active' : ''}" 
-                        onclick="event.stopPropagation(); toggleFavorite(${w.id})"
+                        onclick="event.preventDefault(); event.stopPropagation(); toggleFavorite(${w.id})"
                         title="${favorites.includes(w.id) ? 'Remove from favorites' : 'Add to favorites'}">
                     ${favorites.includes(w.id) ? '❤️' : '🤍'}
                 </button>
                 <button class="list-item-btn" 
-                        onclick="event.stopPropagation(); openShareModal(${w.id})"
+                        onclick="event.preventDefault(); event.stopPropagation(); openShareModal(${w.id})"
                         title="Share">
                     🔗
                 </button>
             </div>
-        </div>
+        </a>
     `).join('');
+
+    // Mark as read when clicking (any mouse button)
+    document.querySelectorAll('.list-item').forEach(item => {
+        const id = parseInt(item.dataset.id);
+        item.addEventListener('mousedown', (e) => {
+            // Mark as read for left, middle, or right click
+            if (e.button === 0 || e.button === 1 || e.button === 2) {
+                if (!readItems.includes(id)) {
+                    readItems.push(id);
+                    localStorage.setItem('writingRead', JSON.stringify(readItems));
+                }
+            }
+        });
+    });
 }
 
 // Navigate to writing and mark as read
@@ -359,7 +387,7 @@ function renderTimeline() {
     const filtered = getFilteredWritings().sort((a, b) => a.year - b.year);
     const container = document.getElementById('timelineItems');
 
-    container.innerHTML = filtered.map(w => `
+    const itemsHtml = filtered.map(w => `
         <div class="timeline-item" onclick="navigateToWriting(${w.id})">
             <div class="timeline-year">${w.year}</div>
             <div class="timeline-title">${w.title}</div>
@@ -367,6 +395,17 @@ function renderTimeline() {
             ${readItems.includes(w.id) ? '<div style="color: #28a745; margin-top: 5px;">✓ Read</div>' : ''}
         </div>
     `).join('');
+
+    container.innerHTML = itemsHtml;
+
+    // Set the timeline line width after items are rendered
+    setTimeout(() => {
+        const timelineContainer = document.querySelector('.timeline-container');
+        const line = document.querySelector('.timeline-line');
+        if (timelineContainer && line && container.scrollWidth > 0) {
+            line.style.width = container.scrollWidth + 'px';
+        }
+    }, 0);
 }
 
 // Toggle favorite
