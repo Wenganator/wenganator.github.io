@@ -1,187 +1,1978 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>E-Book Reader</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style>
-    #pdfCanvas { border: 1px solid #ccc; }
-    .reader-container { position: relative; }
-    .nav-button { position: absolute; top: 50%; transform: translateY(-50%); cursor: pointer; }
-    .nav-left { left: 10px; }
-    .nav-right { right: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal File Reader Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --sidebar-bg: white;
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --sidebar-bg: #2d2d2d;
+        }
+        
+        [data-theme="sepia"] {
+            --primary-color: #8b7355;
+            --secondary-color: #a0826d;
+            --bg-color: #f4ecd8;
+            --text-color: #5c4a3a;
+            --sidebar-bg: #faf5e8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        
+        .reader-container {
+            background: var(--sidebar-bg);
+            border-radius: 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .toolbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .toolbar-section {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .toolbar button, .toolbar select, .toolbar input {
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .toolbar button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .toolbar button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .toolbar button.active {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .toolbar select, .toolbar input {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        #viewerArea {
+            flex: 1;
+            background: var(--bg-color);
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        
+        .page-container {
+            background: var(--sidebar-bg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin: 0 auto;
+            padding: 40px;
+            color: var(--text-color);
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .page-container.fit-width {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+        }
+        
+        .two-page-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-left: 1px solid #dee2e6;
+            padding: 20px;
+            overflow-y: auto;
+            color: var(--text-color);
+            flex-shrink: 0;
+        }
+        
+        .sidebar h5 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .bookmark-item, .library-item, .toc-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: var(--bg-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .bookmark-item:hover, .library-item:hover, .toc-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .highlight {
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 2px;
+        }
+        
+        .highlight-yellow { background: rgba(255, 255, 0, 0.4); }
+        .highlight-green { background: rgba(0, 255, 0, 0.3); }
+        .highlight-blue { background: rgba(0, 150, 255, 0.3); }
+        .highlight-pink { background: rgba(255, 0, 150, 0.3); }
+        
+        .cursor-highlight {
+            background: rgba(255, 255, 0, 0.3);
+            cursor: pointer;
+        }
+        
+        .stats-card {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stats-card h6 {
+            color: var(--primary-color);
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        
+        .stats-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .tts-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--sidebar-bg);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            color: var(--text-color);
+        }
+        
+        .dictionary-popup {
+            position: fixed;
+            background: var(--sidebar-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 300px;
+            z-index: 1000;
+            display: none;
+            color: var(--text-color);
+        }
+        
+        canvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .color-picker {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+            border: 2px solid transparent;
+        }
+        
+        .color-picker:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .recent-file {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .theme-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .theme-option:hover, .theme-option.active {
+            border-color: white;
+            transform: scale(1.1);
+        }
+        
+        .theme-light { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .theme-dark { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); }
+        .theme-sepia { background: linear-gradient(135deg, #f4ecd8 0%, #d4b896 100%); }
+        
+        .page-info {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .progress-bar-custom {
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .tab-content {
+            margin-top: 20px;
+        }
+        
+        .nav-pills .nav-link {
+            color: var(--text-color);
+            border-radius: 6px;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: var(--primary-color);
+        }
+
+        .welcome-screen {
+            text-align: center;
+            color: var(--text-color);
+            padding: 50px 20px;
+        }
+
+        .welcome-screen i {
+            color: var(--primary-color);
+        }
+
+        #contentContainer {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+
+        .page-canvas-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .text-layer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            line-height: 1.0;
+            opacity: 1;
+        }
+
+        .text-layer > span {
+            color: transparent;
+            position: absolute;
+            white-space: pre;
+            cursor: text;
+            transform-origin: 0% 0%;
+        }
+
+        .text-layer ::selection {
+            background: rgba(0, 100, 255, 0.3);
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <!-- Book Selection -->
-    <div class="form-group">
-      <label for="bookSelect">Select a book:</label>
-      <select id="bookSelect" class="form-control">
-        <option value="/assets/pdf/Scripture-Memorization.pdf">Book 1</option>
-        <option value="book2.pdf">Book 2</option>
-        <!-- Add more options -->
-      </select>
-    </div>
-    
-    <!-- Navigation Options -->
-    <div class="form-group">
-      <label>Navigation Orientation:</label>
-      <div>
-        <input type="radio" name="navOrientation" id="vertical" value="vertical" checked>
-        <label for="vertical">Vertical</label>
-        <input type="radio" name="navOrientation" id="horizontal" value="horizontal">
-        <label for="horizontal">Horizontal</label>
-      </div>
-    </div>
-    
-    <!-- Page Jump -->
-    <div class="form-group">
-      <label for="pageInput">Jump to page:</label>
-      <input type="number" id="pageInput" class="form-control" min="1">
-      <button id="jumpButton" class="btn btn-primary mt-2">Go</button>
-    </div>
-    
-    <!-- PDF Viewer -->
+<body data-theme="light">
     <div class="reader-container">
-      <canvas id="pdfCanvas"></canvas>
-      <!-- Navigation Arrows -->
-      <div class="nav-button nav-left" id="prevPage">&larr;</div>
-      <div class="nav-button nav-right" id="nextPage">&rarr;</div>
+        <div class="toolbar">
+            <div class="toolbar-section">
+                <button onclick="openLibrary()" title="Library">
+                    <i class="fas fa-book"></i>
+                </button>
+                <input type="file" id="fileInput" accept=".pdf,.epub,.doc,.docx" style="display:none" onchange="loadFile(event)">
+                <button onclick="document.getElementById('fileInput').click()" title="Upload File">
+                    <i class="fas fa-upload"></i>
+                </button>
+            </div>
+            
+            <div class="toolbar-section">
+                <button onclick="previousPage()" title="Previous Page (←)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <input type="number" id="pageInput" min="1" style="width: 70px; text-align: center;" placeholder="Page" onchange="goToPage()">
+                <span class="page-info" id="pageInfo">/ 0</span>
+                <button onclick="nextPage()" title="Next Page (→)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="toolbar-section">
+                <select id="viewMode" onchange="changeViewMode()" title="View Mode">
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                    <option value="scroll">Scroll</option>
+                </select>
+            </div>
+
+            <div class="toolbar-section">
+                <button onclick="zoomIn()" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button onclick="zoomOut()" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button onclick="fitToWidth()" title="Fit to Width">
+                    <i class="fas fa-arrows-alt-h"></i>
+                </button>
+                <button onclick="fitToHeight()" title="Fit to Height">
+                    <i class="fas fa-arrows-alt-v"></i>
+                </button>
+                <span class="page-info" id="zoomLevel">100%</span>
+            </div>
+
+            <div class="toolbar-section">
+                <button onclick="toggleBookmark()" title="Bookmark">
+                    <i class="fas fa-bookmark"></i>
+                </button>
+                <button id="highlightBtn" onclick="toggleHighlight()" title="Text Highlight">
+                    <i class="fas fa-highlighter"></i>
+                </button>
+                <button id="cursorHighlightBtn" onclick="toggleCursorHighlight()" title="Cursor Highlight">
+                    <i class="fas fa-mouse-pointer"></i>
+                </button>
+                <button onclick="openSearch()" title="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button onclick="toggleTTS()" title="Text-to-Speech">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button onclick="openSidebar()" title="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="progress-bar-custom">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div id="viewerArea">
+                <div class="welcome-screen">
+                    <i class="fas fa-book-open fa-5x mb-4"></i>
+                    <h3>Welcome to Universal File Reader Pro</h3>
+                    <p>Upload a file or select from the library to start reading</p>
+                </div>
+                <div class="dictionary-popup" id="dictionaryPopup"></div>
+            </div>
+            
+            <div class="sidebar" id="sidebar" style="display: none;">
+                <ul class="nav nav-pills mb-3" id="sidebarTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tocTab">TOC</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#bookmarksTab">
+                            <i class="fas fa-bookmark"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#highlightsTab">
+                            <i class="fas fa-highlighter"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#statsTab">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tocTab">
+                        <h5>Table of Contents</h5>
+                        <div id="tocList"></div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="bookmarksTab">
+                        <h5>Bookmarks</h5>
+                        <div id="bookmarksList"></div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="highlightsTab">
+                        <h5>Highlights</h5>
+                        <div id="highlightsList"></div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="statsTab">
+                        <h5>Reading Statistics</h5>
+                        <div class="stats-card">
+                            <h6>Time Reading</h6>
+                            <p id="readingTime">0m</p>
+                        </div>
+                        <div class="stats-card">
+                            <h6>Pages Read</h6>
+                            <p id="pagesRead">0</p>
+                        </div>
+                        <div class="stats-card">
+                            <h6>Current Session</h6>
+                            <p id="sessionTime">0m</p>
+                        </div>
+                        <div class="stats-card">
+                            <h6>Progress</h6>
+                            <p id="readingProgress">0%</p>
+                        </div>
+                        <button class="btn btn-sm btn-primary mt-3 w-100" onclick="exportStats()">
+                            <i class="fas fa-download"></i> Export Stats
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger mt-2 w-100" onclick="clearReadingStats()">
+                            <i class="fas fa-trash"></i> Clear Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <!-- Bookmark Panel -->
-    <div id="bookmarkPanel" class="mt-4">
-      <h5>Bookmarks</h5>
-      <ul id="bookmarkList" class="list-group"></ul>
+
+    <!-- TTS Controls -->
+    <div class="tts-controls" id="ttsControls">
+        <h6 style="color: var(--primary-color);">Text-to-Speech</h6>
+        <div class="d-flex gap-2 mb-2">
+            <button class="btn btn-sm btn-primary" onclick="ttsPlay()">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="btn btn-sm btn-warning" onclick="ttsPause()">
+                <i class="fas fa-pause"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="ttsStop()">
+                <i class="fas fa-stop"></i>
+            </button>
+        </div>
+        <label class="small">Speed</label>
+        <input type="range" class="form-range" min="0.5" max="2" step="0.1" value="1" id="ttsSpeed">
+        <label class="small">Pitch</label>
+        <input type="range" class="form-range" min="0.5" max="2" step="0.1" value="1" id="ttsPitch">
     </div>
-  </div>
-  
-  <!-- Include PDF.js Library -->
-  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
-  <!-- Your custom JS file -->
-  <script>
-    // Configure PDF.js
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
 
-let pdfDoc = null;
-let currentPage = 1;
-let totalPages = 0;
-const canvas = document.getElementById('pdfCanvas');
-const ctx = canvas.getContext('2d');
-const scale = 1.5; // Adjust for your needs
+    <!-- Library Modal -->
+    <div class="modal fade" id="libraryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title"><i class="fas fa-book"></i> Library</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Recent Files</h6>
+                    <div id="recentFilesList"></div>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="clearRecentFiles()">
+                        <i class="fas fa-trash"></i> Clear Recent Files
+                    </button>
+                    
+                    <hr>
+                    
+                    <h6>Preloaded Books</h6>
+                    <div id="libraryContent">
+                        <!-- Add your preloaded files here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// Load a PDF document
-function loadPDF(url) {
-  pdfjsLib.getDocument(url).promise.then(doc => {
-    pdfDoc = doc;
-    totalPages = doc.numPages;
-    currentPage = 1;
-    renderPage(currentPage);
-  });
-}
+    <!-- Search Modal -->
+    <div class="modal fade" id="searchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-search"></i> Search in Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Enter search term..." onkeypress="if(event.key==='Enter') performSearch()">
+                    <div id="searchResults" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="performSearch()">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// Render a page
-function renderPage(pageNumber) {
-  pdfDoc.getPage(pageNumber).then(page => {
-    const viewport = page.getViewport({ scale: scale });
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    const renderContext = {
-      canvasContext: ctx,
-      viewport: viewport,
-    };
-    page.render(renderContext);
-  });
-}
+    <!-- Highlight Color Modal -->
+    <div class="modal fade" id="highlightModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Highlight Color</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="color-picker highlight-yellow" onclick="selectHighlightColor('yellow')"></div>
+                    <div class="color-picker highlight-green" onclick="selectHighlightColor('green')"></div>
+                    <div class="color-picker highlight-blue" onclick="selectHighlightColor('blue')"></div>
+                    <div class="color-picker highlight-pink" onclick="selectHighlightColor('pink')"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// Event listeners for navigation
-document.getElementById('prevPage').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    renderPage(currentPage);
-  }
-});
-document.getElementById('nextPage').addEventListener('click', () => {
-  if (currentPage < totalPages) {
-    currentPage++;
-    renderPage(currentPage);
-  }
-});
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-cog"></i> Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Theme</label>
+                        <div class="theme-selector">
+                            <div class="theme-option theme-light active" onclick="changeTheme('light')" title="Light"></div>
+                            <div class="theme-option theme-dark" onclick="changeTheme('dark')" title="Dark"></div>
+                            <div class="theme-option theme-sepia" onclick="changeTheme('sepia')" title="Sepia"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Font Size: <span id="fontSizeLabel">16px</span></label>
+                        <input type="range" class="form-range" min="12" max="24" value="16" id="fontSizeSlider" oninput="changeFontSize(this.value)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Line Spacing</label>
+                        <select class="form-select" id="lineSpacingSelect" onchange="changeLineSpacing(this.value)">
+                            <option value="1.5">Normal</option>
+                            <option value="1.8">Comfortable</option>
+                            <option value="2.0">Spacious</option>
+                        </select>
+                    </div>
+                    <hr>
+                    <button class="btn btn-primary w-100 mb-2" onclick="exportAllData()">
+                        <i class="fas fa-download"></i> Export All Data
+                    </button>
+                    <button class="btn btn-outline-danger w-100" onclick="clearAllData()">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-// Handle page jump
-document.getElementById('jumpButton').addEventListener('click', () => {
-  const pageInput = document.getElementById('pageInput').value;
-  const pageNumber = parseInt(pageInput);
-  if (pageNumber >= 1 && pageNumber <= totalPages) {
-    currentPage = pageNumber;
-    renderPage(currentPage);
-  }
-});
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Preloaded files configuration - ADD YOUR FILES HERE
+        const PRELOADED_FILES = [
+            {
+                name: 'Scripture Memorization',
+                path: '/assets/pdf/Scripture-Memorization.pdf',  // Replace with your actual file path
+                type: 'pdf'
+            },
+            {
+                name: 'Knowing God',
+                path: '/assets/epub/Packer-Knowing-God.epub',  // Replace with your actual file path
+                type: 'epub'
+            },
+            {
+                name: 'Sample Document',
+                path: '/path/to/sample3.docx',  // Replace with your actual file path
+                type: 'docx'
+            }
+        ];
 
-// Keyboard navigation
-document.addEventListener('keydown', (e) => {
-  // For both vertical and horizontal navigation, adapt based on selected orientation
-  const navOrientation = document.querySelector('input[name="navOrientation"]:checked').value;
-  if ((navOrientation === 'vertical' && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) ||
-      (navOrientation === 'horizontal' && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))) {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-      if (currentPage > 1) { currentPage--; renderPage(currentPage); }
-    } else {
-      if (currentPage < totalPages) { currentPage++; renderPage(currentPage); }
-    }
-  }
-});
+        // Global variables
+        let currentPage = 1;
+        let totalPages = 0;
+        let currentFile = null;
+        let currentFileName = '';
+        let fileType = '';
+        let viewMode = 'single';
+        let zoomLevel = 1.0;
+        let fitToWidthMode = false;
+        let fitToHeightMode = false;
+        let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+        let highlights = JSON.parse(localStorage.getItem('highlights') || '{}');
+        let recentFiles = JSON.parse(localStorage.getItem('recentFiles') || '[]');
+        let readingStats = JSON.parse(localStorage.getItem('readingStats') || '{"totalTime": 0, "pagesRead": {}, "sessions": []}');
+        let pdfDoc = null;
+        let documentContent = '';
+        let highlightMode = false;
+        let cursorHighlightMode = false;
+        let selectedColor = 'yellow';
+        let sessionStart = Date.now();
+        let statsInterval = null;
+        let ttsUtterance = null;
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let fileData = null;
+        let currentHighlightedLine = null;
+        
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// Example: Book selection
-document.getElementById('bookSelect').addEventListener('change', (e) => {
-  loadPDF(e.target.value);
-});
+        // Initialize
+        document.body.setAttribute('data-theme', currentTheme);
+        updateThemeSelector();
+        loadPreloadedLibrary();
 
-// Initialize with first book
-window.addEventListener('load', () => {
-  loadPDF(document.getElementById('bookSelect').value);
-});
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                previousPage();
+            } else if (e.key === 'ArrowRight') {
+                nextPage();
+            }
+        });
 
-// Bookmarking functions (saving and retrieving from local storage)
-const storageKey = 'ebookBookmarks_YourUniqueAppName';
+        function loadPreloadedLibrary() {
+            const libraryContent = document.getElementById('libraryContent');
+            libraryContent.innerHTML = '';
+            
+            PRELOADED_FILES.forEach(file => {
+                const icons = {
+                    'pdf': 'fa-file-pdf text-danger',
+                    'epub': 'fa-book text-success',
+                    'doc': 'fa-file-word text-primary',
+                    'docx': 'fa-file-word text-primary'
+                };
+                
+                const item = document.createElement('div');
+                item.className = 'library-item';
+                item.innerHTML = `
+                    <div class="recent-file">
+                        <i class="fas ${icons[file.type]}"></i>
+                        <span>${file.name}</span>
+                    </div>
+                `;
+                item.onclick = () => loadPreloadedFile(file);
+                libraryContent.appendChild(item);
+            });
+        }
 
-function saveBookmark(book, page) {
-  const bookmarks = JSON.parse(localStorage.getItem(storageKey)) || {};
-  bookmarks[book] = bookmarks[book] || [];
-  if (!bookmarks[book].includes(page)) {
-    bookmarks[book].push(page);
-    localStorage.setItem(storageKey, JSON.stringify(bookmarks));
-    updateBookmarkList(book);
-  }
-}
+        async function loadPreloadedFile(fileInfo) {
+            try {
+                const response = await fetch(fileInfo.path);
+                if (!response.ok) throw new Error('File not found');
+                
+                const blob = await response.blob();
+                const file = new File([blob], fileInfo.name + '.' + fileInfo.type, { type: blob.type });
+                
+                currentFileName = file.name;
+                currentFile = file;
+                fileType = fileInfo.type;
+                
+                addToRecentFiles(file.name, fileType, fileInfo.path);
+                startReadingSession();
+                
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    fileData = e.target.result;
+                    await loadFileByType(e.target.result, fileType);
+                };
+                reader.readAsArrayBuffer(file);
+                
+                document.getElementById('sidebar').style.display = 'block';
+                bootstrap.Modal.getInstance(document.getElementById('libraryModal'))?.hide();
+            } catch (error) {
+                alert('Error loading file: ' + error.message + '\n\nMake sure the file path is correct and accessible.');
+            }
+        }
 
-function updateBookmarkList(book) {
-  const bookmarks = JSON.parse(localStorage.getItem(storageKey)) || {};
-  const list = document.getElementById('bookmarkList');
-  list.innerHTML = '';
-  (bookmarks[book] || []).forEach(page => {
-    const li = document.createElement('li');
-    li.textContent = `Page ${page}`;
-    li.className = 'list-group-item';
-    li.addEventListener('click', () => {
-      currentPage = page;
-      renderPage(currentPage);
-    });
-    list.appendChild(li);
-  });
-}
+        async function loadFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            currentFile = file;
+            currentFileName = file.name;
+            const ext = file.name.split('.').pop().toLowerCase();
+            fileType = ext;
+            
+            addToRecentFiles(file.name, ext, null);
+            startReadingSession();
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                fileData = e.target.result;
+                await loadFileByType(e.target.result, ext);
+            };
+            reader.readAsArrayBuffer(file);
+            
+            document.getElementById('sidebar').style.display = 'block';
+        }
 
-// Example: Add bookmark button (you could place this on your UI)
-const bookmarkBtn = document.createElement('button');
-bookmarkBtn.textContent = 'Bookmark this page';
-bookmarkBtn.className = 'btn btn-secondary mt-2';
-bookmarkBtn.addEventListener('click', () => {
-  const book = document.getElementById('bookSelect').value;
-  saveBookmark(book, currentPage);
-});
-document.querySelector('.container').appendChild(bookmarkBtn);
+        async function loadFileByType(data, type) {
+            if (type === 'pdf') {
+                await loadPDF(data);
+            } else if (type === 'epub') {
+                await loadEPUB(data);
+            } else if (type === 'doc' || type === 'docx') {
+                await loadDOCX(data);
+            }
+        }
 
-  </script>
+        async function loadPDF(data) {
+            try {
+                pdfDoc = await pdfjsLib.getDocument({data: data}).promise;
+                totalPages = pdfDoc.numPages;
+                currentPage = 1;
+                updatePageInfo();
+                await renderPDFPage(currentPage);
+                generateTOC();
+            } catch (error) {
+                alert('Error loading PDF: ' + error.message);
+            }
+        }
+
+        async function renderPDFPage(pageNum) {
+            const page = await pdfDoc.getPage(pageNum);
+            let scale = zoomLevel * 1.5;
+            
+            if (fitToWidthMode) {
+                scale = calculateFitToWidthScale(page);
+            } else if (fitToHeightMode) {
+                scale = calculateFitToHeightScale(page);
+            }
+            
+            const viewport = page.getViewport({scale: scale});
+            
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({canvasContext: context, viewport: viewport}).promise;
+            
+            // Get text content for selection, search and TTS
+            const textContent = await page.getTextContent();
+            const textItems = textContent.items.map(item => item.str).join(' ');
+            
+            if (viewMode === 'single') {
+                const viewerArea = document.getElementById('viewerArea');
+                viewerArea.innerHTML = '';
+                
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'page-container';
+                if (fitToWidthMode) pageContainer.classList.add('fit-width');
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'page-canvas-wrapper';
+                wrapper.appendChild(canvas);
+                
+                // Create text layer for text selection
+                const textLayerDiv = document.createElement('div');
+                textLayerDiv.className = 'text-layer';
+                textLayerDiv.style.width = viewport.width + 'px';
+                textLayerDiv.style.height = viewport.height + 'px';
+                
+                // Render text layer
+                pdfjsLib.renderTextLayer({
+                    textContentSource: textContent,
+                    container: textLayerDiv,
+                    viewport: viewport,
+                    textDivs: []
+                });
+                
+                wrapper.appendChild(textLayerDiv);
+                
+                // Store text content as data attribute
+                pageContainer.dataset.textContent = textItems;
+                
+                pageContainer.appendChild(wrapper);
+                viewerArea.appendChild(pageContainer);
+                
+                enableTextSelection();
+                enableCursorHighlight();
+            } else if (viewMode === 'double' && pageNum < totalPages) {
+                if (pageNum === currentPage) {
+                    const viewerArea = document.getElementById('viewerArea');
+                    viewerArea.innerHTML = '';
+                    
+                    const twoPageDiv = document.createElement('div');
+                    twoPageDiv.className = 'two-page-view';
+                    
+                    const container1 = document.createElement('div');
+                    container1.className = 'page-container';
+                    
+                    const wrapper1 = document.createElement('div');
+                    wrapper1.className = 'page-canvas-wrapper';
+                    wrapper1.appendChild(canvas);
+                    
+                    const textLayerDiv1 = document.createElement('div');
+                    textLayerDiv1.className = 'text-layer';
+                    textLayerDiv1.style.width = viewport.width + 'px';
+                    textLayerDiv1.style.height = viewport.height + 'px';
+                    
+                    pdfjsLib.renderTextLayer({
+                        textContentSource: textContent,
+                        container: textLayerDiv1,
+                        viewport: viewport,
+                        textDivs: []
+                    });
+                    
+                    wrapper1.appendChild(textLayerDiv1);
+                    container1.appendChild(wrapper1);
+                    container1.dataset.textContent = textItems;
+                    twoPageDiv.appendChild(container1);
+                    
+                    // Render second page
+                    const page2 = await pdfDoc.getPage(pageNum + 1);
+                    const viewport2 = page2.getViewport({scale: scale});
+                    const canvas2 = document.createElement('canvas');
+                    const context2 = canvas2.getContext('2d');
+                    canvas2.height = viewport2.height;
+                    canvas2.width = viewport2.width;
+                    await page2.render({canvasContext: context2, viewport: viewport2}).promise;
+                    
+                    const textContent2 = await page2.getTextContent();
+                    const textItems2 = textContent2.items.map(item => item.str).join(' ');
+                    
+                    const container2 = document.createElement('div');
+                    container2.className = 'page-container';
+                    
+                    const wrapper2 = document.createElement('div');
+                    wrapper2.className = 'page-canvas-wrapper';
+                    wrapper2.appendChild(canvas2);
+                    
+                    const textLayerDiv2 = document.createElement('div');
+                    textLayerDiv2.className = 'text-layer';
+                    textLayerDiv2.style.width = viewport2.width + 'px';
+                    textLayerDiv2.style.height = viewport2.height + 'px';
+                    
+                    pdfjsLib.renderTextLayer({
+                        textContentSource: textContent2,
+                        container: textLayerDiv2,
+                        viewport: viewport2,
+                        textDivs: []
+                    });
+                    
+                    wrapper2.appendChild(textLayerDiv2);
+                    container2.appendChild(wrapper2);
+                    container2.dataset.textContent = textItems2;
+                    twoPageDiv.appendChild(container2);
+                    
+                    viewerArea.appendChild(twoPageDiv);
+                    enableTextSelection();
+                    enableCursorHighlight();
+                }
+            } else if (viewMode === 'scroll') {
+                const viewerArea = document.getElementById('viewerArea');
+                
+                if (pageNum === 1) {
+                    viewerArea.innerHTML = '';
+                    viewerArea.style.display = 'block';
+                    viewerArea.style.justifyContent = 'flex-start';
+                    viewerArea.style.alignItems = 'center';
+                }
+                
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'page-container';
+                pageContainer.style.marginBottom = '30px';
+                pageContainer.style.maxWidth = '900px';
+                pageContainer.dataset.pageNumber = pageNum;
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'page-canvas-wrapper';
+                wrapper.appendChild(canvas);
+                
+                const textLayerDiv = document.createElement('div');
+                textLayerDiv.className = 'text-layer';
+                textLayerDiv.style.width = viewport.width + 'px';
+                textLayerDiv.style.height = viewport.height + 'px';
+                
+                pdfjsLib.renderTextLayer({
+                    textContentSource: textContent,
+                    container: textLayerDiv,
+                    viewport: viewport,
+                    textDivs: []
+                });
+                
+                wrapper.appendChild(textLayerDiv);
+                pageContainer.appendChild(wrapper);
+                pageContainer.dataset.textContent = textItems;
+                
+                viewerArea.appendChild(pageContainer);
+                
+                if (pageNum < totalPages) {
+                    await renderPDFPage(pageNum + 1);
+                } else {
+                    enableTextSelection();
+                    enableCursorHighlight();
+                }
+            }
+            
+            trackPageRead(pageNum);
+            loadHighlightsForPage(pageNum);
+        }
+
+        function calculateFitToWidthScale(page) {
+            const viewerArea = document.getElementById('viewerArea');
+            const availableWidth = viewerArea.clientWidth - 120; // Account for padding
+            const viewport = page.getViewport({scale: 1});
+            return availableWidth / viewport.width;
+        }
+
+        function calculateFitToHeightScale(page) {
+            const viewerArea = document.getElementById('viewerArea');
+            const availableHeight = viewerArea.clientHeight - 60; // Account for padding
+            const viewport = page.getViewport({scale: 1});
+            return availableHeight / viewport.height;
+        }
+
+        async function loadEPUB(data) {
+            try {
+                const zip = await JSZip.loadAsync(data);
+                
+                // Find the content.opf file to get the reading order
+                let opfPath = null;
+                const containerXml = await zip.file('META-INF/container.xml').async('string');
+                const parser = new DOMParser();
+                const containerDoc = parser.parseFromString(containerXml, 'text/xml');
+                const rootfile = containerDoc.querySelector('rootfile');
+                if (rootfile) {
+                    opfPath = rootfile.getAttribute('full-path');
+                }
+                
+                if (!opfPath) {
+                    throw new Error('Could not find content.opf');
+                }
+                
+                // Get the directory path
+                const opfDir = opfPath.substring(0, opfPath.lastIndexOf('/') + 1);
+                
+                // Read content.opf
+                const opfContent = await zip.file(opfPath).async('string');
+                const opfDoc = parser.parseFromString(opfContent, 'text/xml');
+                
+                // Get spine items (reading order)
+                const spine = opfDoc.querySelector('spine');
+                const itemrefs = spine ? Array.from(spine.querySelectorAll('itemref')) : [];
+                
+                // Get manifest items
+                const manifest = opfDoc.querySelector('manifest');
+                const items = manifest ? Array.from(manifest.querySelectorAll('item')) : [];
+                
+                // Build ordered list of content files
+                const contentFiles = [];
+                itemrefs.forEach(itemref => {
+                    const idref = itemref.getAttribute('idref');
+                    const item = items.find(i => i.getAttribute('id') === idref);
+                    if (item) {
+                        const href = item.getAttribute('href');
+                        contentFiles.push(opfDir + href);
+                    }
+                });
+                
+                // If no spine found, fall back to finding HTML files
+                if (contentFiles.length === 0) {
+                    const files = Object.keys(zip.files);
+                    const htmlFiles = files.filter(f => 
+                        (f.endsWith('.html') || f.endsWith('.xhtml')) && 
+                        !f.includes('nav.') && 
+                        !f.includes('toc.')
+                    ).sort();
+                    contentFiles.push(...htmlFiles);
+                }
+                
+                // Load all content
+                let content = '';
+                for (let file of contentFiles) {
+                    try {
+                        const text = await zip.file(file).async('string');
+                        // Remove XML declarations and extract body content
+                        const cleanText = text.replace(/<\?xml[^?]*\?>/g, '');
+                        const bodyMatch = cleanText.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+                        if (bodyMatch) {
+                            content += bodyMatch[1] + '<hr style="margin: 40px 0; border: none; border-top: 2px solid #ddd;">';
+                        } else {
+                            content += cleanText + '<hr style="margin: 40px 0; border: none; border-top: 2px solid #ddd;">';
+                        }
+                    } catch (e) {
+                        console.log('Could not load file: ' + file);
+                    }
+                }
+                
+                if (!content.trim()) {
+                    throw new Error('No content found in EPUB');
+                }
+                
+                documentContent = content;
+                totalPages = 1;
+                currentPage = 1;
+                
+                const viewerArea = document.getElementById('viewerArea');
+                viewerArea.innerHTML = '';
+                
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'page-container';
+                if (fitToWidthMode) pageContainer.classList.add('fit-width');
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.id = 'contentContainer';
+                contentDiv.style.fontFamily = 'Georgia, serif';
+                contentDiv.style.fontSize = '16px';
+                contentDiv.style.lineHeight = '1.6';
+                contentDiv.innerHTML = content;
+                
+                pageContainer.appendChild(contentDiv);
+                viewerArea.appendChild(pageContainer);
+                
+                updatePageInfo();
+                enableTextSelection();
+                enableCursorHighlight();
+                generateTOC();
+            } catch (e) {
+                alert('Error loading EPUB file: ' + e.message);
+                console.error(e);
+            }
+        }
+
+        async function loadDOCX(data) {
+            try {
+                const result = await mammoth.convertToHtml({arrayBuffer: data});
+                documentContent = result.value;
+                totalPages = 1;
+                currentPage = 1;
+                
+                const viewerArea = document.getElementById('viewerArea');
+                viewerArea.innerHTML = '';
+                
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'page-container';
+                if (fitToWidthMode) pageContainer.classList.add('fit-width');
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.id = 'contentContainer';
+                contentDiv.style.fontFamily = "'Times New Roman', serif";
+                contentDiv.style.fontSize = '16px';
+                contentDiv.style.lineHeight = '1.6';
+                contentDiv.innerHTML = result.value;
+                
+                pageContainer.appendChild(contentDiv);
+                viewerArea.appendChild(pageContainer);
+                
+                updatePageInfo();
+                enableTextSelection();
+                enableCursorHighlight();
+                generateTOC();
+            } catch (e) {
+                alert('Error loading DOCX file: ' + e.message);
+            }
+        }
+
+        function enableTextSelection() {
+            setTimeout(() => {
+                const container = document.getElementById('contentContainer');
+                if (!container) return;
+                
+                container.addEventListener('mouseup', handleTextSelection);
+                container.addEventListener('dblclick', handleDoubleClick);
+            }, 100);
+        }
+
+        function enableCursorHighlight() {
+            if (!cursorHighlightMode) return;
+            
+            setTimeout(() => {
+                const containers = document.querySelectorAll('.page-container, #contentContainer');
+                containers.forEach(container => {
+                    const elements = container.querySelectorAll('p, div, span, h1, h2, h3, h4, h5, h6');
+                    elements.forEach(el => {
+                        if (el.children.length === 0 && el.textContent.trim()) {
+                            el.addEventListener('mouseenter', function() {
+                                if (cursorHighlightMode && currentHighlightedLine !== this) {
+                                    if (currentHighlightedLine) {
+                                        currentHighlightedLine.classList.remove('cursor-highlight');
+                                    }
+                                    this.classList.add('cursor-highlight');
+                                    currentHighlightedLine = this;
+                                }
+                            });
+                        }
+                    });
+                });
+            }, 100);
+        }
+
+        function toggleCursorHighlight() {
+            cursorHighlightMode = !cursorHighlightMode;
+            const btn = document.getElementById('cursorHighlightBtn');
+            
+            if (cursorHighlightMode) {
+                btn.classList.add('active');
+                enableCursorHighlight();
+            } else {
+                btn.classList.remove('active');
+                if (currentHighlightedLine) {
+                    currentHighlightedLine.classList.remove('cursor-highlight');
+                    currentHighlightedLine = null;
+                }
+            }
+        }
+
+        function handleTextSelection() {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text && highlightMode && selection.rangeCount > 0) {
+                highlightSelectedText(selection);
+            }
+        }
+
+        function handleDoubleClick(e) {
+            const selection = window.getSelection();
+            const word = selection.toString().trim();
+            
+            if (word && word.split(' ').length === 1) {
+                showDictionary(word, e.clientX, e.clientY);
+            }
+        }
+
+        function highlightSelectedText(selection) {
+            if (selection.rangeCount === 0) return;
+            
+            const range = selection.getRangeAt(0);
+            const span = document.createElement('span');
+            span.className = `highlight highlight-${selectedColor}`;
+            span.dataset.highlightId = Date.now();
+            
+            try {
+                range.surroundContents(span);
+                
+                const fileKey = currentFileName || 'current';
+                if (!highlights[fileKey]) highlights[fileKey] = [];
+                
+                highlights[fileKey].push({
+                    page: currentPage,
+                    text: selection.toString(),
+                    color: selectedColor,
+                    timestamp: new Date().toISOString(),
+                    id: span.dataset.highlightId
+                });
+                
+                saveData('highlights', highlights);
+                updateHighlightsList();
+                selection.removeAllRanges();
+            } catch (e) {
+                console.log('Cannot highlight: ' + e.message);
+            }
+        }
+
+        function loadHighlightsForPage(page) {
+            const fileKey = currentFileName || 'current';
+            const pageHighlights = highlights[fileKey]?.filter(h => h.page === page) || [];
+            // Highlights are already embedded in the DOM from previous sessions
+        }
+
+        function showDictionary(word, x, y) {
+            const popup = document.getElementById('dictionaryPopup');
+            popup.innerHTML = `
+                <button type="button" class="btn-close float-end" onclick="closeDictionary()"></button>
+                <h6 style="color: var(--primary-color);">${word}</h6>
+                <p class="small mb-2">Loading definition...</p>
+            `;
+            popup.style.display = 'block';
+            popup.style.left = Math.min(x, window.innerWidth - 320) + 'px';
+            popup.style.top = Math.min(y - 100, window.innerHeight - 200) + 'px';
+            
+            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data[0]) {
+                        const meaning = data[0].meanings[0];
+                        popup.innerHTML = `
+                            <button type="button" class="btn-close float-end" onclick="closeDictionary()"></button>
+                            <h6 style="color: var(--primary-color);">${word}</h6>
+                            <p class="small mb-1"><em>${meaning.partOfSpeech}</em></p>
+                            <p class="small">${meaning.definitions[0].definition}</p>
+                            ${data[0].phonetics[0]?.audio ? `<button class="btn btn-sm btn-primary" onclick="playPronunciation('${data[0].phonetics[0].audio}')">
+                                <i class="fas fa-volume-up"></i> Pronounce
+                            </button>` : ''}
+                        `;
+                    }
+                })
+                .catch(() => {
+                    popup.innerHTML = `
+                        <button type="button" class="btn-close float-end" onclick="closeDictionary()"></button>
+                        <h6 style="color: var(--primary-color);">${word}</h6>
+                        <p class="small text-muted">Definition not found</p>
+                    `;
+                });
+        }
+
+        function closeDictionary() {
+            document.getElementById('dictionaryPopup').style.display = 'none';
+        }
+
+        function playPronunciation(url) {
+            new Audio(url).play();
+        }
+
+        function toggleHighlight() {
+            highlightMode = !highlightMode;
+            const btn = document.getElementById('highlightBtn');
+            
+            if (highlightMode) {
+                btn.classList.add('active');
+                const modal = new bootstrap.Modal(document.getElementById('highlightModal'));
+                modal.show();
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+
+        function selectHighlightColor(color) {
+            selectedColor = color;
+            bootstrap.Modal.getInstance(document.getElementById('highlightModal')).hide();
+        }
+
+        function updateHighlightsList() {
+            const list = document.getElementById('highlightsList');
+            list.innerHTML = '';
+            
+            const fileKey = currentFileName || 'current';
+            const fileHighlights = highlights[fileKey] || [];
+            
+            if (fileHighlights.length === 0) {
+                list.innerHTML = '<p class="text-muted small">No highlights yet</p>';
+                return;
+            }
+            
+            fileHighlights.forEach((h, idx) => {
+                const item = document.createElement('div');
+                item.className = 'bookmark-item';
+                item.innerHTML = `
+                    <div style="flex: 1;">
+                        <span class="highlight highlight-${h.color}" style="padding: 2px 8px; border-radius: 3px;">
+                            ${h.text.substring(0, 40)}...
+                        </span>
+                        <small class="d-block text-muted">Page ${h.page}</small>
+                    </div>
+                    <button class="btn btn-sm btn-danger" onclick="removeHighlight(${idx}); event.stopPropagation();">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                item.onclick = (e) => {
+                    if (!e.target.closest('button')) {
+                        jumpToPage(h.page);
+                    }
+                };
+                list.appendChild(item);
+            });
+        }
+
+        function removeHighlight(idx) {
+            const fileKey = currentFileName || 'current';
+            if (highlights[fileKey]) {
+                highlights[fileKey].splice(idx, 1);
+                saveData('highlights', highlights);
+                updateHighlightsList();
+            }
+        }
+
+        function toggleTTS() {
+            const controls = document.getElementById('ttsControls');
+            controls.style.display = controls.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function ttsPlay() {
+            if ('speechSynthesis' in window) {
+                let text = '';
+                
+                // Get text from current page
+                if (fileType === 'pdf') {
+                    const containers = document.querySelectorAll('.page-container');
+                    containers.forEach(container => {
+                        text += container.dataset.textContent + ' ';
+                    });
+                } else {
+                    const container = document.getElementById('contentContainer');
+                    text = container ? container.innerText : '';
+                }
+                
+                if (text.trim()) {
+                    window.speechSynthesis.cancel(); // Stop any ongoing speech
+                    ttsUtterance = new SpeechSynthesisUtterance(text);
+                    ttsUtterance.rate = parseFloat(document.getElementById('ttsSpeed').value);
+                    ttsUtterance.pitch = parseFloat(document.getElementById('ttsPitch').value);
+                    window.speechSynthesis.speak(ttsUtterance);
+                } else {
+                    alert('No text content found on this page');
+                }
+            } else {
+                alert('Text-to-speech not supported in this browser');
+            }
+        }
+
+        function ttsPause() {
+            if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+                window.speechSynthesis.pause();
+            } else if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+            }
+        }
+
+        function ttsStop() {
+            window.speechSynthesis.cancel();
+        }
+
+        function generateTOC() {
+            const tocList = document.getElementById('tocList');
+            tocList.innerHTML = '';
+            
+            if (fileType === 'pdf') {
+                // Simple page-based TOC for PDFs
+                const step = Math.max(1, Math.floor(totalPages / 20));
+                for (let i = 1; i <= totalPages; i += step) {
+                    const item = document.createElement('div');
+                    item.className = 'toc-item';
+                    item.innerHTML = `Page ${i}`;
+                    item.onclick = () => {
+                        jumpToPage(i);
+                    };
+                    tocList.appendChild(item);
+                }
+            } else {
+                // Extract headings for EPUB/DOCX
+                setTimeout(() => {
+                    const container = document.getElementById('contentContainer');
+                    if (container) {
+                        const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                        if (headings.length > 0) {
+                            headings.forEach((heading) => {
+                                const item = document.createElement('div');
+                                item.className = 'toc-item';
+                                const level = parseInt(heading.tagName[1]);
+                                item.style.paddingLeft = ((level - 1) * 15) + 'px';
+                                item.innerHTML = heading.textContent.substring(0, 50);
+                                item.onclick = () => {
+                                    heading.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                };
+                                tocList.appendChild(item);
+                            });
+                        } else {
+                            tocList.innerHTML = '<p class="text-muted small">No headings found</p>';
+                        }
+                    }
+                }, 500);
+            }
+        }
+
+        function startReadingSession() {
+            sessionStart = Date.now();
+            if (statsInterval) clearInterval(statsInterval);
+            
+            statsInterval = setInterval(updateStats, 1000);
+        }
+
+        function updateStats() {
+            const sessionTime = Math.floor((Date.now() - sessionStart) / 60000);
+            document.getElementById('sessionTime').textContent = sessionTime + 'm';
+            
+            readingStats.totalTime += 1000;
+            const totalMinutes = Math.floor(readingStats.totalTime / 60000);
+            document.getElementById('readingTime').textContent = totalMinutes + 'm';
+            
+            const fileKey = currentFileName || 'current';
+            if (!readingStats.pagesRead[fileKey]) {
+                readingStats.pagesRead[fileKey] = {};
+            }
+            
+            const pagesReadCount = Object.keys(readingStats.pagesRead[fileKey] || {}).length;
+            document.getElementById('pagesRead').textContent = pagesReadCount;
+            
+            const progress = totalPages > 0 ? Math.round((currentPage / totalPages) * 100) : 0;
+            document.getElementById('readingProgress').textContent = progress + '%';
+            
+            saveData('readingStats', readingStats);
+        }
+
+        function trackPageRead(page) {
+            const fileKey = currentFileName || 'current';
+            if (!readingStats.pagesRead[fileKey]) {
+                readingStats.pagesRead[fileKey] = {};
+            }
+            if (!readingStats.pagesRead[fileKey][page]) {
+                readingStats.pagesRead[fileKey][page] = true;
+            }
+        }
+
+        function changeTheme(theme) {
+            currentTheme = theme;
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeSelector();
+        }
+
+        function updateThemeSelector() {
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            document.querySelector(`.theme-${currentTheme}`)?.classList.add('active');
+        }
+
+        function addToRecentFiles(name, type, path) {
+            const file = {
+                name: name,
+                type: type,
+                path: path,
+                timestamp: new Date().toISOString()
+            };
+            
+            recentFiles = recentFiles.filter(f => f.name !== name);
+            recentFiles.unshift(file);
+            recentFiles = recentFiles.slice(0, 10);
+            
+            saveData('recentFiles', recentFiles);
+            updateRecentFilesList();
+        }
+
+        function updateRecentFilesList() {
+            const list = document.getElementById('recentFilesList');
+            list.innerHTML = '';
+            
+            if (recentFiles.length === 0) {
+                list.innerHTML = '<p class="text-muted small">No recent files</p>';
+                return;
+            }
+            
+            recentFiles.forEach(file => {
+                const icons = {
+                    'pdf': 'fa-file-pdf text-danger',
+                    'epub': 'fa-book text-success',
+                    'doc': 'fa-file-word text-primary',
+                    'docx': 'fa-file-word text-primary'
+                };
+                
+                const item = document.createElement('div');
+                item.className = 'library-item';
+                item.innerHTML = `
+                    <div class="recent-file">
+                        <i class="fas ${icons[file.type] || 'fa-file'}"></i>
+                        <div>
+                            <div>${file.name}</div>
+                            <small class="text-muted">${new Date(file.timestamp).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                `;
+                
+                // Only clickable if it's a preloaded file with a path
+                if (file.path) {
+                    item.style.cursor = 'pointer';
+                    item.onclick = () => {
+                        const fileInfo = PRELOADED_FILES.find(f => f.path === file.path) || {
+                            name: file.name.replace(/\.[^/.]+$/, ""),
+                            path: file.path,
+                            type: file.type
+                        };
+                        loadPreloadedFile(fileInfo);
+                    };
+                } else {
+                    item.style.opacity = '0.6';
+                    item.title = 'User-uploaded file - please upload again to view';
+                }
+                
+                list.appendChild(item);
+            });
+        }
+
+        function exportAllData() {
+            const data = {
+                bookmarks: bookmarks,
+                highlights: highlights,
+                stats: readingStats,
+                theme: currentTheme,
+                recentFiles: recentFiles
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'reader-data-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportStats() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(20);
+                doc.text('Reading Statistics', 20, 20);
+                
+                doc.setFontSize(12);
+                const totalMinutes = Math.floor(readingStats.totalTime / 60000);
+                doc.text(`Total Reading Time: ${totalMinutes} minutes`, 20, 40);
+                
+                let totalPagesRead = 0;
+                Object.values(readingStats.pagesRead).forEach(filePages => {
+                    totalPagesRead += Object.keys(filePages).length;
+                });
+                doc.text(`Total Pages Read: ${totalPagesRead}`, 20, 50);
+                
+                const fileKey = currentFileName || 'current';
+                const fileBookmarks = bookmarks[fileKey] || [];
+                const fileHighlights = highlights[fileKey] || [];
+                doc.text(`Current File Bookmarks: ${fileBookmarks.length}`, 20, 60);
+                doc.text(`Current File Highlights: ${fileHighlights.length}`, 20, 70);
+                
+                doc.save('reading-stats-' + new Date().toISOString().split('T')[0] + '.pdf');
+            } catch (error) {
+                alert('Error exporting stats. Please try again.');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                localStorage.clear();
+                bookmarks = {};
+                highlights = {};
+                recentFiles = [];
+                readingStats = {totalTime: 0, pagesRead: {}, sessions: []};
+                alert('All data cleared');
+                location.reload();
+            }
+        }
+
+        function saveData(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                if (viewMode === 'double' && currentPage > 1) currentPage--;
+                renderCurrentPage();
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                if (viewMode === 'double' && currentPage < totalPages) currentPage++;
+                renderCurrentPage();
+            }
+        }
+
+        function goToPage() {
+            const pageNum = parseInt(document.getElementById('pageInput').value);
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                currentPage = pageNum;
+                renderCurrentPage();
+            }
+        }
+
+        async function renderCurrentPage() {
+            if (fileType === 'pdf' && pdfDoc) {
+                await renderPDFPage(currentPage);
+            }
+            updatePageInfo();
+        }
+
+        function updatePageInfo() {
+            document.getElementById('pageInfo').textContent = `/ ${totalPages}`;
+            document.getElementById('pageInput').value = currentPage;
+            document.getElementById('pageInput').max = totalPages;
+            
+            const progress = totalPages > 0 ? (currentPage / totalPages) * 100 : 0;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function changeViewMode() {
+            viewMode = document.getElementById('viewMode').value;
+            if (fileType === 'pdf' && pdfDoc) {
+                currentPage = 1; // Reset to first page when changing views
+                renderCurrentPage();
+            }
+        }
+
+        function zoomIn() {
+            fitToWidthMode = false;
+            fitToHeightMode = false;
+            zoomLevel += 0.2;
+            document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+            if (fileType === 'pdf' && pdfDoc) {
+                renderCurrentPage();
+            } else {
+                applyZoomToContent();
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 0.4) {
+                fitToWidthMode = false;
+                fitToHeightMode = false;
+                zoomLevel -= 0.2;
+                document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+                if (fileType === 'pdf' && pdfDoc) {
+                    renderCurrentPage();
+                } else {
+                    applyZoomToContent();
+                }
+            }
+        }
+
+        function fitToWidth() {
+            fitToWidthMode = !fitToWidthMode;
+            fitToHeightMode = false;
+            
+            if (fitToWidthMode) {
+                document.getElementById('zoomLevel').textContent = 'Fit W';
+                if (fileType === 'pdf' && pdfDoc) {
+                    renderCurrentPage();
+                } else {
+                    const containers = document.querySelectorAll('.page-container');
+                    containers.forEach(c => c.classList.add('fit-width'));
+                }
+            } else {
+                document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+                if (fileType === 'pdf' && pdfDoc) {
+                    renderCurrentPage();
+                } else {
+                    const containers = document.querySelectorAll('.page-container');
+                    containers.forEach(c => c.classList.remove('fit-width'));
+                }
+            }
+        }
+
+        function fitToHeight() {
+            fitToHeightMode = !fitToHeightMode;
+            fitToWidthMode = false;
+            
+            if (fitToHeightMode) {
+                document.getElementById('zoomLevel').textContent = 'Fit H';
+                if (fileType === 'pdf' && pdfDoc) {
+                    renderCurrentPage();
+                }
+            } else {
+                document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+                if (fileType === 'pdf' && pdfDoc) {
+                    renderCurrentPage();
+                }
+            }
+        }
+
+        function clearRecentFiles() {
+            if (confirm('Clear all recent files?')) {
+                recentFiles = [];
+                saveData('recentFiles', recentFiles);
+                updateRecentFilesList();
+            }
+        }
+
+        function applyZoomToContent() {
+            const contentContainer = document.getElementById('contentContainer');
+            if (contentContainer) {
+                contentContainer.style.transform = `scale(${zoomLevel})`;
+                contentContainer.style.transformOrigin = 'top center';
+            }
+        }
+
+        function toggleBookmark() {
+            const fileKey = currentFileName || 'current';
+            if (!bookmarks[fileKey]) bookmarks[fileKey] = [];
+            
+            const existingIndex = bookmarks[fileKey].findIndex(b => b.page === currentPage);
+            
+            if (existingIndex > -1) {
+                bookmarks[fileKey].splice(existingIndex, 1);
+                alert('Bookmark removed');
+            } else {
+                bookmarks[fileKey].push({
+                    page: currentPage,
+                    timestamp: new Date().toISOString()
+                });
+                alert('Page bookmarked!');
+            }
+            
+            saveData('bookmarks', bookmarks);
+            updateBookmarksList();
+        }
+
+        function updateBookmarksList() {
+            const list = document.getElementById('bookmarksList');
+            list.innerHTML = '';
+            
+            const fileKey = currentFileName || 'current';
+            const fileBookmarks = bookmarks[fileKey] || [];
+            
+            if (fileBookmarks.length === 0) {
+                list.innerHTML = '<p class="text-muted small">No bookmarks yet</p>';
+                return;
+            }
+            
+            fileBookmarks.forEach((bookmark, idx) => {
+                const item = document.createElement('div');
+                item.className = 'bookmark-item';
+                item.innerHTML = `
+                    <span>Page ${bookmark.page}</span>
+                    <button class="btn btn-sm btn-danger" onclick="removeBookmark(${idx}); event.stopPropagation();">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                item.onclick = (e) => {
+                    if (!e.target.closest('button')) {
+                        jumpToPage(bookmark.page);
+                    }
+                };
+                list.appendChild(item);
+            });
+        }
+
+        function jumpToPage(pageNumber) {
+            if (viewMode === 'scroll') {
+                // In scroll mode, scroll to the specific page
+                const pageContainers = document.querySelectorAll('.page-container[data-page-number]');
+                const targetPage = Array.from(pageContainers).find(p => 
+                    parseInt(p.dataset.pageNumber) === pageNumber
+                );
+                
+                if (targetPage) {
+                    targetPage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    currentPage = pageNumber;
+                    updatePageInfo();
+                }
+            } else {
+                // In single or double page mode, render that page
+                currentPage = pageNumber;
+                renderCurrentPage();
+            }
+        }
+
+        function removeBookmark(idx) {
+            const fileKey = currentFileName || 'current';
+            if (bookmarks[fileKey]) {
+                bookmarks[fileKey].splice(idx, 1);
+                saveData('bookmarks', bookmarks);
+                updateBookmarksList();
+            }
+        }
+
+        function openLibrary() {
+            updateRecentFilesList();
+            new bootstrap.Modal(document.getElementById('libraryModal')).show();
+        }
+
+        function openSearch() {
+            new bootstrap.Modal(document.getElementById('searchModal')).show();
+        }
+
+        function openSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (!searchTerm) {
+                resultsDiv.innerHTML = '<p class="text-muted">Please enter a search term</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<p class="text-muted">Searching...</p>';
+            
+            const results = [];
+            
+            if (fileType === 'pdf' && pdfDoc) {
+                for (let i = 1; i <= totalPages; i++) {
+                    try {
+                        const page = await pdfDoc.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const text = textContent.items.map(item => item.str).join(' ');
+                        
+                        if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
+                            const index = text.toLowerCase().indexOf(searchTerm.toLowerCase());
+                            const preview = text.substring(Math.max(0, index - 40), Math.min(text.length, index + 80));
+                            results.push({page: i, preview: preview});
+                        }
+                    } catch (e) {
+                        console.error('Error searching page ' + i, e);
+                    }
+                }
+            } else {
+                // Search in EPUB/DOCX
+                const container = document.getElementById('contentContainer');
+                if (container) {
+                    const text = container.innerText;
+                    if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        const index = text.toLowerCase().indexOf(searchTerm.toLowerCase());
+                        const preview = text.substring(Math.max(0, index - 40), Math.min(text.length, index + 80));
+                        results.push({page: currentPage, preview: preview});
+                        
+                        // Highlight in document
+                        highlightSearchTerm(container, searchTerm);
+                    }
+                }
+            }
+            
+            displaySearchResults(results, searchTerm);
+        }
+
+        function highlightSearchTerm(container, term) {
+            const innerHTML = container.innerHTML;
+            const regex = new RegExp(`(${term})`, 'gi');
+            container.innerHTML = innerHTML.replace(regex, '<span class="highlight highlight-yellow">$1</span>');
+        }
+
+        function displaySearchResults(results, searchTerm) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-muted">No results found</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = `<p class="text-success"><strong>${results.length}</strong> result(s) found for "${searchTerm}"</p>`;
+            
+            results.forEach(result => {
+                const item = document.createElement('div');
+                item.className = 'bookmark-item';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'flex-start';
+                item.innerHTML = `
+                    <strong>Page ${result.page}</strong>
+                    <small class="text-muted">...${result.preview}...</small>
+                `;
+                item.onclick = () => {
+                    jumpToPage(result.page);
+                    bootstrap.Modal.getInstance(document.getElementById('searchModal')).hide();
+                };
+                resultsDiv.appendChild(item);
+            });
+        }
+
+        function clearReadingStats() {
+            if (confirm('Clear all reading statistics? This cannot be undone.')) {
+                readingStats = {totalTime: 0, pagesRead: {}, sessions: []};
+                saveData('readingStats', readingStats);
+                updateStats();
+                alert('Reading statistics cleared');
+            }
+        }
+
+        function changeFontSize(value) {
+            document.getElementById('fontSizeLabel').textContent = value + 'px';
+            const container = document.getElementById('contentContainer');
+            if (container) {
+                container.style.fontSize = value + 'px';
+            }
+        }
+
+        function changeLineSpacing(value) {
+            const container = document.getElementById('contentContainer');
+            if (container) {
+                container.style.lineHeight = value;
+            }
+        }
+
+        // Initialize on load
+        updateBookmarksList();
+        updateHighlightsList();
+        updateRecentFilesList();
+        
+        // Start stats tracking if there's a file loaded
+        if (currentFile) {
+            startReadingSession();
+        }
+    </script>
 </body>
 </html>

@@ -414,6 +414,12 @@ a.list-item {
     transform: translateY(-5px);
 }
 
+a.timeline-item {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .timeline-year {
     font-weight: bold;
     color: var(--primary-color);

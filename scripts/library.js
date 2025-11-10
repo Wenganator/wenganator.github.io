@@ -64,23 +64,53 @@ const writings = [
 let favorites = JSON.parse(localStorage.getItem('writingFavorites') || '[]');
 let readItems = JSON.parse(localStorage.getItem('writingRead') || '[]');
 let darkMode = JSON.parse(localStorage.getItem('writingDarkMode') || 'false');
-let activeCategories = [];
-let activeTags = [];
-let currentView = 'grid';
-let showOnlyFavorites = false;
-let showOnlyRead = false;
-let showOnlyUnread = false;
+let activeCategories = JSON.parse(localStorage.getItem('writingActiveCategories') || '[]');
+let activeTags = JSON.parse(localStorage.getItem('writingActiveTags') || '[]');
+let currentView = localStorage.getItem('writingCurrentView') || 'grid';
+let cardSize = localStorage.getItem('writingCardSize') || 'medium';
+let sortBy = localStorage.getItem('writingSortBy') || 'title-asc';
+let showOnlyFavorites = JSON.parse(localStorage.getItem('writingShowOnlyFavorites') || 'false');
+let showOnlyRead = JSON.parse(localStorage.getItem('writingShowOnlyRead') || 'false');
+let showOnlyUnread = JSON.parse(localStorage.getItem('writingShowOnlyUnread') || 'false');
 let currentShareWriting = null;
 
 // Initialize
 function init() {
     renderCategoryTags();
     renderTagChips();
+    restoreUIState();
     renderView();
     updateStats();
     setupEventListeners();
     updateActiveFilters();
     initDarkMode();
+}
+
+// Restore UI state from localStorage
+function restoreUIState() {
+    // Restore sort selection
+    document.getElementById('sortSelect').value = sortBy;
+
+    // Restore card size
+    const cardSizeRadio = document.getElementById(`size${cardSize.charAt(0).toUpperCase() + cardSize.slice(1)}`);
+    if (cardSizeRadio) {
+        cardSizeRadio.checked = true;
+        document.getElementById('gridView').className = `writings-grid size-${cardSize}`;
+    }
+
+    // Restore view
+    document.getElementById('gridView').style.display = currentView === 'grid' ? 'grid' : 'none';
+    document.getElementById('listView').classList.toggle('active', currentView === 'list');
+    document.getElementById('timelineView').classList.toggle('active', currentView === 'timeline');
+    document.getElementById('cardSizeControl').style.display = currentView === 'grid' ? 'flex' : 'none';
+
+    // Restore view buttons
+    document.getElementById('gridViewBtn').classList.toggle('active', currentView === 'grid');
+    document.getElementById('listViewBtn').classList.toggle('active', currentView === 'list');
+    document.getElementById('timelineViewBtn').classList.toggle('active', currentView === 'timeline');
+
+    // Highlight active category and tag chips
+    highlightActiveChips();
 }
 
 // Initialize dark mode
@@ -222,6 +252,10 @@ function renderWritings() {
     document.querySelectorAll('.writing-card').forEach(card => {
         const id = parseInt(card.dataset.id);
         card.addEventListener('mousedown', (e) => {
+            // Don't mark as read if clicking on buttons or tags
+            if (e.target.closest('button') || e.target.closest('.card-tag')) {
+                return;
+            }
             // Mark as read for left, middle, or right click
             if (e.button === 0 || e.button === 1 || e.button === 2) {
                 if (!readItems.includes(id)) {
@@ -280,6 +314,11 @@ function renderList() {
     document.querySelectorAll('.list-item').forEach(item => {
         const id = parseInt(item.dataset.id);
         item.addEventListener('mousedown', (e) => {
+            // Don't mark as read if clicking on buttons or tags
+            if (e.target.closest('button') || e.target.closest('.list-item-tag') || 
+                e.target.closest('.list-item-category')) {
+                return;
+            }
             // Mark as read for left, middle, or right click
             if (e.button === 0 || e.button === 1 || e.button === 2) {
                 if (!readItems.includes(id)) {
@@ -382,10 +421,23 @@ function clearAllFilters() {
     activeCategories = [];
     activeTags = [];
     document.getElementById('searchBox').value = '';
+    savePreferences();
     updateActiveFilters();
     highlightActiveChips();
     renderView();
     updateStats();
+}
+
+// Save user preferences to localStorage
+function savePreferences() {
+    localStorage.setItem('writingActiveCategories', JSON.stringify(activeCategories));
+    localStorage.setItem('writingActiveTags', JSON.stringify(activeTags));
+    localStorage.setItem('writingCurrentView', currentView);
+    localStorage.setItem('writingCardSize', cardSize);
+    localStorage.setItem('writingSortBy', sortBy);
+    localStorage.setItem('writingShowOnlyFavorites', JSON.stringify(showOnlyFavorites));
+    localStorage.setItem('writingShowOnlyRead', JSON.stringify(showOnlyRead));
+    localStorage.setItem('writingShowOnlyUnread', JSON.stringify(showOnlyUnread));
 }
 
 // Render timeline view
@@ -394,12 +446,12 @@ function renderTimeline() {
     const container = document.getElementById('timelineItems');
 
     const itemsHtml = filtered.map(w => `
-        <div class="timeline-item" onclick="navigateToWriting(${w.id})">
+        <a href="${w.url}" class="timeline-item" data-id="${w.id}">
             <div class="timeline-year">${w.year}</div>
             <div class="timeline-title">${w.title}</div>
             <div class="timeline-author">${w.author}</div>
             ${readItems.includes(w.id) ? '<div style="color: #28a745; margin-top: 5px;">✓ Read</div>' : ''}
-        </div>
+        </a>
     `).join('');
 
     container.innerHTML = itemsHtml;
@@ -411,6 +463,23 @@ function renderTimeline() {
         if (timelineContainer && line && container.scrollWidth > 0) {
             line.style.width = container.scrollWidth + 'px';
         }
+        
+        // Mark as read when clicking timeline items (any mouse button)
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            const id = parseInt(item.dataset.id);
+            item.addEventListener('mousedown', (e) => {
+                // Don't mark as read if clicking on interactive elements
+                if (e.target.closest('button')) {
+                    return;
+                }
+                if (e.button === 0 || e.button === 1 || e.button === 2) {
+                    if (!readItems.includes(id)) {
+                        readItems.push(id);
+                        localStorage.setItem('writingRead', JSON.stringify(readItems));
+                    }
+                }
+            });
+        });
     }, 0);
 }
 
@@ -422,7 +491,7 @@ function toggleFavorite(id) {
         favorites.push(id);
     }
     localStorage.setItem('writingFavorites', JSON.stringify(favorites));
-    renderWritings();
+    renderView();
     updateStats();
 }
 
@@ -430,9 +499,10 @@ function toggleFavorite(id) {
 function toggleFavoritesFilter() {
     showOnlyFavorites = !showOnlyFavorites;
     showOnlyRead = false;
+    showOnlyUnread = false;
+    savePreferences();
     updateActiveFilters();
-    if (currentView === 'grid') renderWritings();
-    else renderTimeline();
+    renderView();
     updateStats();
 }
 
@@ -441,9 +511,9 @@ function toggleReadFilter() {
     showOnlyRead = !showOnlyRead;
     showOnlyFavorites = false;
     showOnlyUnread = false;
+    savePreferences();
     updateActiveFilters();
-    if (currentView === 'grid') renderWritings();
-    else renderTimeline();
+    renderView();
     updateStats();
 }
 
@@ -452,9 +522,9 @@ function toggleUnreadFilter() {
     showOnlyUnread = !showOnlyUnread;
     showOnlyFavorites = false;
     showOnlyRead = false;
+    savePreferences();
     updateActiveFilters();
-    if (currentView === 'grid') renderWritings();
-    else renderTimeline();
+    renderView();
     updateStats();
 }
 
@@ -463,7 +533,7 @@ function clearAllRead() {
     if (confirm('Are you sure you want to clear all read status? This cannot be undone.')) {
         readItems = [];
         localStorage.setItem('writingRead', JSON.stringify(readItems));
-        renderWritings();
+        renderView();
         updateStats();
     }
 }
@@ -592,7 +662,9 @@ function setupEventListeners() {
     });
 
     // Sort
-    document.getElementById('sortSelect').addEventListener('change', () => {
+    document.getElementById('sortSelect').addEventListener('change', (e) => {
+        sortBy = e.target.value;
+        savePreferences();
         renderView();
     });
 
@@ -608,6 +680,7 @@ function setupEventListeners() {
                 activeCategories.push(category);
             }
             
+            savePreferences();
             updateActiveFilters();
             renderView();
             updateStats();
@@ -626,6 +699,7 @@ function setupEventListeners() {
                 activeTags.push(tag);
             }
             
+            savePreferences();
             updateActiveFilters();
             renderView();
             updateStats();
@@ -656,6 +730,7 @@ function setupEventListeners() {
     // View toggle
     document.getElementById('gridViewBtn').addEventListener('click', () => {
         currentView = 'grid';
+        savePreferences();
         document.getElementById('gridView').style.display = 'grid';
         document.getElementById('listView').classList.remove('active');
         document.getElementById('timelineView').classList.remove('active');
@@ -668,6 +743,7 @@ function setupEventListeners() {
 
     document.getElementById('listViewBtn').addEventListener('click', () => {
         currentView = 'list';
+        savePreferences();
         document.getElementById('gridView').style.display = 'none';
         document.getElementById('listView').classList.add('active');
         document.getElementById('timelineView').classList.remove('active');
@@ -680,6 +756,7 @@ function setupEventListeners() {
 
     document.getElementById('timelineViewBtn').addEventListener('click', () => {
         currentView = 'timeline';
+        savePreferences();
         document.getElementById('gridView').style.display = 'none';
         document.getElementById('listView').classList.remove('active');
         document.getElementById('timelineView').classList.add('active');
@@ -693,7 +770,9 @@ function setupEventListeners() {
     // Card size controls
     document.querySelectorAll('input[name="cardSize"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
-            changeCardSize(e.target.value);
+            cardSize = e.target.value;
+            changeCardSize(cardSize);
+            savePreferences();
         });
     });
 
