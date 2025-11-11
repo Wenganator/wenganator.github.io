@@ -35,6 +35,187 @@
             --sidebar-bg: #faf5e8;
         }
 
+        body.reader-dark {
+            background: #1a1a1a;
+        }
+
+        body.reader-dark .reader-container {
+            background: #2d2d2d;
+        }
+
+        body.reader-dark .toolbar {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        }
+
+        body.reader-dark .sidebar {
+            background: #2d2d2d;
+            border-left-color: #4a5568;
+        }
+
+        body.reader-sepia {
+            background: #d4b896;
+        }
+
+        body.reader-sepia .reader-container {
+            background: #f4ecd8;
+        }
+
+        body.reader-sepia .toolbar {
+            background: linear-gradient(135deg, #c4a57b 0%, #a0826d 100%);
+        }
+
+        body.reader-sepia .sidebar {
+            background: #faf5e8;
+            border-left-color: #d4b896;
+        }
+
+        body.reader-night {
+            background: #000000;
+        }
+
+        body.reader-night .reader-container {
+            background: #1a1a1a;
+        }
+
+        body.reader-night .toolbar {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+        }
+
+        body.reader-night .sidebar {
+            background: #1a1a1a;
+            border-left-color: #333;
+        }
+
+        body.reader-blue {
+            background: #1a2332;
+        }
+
+        body.reader-blue .reader-container {
+            background: #2c3e50;
+        }
+
+        body.reader-blue .toolbar {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        body.reader-blue .sidebar {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        body.reader-blue .page-container {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        body.reader-blue #viewerArea {
+            background: #34495e;
+        }
+
+        body.reader-green {
+            background: #1b2e1f;
+        }
+
+        body.reader-green .reader-container {
+            background: #27ae60;
+        }
+
+        body.reader-green .toolbar {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        body.reader-green .sidebar {
+            background: #2ecc71;
+            border-left-color: #27ae60;
+        }
+
+        body.reader-green .page-container {
+            background: #f1f8e9;
+            color: #1b5e20;
+        }
+
+        body.reader-green #viewerArea {
+            background: #a5d6a7;
+        }
+
+        body.reader-purple {
+            background: #2d1b3d;
+        }
+
+        body.reader-purple .reader-container {
+            background: #4a2c5e;
+        }
+
+        body.reader-purple .toolbar {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        }
+
+        body.reader-purple .sidebar {
+            background: #6c3483;
+            border-left-color: #9b59b6;
+        }
+
+        body.reader-purple .page-container {
+            background: #f3e5f5;
+            color: #4a148c;
+        }
+
+        body.reader-purple #viewerArea {
+            background: #5e3a6e;
+        }
+
+        body.reader-blue .modal-content,
+        body.reader-blue .dictionary-popup,
+        body.reader-blue .context-menu,
+        body.reader-blue .annotation-tooltip,
+        body.reader-blue .btn-close {
+            background: #34495e;
+            color: #ecf0f1;
+            border-color: #3498db;
+        }
+
+        body.reader-green .modal-content,
+        body.reader-green .dictionary-popup,
+        body.reader-green .context-menu,
+        body.reader-green .annotation-tooltip,
+        body.reader-green .btn-close {
+            background: #2ecc71;
+            color: #1b5e20;
+            border-color: #27ae60;
+        }
+
+        body.reader-purple .modal-content,
+        body.reader-purple .dictionary-popup,
+        body.reader-purple .context-menu,
+        body.reader-purple .annotation-tooltip,
+        body.reader-purple .btn-close {
+            background: #6c3483;
+            color: #f3e5f5;
+            border-color: #9b59b6;
+        }
+
+        .sort-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .sort-btn {
+            flex: 1;
+            padding: 5px;
+            font-size: 11px;
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .sort-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -122,6 +303,17 @@
             padding: 20px;
         }
         
+        #viewerArea.fit-height-mode {
+            overflow-y: hidden;
+            padding: 0;
+            align-items: center;
+        }
+
+        #viewerArea.single-page-mode, #viewerArea.double-page-mode {
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+        
         .page-container {
             background: var(--sidebar-bg);
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -137,6 +329,109 @@
             width: 100%;
             max-width: none;
             margin: 0;
+        }
+
+        .page-container.document-style {
+            padding: 40px;
+            max-width: 900px;
+        }
+
+        .display-dark .page-container {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .display-sepia .page-container {
+            background: #f4ecd8;
+            color: #5c4a3a;
+        }
+
+        .display-night .page-container {
+            background: #1a1a1a;
+            color: #b0b0b0;
+        }
+
+        .display-dark #viewerArea {
+            background: #1a1a1a;
+        }
+
+        .display-sepia #viewerArea {
+            background: #e8dcc0;
+        }
+
+        .display-night #viewerArea {
+            background: #000000;
+        }
+
+        body.reader-dark .page-container {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.reader-sepia .page-container {
+            background: #f4ecd8;
+            color: #5c4a3a;
+        }
+
+        body.reader-night .page-container {
+            background: #1a1a1a;
+            color: #b0b0b0;
+        }
+
+        body.reader-dark #viewerArea {
+            background: #1a1a1a;
+        }
+
+        body.reader-sepia #viewerArea {
+            background: #e8dcc0;
+        }
+
+        body.reader-night #viewerArea {
+            background: #000000;
+        }
+
+        body.reader-dark .modal-content,
+        body.reader-dark .dictionary-popup,
+        body.reader-dark .context-menu,
+        body.reader-dark .annotation-tooltip {
+            background: #2d2d2d;
+            color: #e0e0e0;
+            border-color: #4a5568;
+        }
+
+        body.reader-sepia .modal-content,
+        body.reader-sepia .dictionary-popup,
+        body.reader-sepia .context-menu,
+        body.reader-sepia .annotation-tooltip {
+            background: #faf5e8;
+            color: #5c4a3a;
+            border-color: #d4b896;
+        }
+
+        body.reader-night .modal-content,
+        body.reader-night .dictionary-popup,
+        body.reader-night .context-menu,
+        body.reader-night .annotation-tooltip {
+            background: #1a1a1a;
+            color: #b0b0b0;
+            border-color: #333;
+        }
+
+        .file-label {
+            font-size: 10px;
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+            margin: 40px 0;
+            border-top: 2px dashed #ccc;
+            padding-top: 40px;
         }
         
         .two-page-view {
@@ -375,6 +670,112 @@
         .text-layer ::selection {
             background: rgba(0, 100, 255, 0.3);
         }
+
+        .search-highlight-temp {
+            background: rgba(255, 255, 0, 0.6);
+            padding: 2px 4px;
+            border-radius: 2px;
+            animation: pulse 1s ease-in-out 3;
+        }
+
+        @keyframes pulse {
+            0%, 100% { background: rgba(255, 255, 0, 0.6); }
+            50% { background: rgba(255, 255, 0, 0.9); }
+        }
+
+        .context-menu {
+            position: fixed;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 8px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 10000;
+            min-width: 200px;
+            display: none;
+        }
+
+        .context-menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-menu-item:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .context-menu-item i {
+            width: 20px;
+        }
+
+        .context-menu-divider {
+            height: 1px;
+            background: #dee2e6;
+            margin: 5px 0;
+        }
+
+        .annotation-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .annotation-marker:hover {
+            transform: scale(1.2);
+        }
+
+        .annotation-tooltip {
+            position: absolute;
+            background: var(--sidebar-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            max-width: 300px;
+            z-index: 1001;
+            display: none;
+            color: var(--text-color);
+        }
+
+        .highlight-deletable {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .highlight-deletable:hover::after {
+            content: '×';
+            position: absolute;
+            right: -15px;
+            top: -8px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -407,6 +808,15 @@
                     <option value="double">Double</option>
                     <option value="scroll">Scroll</option>
                 </select>
+                <select id="displayTheme" onchange="changeDisplayTheme()" title="Display Theme">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="night">Night</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="purple">Purple</option>
+                </select>
             </div>
 
             <div class="toolbar-section">
@@ -434,6 +844,15 @@
                 </button>
                 <button id="cursorHighlightBtn" onclick="toggleCursorHighlight()" title="Cursor Highlight">
                     <i class="fas fa-mouse-pointer"></i>
+                </button>
+                <button id="annotateBtn" onclick="toggleAnnotationMode()" title="Add Annotation">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <button onclick="clipSelectedText()" title="Clip to Notes">
+                    <i class="fas fa-clipboard"></i>
+                </button>
+                <button onclick="defineSelectedWord()" title="Define Word">
+                    <i class="fas fa-book-open"></i>
                 </button>
                 <button onclick="openSearch()" title="Search">
                     <i class="fas fa-search"></i>
@@ -477,6 +896,16 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#annotationsTab">
+                            <i class="fas fa-sticky-note"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#notesTab">
+                            <i class="fas fa-clipboard"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" data-bs-toggle="pill" data-bs-target="#statsTab">
                             <i class="fas fa-chart-bar"></i>
                         </button>
@@ -491,12 +920,50 @@
                     
                     <div class="tab-pane fade" id="bookmarksTab">
                         <h5>Bookmarks</h5>
+                        <div class="sort-buttons">
+                            <button class="sort-btn active" onclick="setSortMode('bookmarks', 'recent')">Recent</button>
+                            <button class="sort-btn" onclick="setSortMode('bookmarks', 'position')">Position</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="clearAllBookmarks()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
                         <div id="bookmarksList"></div>
                     </div>
                     
                     <div class="tab-pane fade" id="highlightsTab">
                         <h5>Highlights</h5>
+                        <div class="sort-buttons">
+                            <button class="sort-btn active" onclick="setSortMode('highlights', 'recent')">Recent</button>
+                            <button class="sort-btn" onclick="setSortMode('highlights', 'position')">Position</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="clearAllHighlights()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
                         <div id="highlightsList"></div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="annotationsTab">
+                        <h5>Annotations</h5>
+                        <div class="sort-buttons">
+                            <button class="sort-btn active" onclick="setSortMode('annotations', 'recent')">Recent</button>
+                            <button class="sort-btn" onclick="setSortMode('annotations', 'position')">Position</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="clearAllAnnotations()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                        <div id="annotationsList"></div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="notesTab">
+                        <h5>Clipped Notes</h5>
+                        <div class="sort-buttons">
+                            <button class="sort-btn active" onclick="setSortMode('notes', 'recent')">Recent</button>
+                            <button class="sort-btn" onclick="setSortMode('notes', 'position')">Position</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger w-100 mb-2" onclick="clearAllNotes()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                        <div id="notesList"></div>
                     </div>
                     
                     <div class="tab-pane fade" id="statsTab">
@@ -585,6 +1052,15 @@
                 </div>
                 <div class="modal-body">
                     <input type="text" class="form-control" id="searchInput" placeholder="Enter search term..." onkeypress="if(event.key==='Enter') performSearch()">
+                    <div class="d-flex gap-2 mt-2" id="searchNavigation" style="display: none !important;">
+                        <button class="btn btn-sm btn-secondary" onclick="previousSearchResult()">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="nextSearchResult()">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <span class="align-self-center" id="searchPosition"></span>
+                    </div>
                     <div id="searchResults" class="mt-3"></div>
                 </div>
                 <div class="modal-footer">
@@ -653,6 +1129,49 @@
         </div>
     </div>
 
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" onclick="contextMenuAction('copy')">
+            <i class="fas fa-copy"></i> Copy
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('highlight')">
+            <i class="fas fa-highlighter"></i> Highlight
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('annotate')">
+            <i class="fas fa-sticky-note"></i> Add Annotation
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('clipToNotes')">
+            <i class="fas fa-clipboard"></i> Clip to Notes
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" onclick="contextMenuAction('search')">
+            <i class="fas fa-search"></i> Search Selected
+        </div>
+        <div class="context-menu-item" onclick="contextMenuAction('dictionary')">
+            <i class="fas fa-book"></i> Define Word
+        </div>
+    </div>
+
+    <!-- Annotation Modal -->
+    <div class="modal fade" id="annotationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sticky-note"></i> Add Annotation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">Page <span id="annotationPageNum"></span></p>
+                    <div id="annotationContext" class="mb-2 p-2 bg-light rounded small"></div>
+                    <textarea class="form-control" id="annotationText" rows="4" placeholder="Enter your annotation..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="saveAnnotation()">Save Annotation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Preloaded files configuration - ADD YOUR FILES HERE
@@ -663,8 +1182,8 @@
                 type: 'pdf'
             },
             {
-                name: 'Knowing God',
-                path: '/assets/epub/Packer-Knowing-God.epub',  // Replace with your actual file path
+                name: 'Heart of Darkness',
+                path: '/assets/epub/Conrad-Heart-of-Darkness.epub',  // Replace with your actual file path
                 type: 'epub'
             },
             {
@@ -699,6 +1218,19 @@
         let currentTheme = localStorage.getItem('theme') || 'light';
         let fileData = null;
         let currentHighlightedLine = null;
+        let annotationMode = false;
+        let annotations = JSON.parse(localStorage.getItem('annotations') || '{}');
+        let clippedNotes = JSON.parse(localStorage.getItem('clippedNotes') || '{}');
+        let contextMenuSelection = null;
+        let displayTheme = 'light';
+        let searchResults = [];
+        let currentSearchIndex = -1;
+        let sortModes = {
+            bookmarks: 'recent',
+            highlights: 'recent',
+            annotations: 'recent',
+            notes: 'recent'
+        };
         
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -714,6 +1246,72 @@
             } else if (e.key === 'ArrowRight') {
                 nextPage();
             }
+        });
+
+        // Mouse wheel navigation with scroll detection
+        let scrollTimeout;
+        let lastScrollPosition = 0;
+        
+        document.addEventListener('wheel', function(e) {
+            if ((viewMode === 'single' || viewMode === 'double') && fileType === 'pdf') {
+                const viewerArea = document.getElementById('viewerArea');
+                
+                // In fit to height mode, disable scrolling entirely
+                if (fitToHeightMode) {
+                    e.preventDefault();
+                    if (e.deltaY > 0) {
+                        nextPage();
+                    } else if (e.deltaY < 0) {
+                        previousPage();
+                    }
+                    return;
+                }
+                
+                const atTop = viewerArea.scrollTop === 0;
+                const atBottom = viewerArea.scrollTop + viewerArea.clientHeight >= viewerArea.scrollHeight - 5;
+                
+                if (e.deltaY > 0 && atBottom) {
+                    // Scrolling down at bottom - next page and scroll to top
+                    e.preventDefault();
+                    nextPage();
+                    setTimeout(() => {
+                        viewerArea.scrollTop = 0;
+                    }, 50);
+                } else if (e.deltaY < 0 && atTop) {
+                    // Scrolling up at top - previous page
+                    e.preventDefault();
+                    previousPage();
+                }
+                // Otherwise allow normal scrolling
+            }
+        }, { passive: false });
+
+        // Context menu - simpler approach
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            
+            // Small delay to ensure selection is captured
+            setTimeout(() => {
+                const selection = window.getSelection();
+                const selectedText = selection.toString().trim();
+                
+                if (selectedText) {
+                    contextMenuSelection = selectedText;
+                    showContextMenu(e.clientX, e.clientY);
+                }
+            }, 10);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.context-menu')) {
+                hideContextMenu();
+            }
+            // Remove temporary search highlights
+            document.querySelectorAll('.search-highlight-temp').forEach(el => {
+                const parent = el.parentNode;
+                parent.replaceChild(document.createTextNode(el.textContent), el);
+                parent.normalize();
+            });
         });
 
         function loadPreloadedLibrary() {
@@ -838,9 +1436,12 @@
             const textContent = await page.getTextContent();
             const textItems = textContent.items.map(item => item.str).join(' ');
             
+            const viewerArea = document.getElementById('viewerArea');
+            
             if (viewMode === 'single') {
-                const viewerArea = document.getElementById('viewerArea');
                 viewerArea.innerHTML = '';
+                viewerArea.classList.add('single-page-mode');
+                viewerArea.classList.remove('double-page-mode');
                 
                 const pageContainer = document.createElement('div');
                 pageContainer.className = 'page-container';
@@ -868,19 +1469,24 @@
                 
                 // Store text content as data attribute
                 pageContainer.dataset.textContent = textItems;
+                pageContainer.dataset.pageNumber = pageNum;
                 
                 pageContainer.appendChild(wrapper);
                 viewerArea.appendChild(pageContainer);
                 
                 enableTextSelection();
                 enableCursorHighlight();
+                loadAnnotationsForPage(pageNum);
             } else if (viewMode === 'double' && pageNum < totalPages) {
                 if (pageNum === currentPage) {
-                    const viewerArea = document.getElementById('viewerArea');
                     viewerArea.innerHTML = '';
+                    viewerArea.classList.add('double-page-mode');
+                    viewerArea.classList.remove('single-page-mode');
                     
                     const twoPageDiv = document.createElement('div');
                     twoPageDiv.className = 'two-page-view';
+                    twoPageDiv.style.width = 'fit-content';
+                    twoPageDiv.style.minWidth = (viewport.width * 2 + 60) + 'px';
                     
                     const container1 = document.createElement('div');
                     container1.className = 'page-container';
@@ -904,6 +1510,7 @@
                     wrapper1.appendChild(textLayerDiv1);
                     container1.appendChild(wrapper1);
                     container1.dataset.textContent = textItems;
+                    container1.dataset.pageNumber = pageNum;
                     twoPageDiv.appendChild(container1);
                     
                     // Render second page
@@ -940,14 +1547,17 @@
                     wrapper2.appendChild(textLayerDiv2);
                     container2.appendChild(wrapper2);
                     container2.dataset.textContent = textItems2;
+                    container2.dataset.pageNumber = pageNum + 1;
                     twoPageDiv.appendChild(container2);
                     
                     viewerArea.appendChild(twoPageDiv);
                     enableTextSelection();
                     enableCursorHighlight();
+                    loadAnnotationsForPage(pageNum);
+                    loadAnnotationsForPage(pageNum + 1);
                 }
             } else if (viewMode === 'scroll') {
-                const viewerArea = document.getElementById('viewerArea');
+                viewerArea.classList.remove('single-page-mode', 'double-page-mode');
                 
                 if (pageNum === 1) {
                     viewerArea.innerHTML = '';
@@ -989,11 +1599,11 @@
                 } else {
                     enableTextSelection();
                     enableCursorHighlight();
+                    loadAnnotationsForPage(pageNum);
                 }
             }
             
             trackPageRead(pageNum);
-            loadHighlightsForPage(pageNum);
         }
 
         function calculateFitToWidthScale(page) {
@@ -1095,7 +1705,7 @@
                 viewerArea.innerHTML = '';
                 
                 const pageContainer = document.createElement('div');
-                pageContainer.className = 'page-container';
+                pageContainer.className = 'page-container document-style';
                 if (fitToWidthMode) pageContainer.classList.add('fit-width');
                 
                 const contentDiv = document.createElement('div');
@@ -1103,7 +1713,25 @@
                 contentDiv.style.fontFamily = 'Georgia, serif';
                 contentDiv.style.fontSize = '16px';
                 contentDiv.style.lineHeight = '1.6';
-                contentDiv.innerHTML = content;
+                
+                // Split content by horizontal rules or chapter markers to create pages
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = content;
+                const sections = content.split(/<hr[^>]*>/gi);
+                
+                if (sections.length > 1) {
+                    totalPages = sections.length;
+                    sections.forEach((section, index) => {
+                        const pageDiv = document.createElement('div');
+                        pageDiv.className = 'page-break';
+                        pageDiv.dataset.pageNumber = index + 1;
+                        pageDiv.innerHTML = section;
+                        contentDiv.appendChild(pageDiv);
+                    });
+                } else {
+                    contentDiv.innerHTML = content;
+                    totalPages = 1;
+                }
                 
                 pageContainer.appendChild(contentDiv);
                 viewerArea.appendChild(pageContainer);
@@ -1112,6 +1740,8 @@
                 enableTextSelection();
                 enableCursorHighlight();
                 generateTOC();
+                loadAnnotationsForPage(1);
+                applyHighlightsToPage(1);
             } catch (e) {
                 alert('Error loading EPUB file: ' + e.message);
                 console.error(e);
@@ -1129,7 +1759,7 @@
                 viewerArea.innerHTML = '';
                 
                 const pageContainer = document.createElement('div');
-                pageContainer.className = 'page-container';
+                pageContainer.className = 'page-container document-style';
                 if (fitToWidthMode) pageContainer.classList.add('fit-width');
                 
                 const contentDiv = document.createElement('div');
@@ -1137,6 +1767,17 @@
                 contentDiv.style.fontFamily = "'Times New Roman', serif";
                 contentDiv.style.fontSize = '16px';
                 contentDiv.style.lineHeight = '1.6';
+                
+                // Try to detect page breaks in DOCX
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = result.value;
+                
+                // Look for page break indicators
+                const pageBreakElements = tempDiv.querySelectorAll('[style*="page-break"]');
+                if (pageBreakElements.length > 0) {
+                    totalPages = pageBreakElements.length + 1;
+                }
+                
                 contentDiv.innerHTML = result.value;
                 
                 pageContainer.appendChild(contentDiv);
@@ -1146,6 +1787,8 @@
                 enableTextSelection();
                 enableCursorHighlight();
                 generateTOC();
+                loadAnnotationsForPage(1);
+                applyHighlightsToPage(1);
             } catch (e) {
                 alert('Error loading DOCX file: ' + e.message);
             }
@@ -1339,26 +1982,21 @@
                         </span>
                         <small class="d-block text-muted">Page ${h.page}</small>
                     </div>
-                    <button class="btn btn-sm btn-danger" onclick="removeHighlight(${idx}); event.stopPropagation();">
+                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); removeHighlight('${h.id}');">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
                 item.onclick = (e) => {
                     if (!e.target.closest('button')) {
-                        jumpToPage(h.page);
+                        jumpToPage(h.page, h.text);
                     }
                 };
                 list.appendChild(item);
             });
         }
 
-        function removeHighlight(idx) {
-            const fileKey = currentFileName || 'current';
-            if (highlights[fileKey]) {
-                highlights[fileKey].splice(idx, 1);
-                saveData('highlights', highlights);
-                updateHighlightsList();
-            }
+        function removeHighlight(highlightId) {
+            deleteHighlightById(highlightId);
         }
 
         function toggleTTS() {
@@ -1686,6 +2324,10 @@
         function zoomIn() {
             fitToWidthMode = false;
             fitToHeightMode = false;
+            
+            const viewerArea = document.getElementById('viewerArea');
+            viewerArea.classList.remove('fit-height-mode');
+            
             zoomLevel += 0.2;
             document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
             if (fileType === 'pdf' && pdfDoc) {
@@ -1699,6 +2341,10 @@
             if (zoomLevel > 0.4) {
                 fitToWidthMode = false;
                 fitToHeightMode = false;
+                
+                const viewerArea = document.getElementById('viewerArea');
+                viewerArea.classList.remove('fit-height-mode');
+                
                 zoomLevel -= 0.2;
                 document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
                 if (fileType === 'pdf' && pdfDoc) {
@@ -1736,15 +2382,172 @@
             fitToHeightMode = !fitToHeightMode;
             fitToWidthMode = false;
             
+            const viewerArea = document.getElementById('viewerArea');
+            
             if (fitToHeightMode) {
                 document.getElementById('zoomLevel').textContent = 'Fit H';
+                viewerArea.classList.add('fit-height-mode');
                 if (fileType === 'pdf' && pdfDoc) {
                     renderCurrentPage();
                 }
             } else {
                 document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+                viewerArea.classList.remove('fit-height-mode');
                 if (fileType === 'pdf' && pdfDoc) {
                     renderCurrentPage();
+                }
+            }
+        }
+
+        function changeDisplayTheme(theme) {
+            if (!theme) {
+                theme = document.getElementById('displayTheme').value;
+            }
+            
+            displayTheme = theme;
+            const body = document.body;
+            
+            // Remove ALL theme classes first
+            body.classList.remove('reader-dark', 'reader-sepia', 'reader-night', 'reader-blue', 'reader-green', 'reader-purple');
+            
+            // Add selected theme class
+            if (theme !== 'light') {
+                body.classList.add(`reader-${theme}`);
+            }
+            
+            localStorage.setItem('displayTheme', theme);
+        }
+
+        function clipSelectedText() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (!selectedText) {
+                alert('Please select some text first');
+                return;
+            }
+            
+            const fileKey = currentFileName || 'current';
+            if (!clippedNotes[fileKey]) clippedNotes[fileKey] = [];
+            
+            clippedNotes[fileKey].push({
+                page: currentPage,
+                text: selectedText,
+                fileName: currentFileName,
+                timestamp: new Date().toISOString()
+            });
+            
+            saveData('clippedNotes', clippedNotes);
+            updateNotesList();
+            selection.removeAllRanges();
+        }
+
+        function defineSelectedWord() {
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            if (!selectedText) {
+                alert('Please select a word first');
+                return;
+            }
+            
+            const word = selectedText.split(' ')[0];
+            showDictionary(word, window.innerWidth / 2, window.innerHeight / 2);
+        }
+
+        function setSortMode(type, mode) {
+            sortModes[type] = mode;
+            
+            // Update button states
+            const parent = event.target.parentElement;
+            parent.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Refresh the list
+            switch(type) {
+                case 'bookmarks':
+                    updateBookmarksList();
+                    break;
+                case 'highlights':
+                    updateHighlightsList();
+                    break;
+                case 'annotations':
+                    updateAnnotationsList();
+                    break;
+                case 'notes':
+                    updateNotesList();
+                    break;
+            }
+        }
+
+        function updateNotesList() {
+            const list = document.getElementById('notesList');
+            list.innerHTML = '';
+            
+            // Show all notes from all files
+            let allNotes = [];
+            Object.keys(clippedNotes).forEach(fileKey => {
+                clippedNotes[fileKey].forEach((note, idx) => {
+                    allNotes.push({ ...note, fileKey, idx });
+                });
+            });
+            
+            if (allNotes.length === 0) {
+                list.innerHTML = '<p class="text-muted small">No clipped notes yet</p>';
+                return;
+            }
+            
+            // Sort based on mode
+            if (sortModes.notes === 'recent') {
+                allNotes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            } else {
+                allNotes.sort((a, b) => a.page - b.page);
+            }
+            
+            allNotes.forEach(note => {
+                const item = document.createElement('div');
+                item.className = 'bookmark-item';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'flex-start';
+                item.style.cursor = 'pointer';
+                item.innerHTML = `
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="file-label">${note.fileName || 'Unknown'}</span>
+                        <small class="text-muted">Page ${note.page}</small>
+                    </div>
+                    <p class="mb-0">${note.text.substring(0, 100)}...</p>
+                    <button class="btn btn-sm btn-danger mt-2" onclick="event.stopPropagation(); deleteNote('${note.fileKey}', ${note.idx})">
+                        <i class="fas fa-times"></i> Delete
+                    </button>
+                `;
+                item.onclick = (e) => {
+                    if (!e.target.closest('button')) {
+                        if (note.fileKey !== (currentFileName || 'current')) {
+                            alert('This note is from a different document: ' + note.fileName);
+                        } else {
+                            jumpToPage(note.page, note.text);
+                        }
+                    }
+                };
+                list.appendChild(item);
+            });
+        }
+
+        function deleteNote(fileKey, idx) {
+            if (clippedNotes[fileKey]) {
+                clippedNotes[fileKey].splice(idx, 1);
+                saveData('clippedNotes', clippedNotes);
+                updateNotesList();
+            }
+        }
+
+        function clearAllNotes() {
+            if (confirm('Clear all clipped notes for this file?')) {
+                const fileKey = currentFileName || 'current';
+                if (clippedNotes[fileKey]) {
+                    clippedNotes[fileKey] = [];
+                    saveData('clippedNotes', clippedNotes);
+                    updateNotesList();
                 }
             }
         }
@@ -1754,6 +2557,57 @@
                 recentFiles = [];
                 saveData('recentFiles', recentFiles);
                 updateRecentFilesList();
+            }
+        }
+
+        function applyHighlightsToPage(page) {
+            const fileKey = currentFileName || 'current';
+            const pageHighlights = highlights[fileKey]?.filter(h => h.page === page) || [];
+            
+            // For EPUB/DOCX, try to re-apply highlights
+            if (fileType !== 'pdf' && pageHighlights.length > 0) {
+                const container = document.getElementById('contentContainer');
+                if (container) {
+                    pageHighlights.forEach(h => {
+                        try {
+                            const text = h.text;
+                            const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+                            const textNodes = [];
+                            let node;
+                            while (node = walker.nextNode()) {
+                                if (node.textContent.includes(text)) {
+                                    textNodes.push(node);
+                                }
+                            }
+                            
+                            textNodes.forEach(textNode => {
+                                const content = textNode.textContent;
+                                if (content.includes(text)) {
+                                    const span = document.createElement('span');
+                                    const parts = content.split(text);
+                                    span.appendChild(document.createTextNode(parts[0]));
+                                    
+                                    const highlightSpan = document.createElement('span');
+                                    highlightSpan.className = `highlight highlight-${h.color} highlight-deletable`;
+                                    highlightSpan.dataset.highlightId = h.id;
+                                    highlightSpan.textContent = text;
+                                    highlightSpan.addEventListener('click', function(e) {
+                                        e.stopPropagation();
+                                        if (confirm('Delete this highlight?')) {
+                                            deleteHighlightById(h.id);
+                                        }
+                                    });
+                                    span.appendChild(highlightSpan);
+                                    span.appendChild(document.createTextNode(parts.slice(1).join(text)));
+                                    
+                                    textNode.parentNode.replaceChild(span, textNode);
+                                }
+                            });
+                        } catch (e) {
+                            console.log('Could not apply highlight:', e);
+                        }
+                    });
+                }
             }
         }
 
@@ -1816,7 +2670,7 @@
             });
         }
 
-        function jumpToPage(pageNumber) {
+        function jumpToPage(pageNumber, searchTerm = null) {
             if (viewMode === 'scroll') {
                 // In scroll mode, scroll to the specific page
                 const pageContainers = document.querySelectorAll('.page-container[data-page-number]');
@@ -1828,11 +2682,61 @@
                     targetPage.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     currentPage = pageNumber;
                     updatePageInfo();
+                    
+                    if (searchTerm) {
+                        setTimeout(() => highlightSearchTermInPage(targetPage, searchTerm), 500);
+                    }
                 }
             } else {
                 // In single or double page mode, render that page
                 currentPage = pageNumber;
-                renderCurrentPage();
+                renderCurrentPage().then(() => {
+                    if (searchTerm) {
+                        setTimeout(() => {
+                            const containers = document.querySelectorAll('.page-container');
+                            containers.forEach(c => highlightSearchTermInPage(c, searchTerm));
+                        }, 500);
+                    }
+                });
+            }
+        }
+
+        function highlightSearchTermInPage(container, term) {
+            const textContent = container.innerText || container.textContent;
+            if (!textContent.toLowerCase().includes(term.toLowerCase())) return;
+            
+            // Get all text nodes
+            const walker = document.createTreeWalker(
+                container,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            const textNodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.textContent.trim()) {
+                    textNodes.push(node);
+                }
+            }
+            
+            // Highlight term in text nodes
+            textNodes.forEach(textNode => {
+                const text = textNode.textContent;
+                const regex = new RegExp(`(${term})`, 'gi');
+                
+                if (regex.test(text)) {
+                    const span = document.createElement('span');
+                    span.innerHTML = text.replace(regex, '<span class="search-highlight-temp">$1</span>');
+                    textNode.parentNode.replaceChild(span, textNode);
+                }
+            });
+            
+            // Scroll to first highlight
+            const firstHighlight = container.querySelector('.search-highlight-temp');
+            if (firstHighlight) {
+                firstHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
@@ -1933,11 +2837,349 @@
                     <small class="text-muted">...${result.preview}...</small>
                 `;
                 item.onclick = () => {
-                    jumpToPage(result.page);
+                    jumpToPage(result.page, searchTerm);
                     bootstrap.Modal.getInstance(document.getElementById('searchModal')).hide();
                 };
                 resultsDiv.appendChild(item);
             });
+        }
+
+        function clearAllBookmarks() {
+            if (confirm('Clear all bookmarks for this file?')) {
+                const fileKey = currentFileName || 'current';
+                if (bookmarks[fileKey]) {
+                    bookmarks[fileKey] = [];
+                    saveData('bookmarks', bookmarks);
+                    updateBookmarksList();
+                }
+            }
+        }
+
+        function clearAllHighlights() {
+            if (confirm('Clear all highlights for this file?')) {
+                const fileKey = currentFileName || 'current';
+                if (highlights[fileKey]) {
+                    highlights[fileKey] = [];
+                    saveData('highlights', highlights);
+                    updateHighlightsList();
+                    
+                    // Remove visual highlights from page
+                    document.querySelectorAll('.highlight').forEach(el => {
+                        const parent = el.parentNode;
+                        parent.replaceChild(document.createTextNode(el.textContent), el);
+                        parent.normalize();
+                    });
+                }
+            }
+        }
+
+        function toggleAnnotationMode() {
+            annotationMode = !annotationMode;
+            const btn = document.getElementById('annotateBtn');
+            
+            if (annotationMode) {
+                btn.classList.add('active');
+                alert('Annotation mode ON. Click anywhere on the page to add an annotation. Click the button again to turn off.');
+                
+                // Add click listener for annotations
+                setTimeout(() => {
+                    const containers = document.querySelectorAll('.page-container');
+                    containers.forEach(c => {
+                        c.style.cursor = 'crosshair';
+                        c.addEventListener('click', handleAnnotationClick);
+                    });
+                }, 100);
+            } else {
+                btn.classList.remove('active');
+                const containers = document.querySelectorAll('.page-container');
+                containers.forEach(c => {
+                    c.style.cursor = 'default';
+                    c.removeEventListener('click', handleAnnotationClick);
+                });
+            }
+        }
+
+        function handleAnnotationClick(e) {
+            if (!annotationMode) return;
+            
+            e.stopPropagation();
+            
+            // Get click position relative to page
+            const pageContainer = e.currentTarget;
+            const rect = pageContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Get selection if any
+            const selection = window.getSelection();
+            const selectedText = selection.toString().trim();
+            
+            // Store position for annotation marker
+            window.pendingAnnotation = { x, y, page: currentPage };
+            
+            document.getElementById('annotationPageNum').textContent = currentPage;
+            document.getElementById('annotationContext').textContent = selectedText || '';
+            document.getElementById('annotationText').value = '';
+            
+            const modal = new bootstrap.Modal(document.getElementById('annotationModal'));
+            modal.show();
+            
+            // Turn off annotation mode
+            toggleAnnotationMode();
+        }
+
+        function saveAnnotation() {
+            const text = document.getElementById('annotationText').value.trim();
+            if (!text) return;
+            
+            const context = document.getElementById('annotationContext').textContent;
+            const fileKey = currentFileName || 'current';
+            const position = window.pendingAnnotation || { x: 50, y: 50, page: currentPage };
+            
+            if (!annotations[fileKey]) annotations[fileKey] = [];
+            
+            const annotationId = Date.now().toString();
+            
+            annotations[fileKey].push({
+                id: annotationId,
+                page: position.page,
+                text: text,
+                context: context,
+                x: position.x,
+                y: position.y,
+                timestamp: new Date().toISOString()
+            });
+            
+            saveData('annotations', annotations);
+            updateAnnotationsList();
+            loadAnnotationsForPage(position.page);
+            
+            window.pendingAnnotation = null;
+            
+            bootstrap.Modal.getInstance(document.getElementById('annotationModal')).hide();
+        }
+
+        function loadAnnotationsForPage(page) {
+            // Remove existing annotation markers
+            document.querySelectorAll('.annotation-marker').forEach(el => el.remove());
+            document.querySelectorAll('.annotation-tooltip').forEach(el => el.remove());
+            
+            const fileKey = currentFileName || 'current';
+            const pageAnnotations = annotations[fileKey]?.filter(a => a.page === page) || [];
+            
+            pageAnnotations.forEach(annotation => {
+                const containers = document.querySelectorAll('.page-container');
+                containers.forEach(container => {
+                    if (parseInt(container.dataset.pageNumber) === page || fileType !== 'pdf') {
+                        const marker = document.createElement('div');
+                        marker.className = 'annotation-marker';
+                        marker.innerHTML = '<i class="fas fa-sticky-note"></i>';
+                        marker.style.left = annotation.x + 'px';
+                        marker.style.top = annotation.y + 'px';
+                        marker.dataset.annotationId = annotation.id;
+                        
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'annotation-tooltip';
+                        tooltip.innerHTML = `
+                            <strong>Annotation</strong>
+                            <p class="mb-1 small">${annotation.context}</p>
+                            <p class="mb-0">${annotation.text}</p>
+                            <button class="btn btn-sm btn-danger mt-2" onclick="deleteAnnotation('${annotation.id}')">Delete</button>
+                        `;
+                        
+                        marker.addEventListener('mouseenter', function() {
+                            const rect = marker.getBoundingClientRect();
+                            tooltip.style.left = (rect.right + 10) + 'px';
+                            tooltip.style.top = rect.top + 'px';
+                            tooltip.style.display = 'block';
+                            document.body.appendChild(tooltip);
+                        });
+                        
+                        marker.addEventListener('mouseleave', function() {
+                            tooltip.style.display = 'none';
+                            if (tooltip.parentNode) {
+                                tooltip.parentNode.removeChild(tooltip);
+                            }
+                        });
+                        
+                        container.appendChild(marker);
+                    }
+                });
+            });
+        }
+
+        function deleteAnnotation(annotationId) {
+            const fileKey = currentFileName || 'current';
+            if (!annotations[fileKey]) return;
+            
+            annotations[fileKey] = annotations[fileKey].filter(a => a.id !== annotationId);
+            saveData('annotations', annotations);
+            updateAnnotationsList();
+            loadAnnotationsForPage(currentPage);
+        }
+
+        function updateAnnotationsList() {
+            const list = document.getElementById('annotationsList');
+            list.innerHTML = '';
+            
+            const fileKey = currentFileName || 'current';
+            const fileAnnotations = annotations[fileKey] || [];
+            
+            if (fileAnnotations.length === 0) {
+                list.innerHTML = '<p class="text-muted small">No annotations yet</p>';
+                return;
+            }
+            
+            fileAnnotations.forEach(annotation => {
+                const item = document.createElement('div');
+                item.className = 'bookmark-item';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'flex-start';
+                item.style.cursor = 'pointer';
+                item.innerHTML = `
+                    <strong>Page ${annotation.page}</strong>
+                    ${annotation.context ? `<small class="text-muted">"${annotation.context.substring(0, 50)}..."</small>` : ''}
+                    <p class="mb-0 mt-1">${annotation.text}</p>
+                    <button class="btn btn-sm btn-danger mt-2" onclick="event.stopPropagation(); deleteAnnotation('${annotation.id}')">
+                        <i class="fas fa-times"></i> Delete
+                    </button>
+                `;
+                item.onclick = (e) => {
+                    if (!e.target.closest('button')) {
+                        jumpToAnnotation(annotation);
+                    }
+                };
+                list.appendChild(item);
+            });
+        }
+
+        function jumpToAnnotation(annotation) {
+            jumpToPage(annotation.page);
+            
+            // After jumping to page, scroll to annotation marker if visible
+            setTimeout(() => {
+                const marker = document.querySelector(`[data-annotation-id="${annotation.id}"]`);
+                if (marker) {
+                    marker.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Flash the marker
+                    marker.style.transform = 'scale(1.5)';
+                    setTimeout(() => {
+                        marker.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            }, 500);
+        }
+
+        function clearAllAnnotations() {
+            if (confirm('Clear all annotations for this file?')) {
+                const fileKey = currentFileName || 'current';
+                if (annotations[fileKey]) {
+                    annotations[fileKey] = [];
+                    saveData('annotations', annotations);
+                    updateAnnotationsList();
+                    loadAnnotationsForPage(currentPage);
+                }
+            }
+        }
+
+        function showContextMenu(x, y) {
+            const menu = document.getElementById('contextMenu');
+            menu.style.display = 'block';
+            menu.style.left = Math.min(x, window.innerWidth - 220) + 'px';
+            menu.style.top = Math.min(y, window.innerHeight - 300) + 'px';
+        }
+
+        function hideContextMenu() {
+            document.getElementById('contextMenu').style.display = 'none';
+        }
+
+        function contextMenuAction(action) {
+            const selectedText = contextMenuSelection;
+            if (!selectedText) return;
+            
+            hideContextMenu();
+            
+            switch(action) {
+                case 'copy':
+                    navigator.clipboard.writeText(selectedText);
+                    // Silent copy - no alert
+                    break;
+                    
+                case 'highlight':
+                    // Get current selection and store it
+                    const currentSelection = window.getSelection();
+                    if (!currentSelection.toString().trim()) return;
+                    
+                    const range = currentSelection.getRangeAt(0).cloneRange();
+                    
+                    // Enable highlight mode temporarily
+                    highlightMode = true;
+                    
+                    // Create new selection from stored range
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    
+                    // Trigger highlight
+                    handleTextSelection({});
+                    
+                    // Reset highlight mode
+                    highlightMode = false;
+                    break;
+                    
+                case 'annotate':
+                    document.getElementById('annotationPageNum').textContent = currentPage;
+                    document.getElementById('annotationContext').textContent = selectedText.substring(0, 100);
+                    document.getElementById('annotationText').value = '';
+                    
+                    // Store position for annotation
+                    const sel = window.getSelection();
+                    if (sel.rangeCount > 0) {
+                        const range = sel.getRangeAt(0);
+                        const rect = range.getBoundingClientRect();
+                        const container = document.querySelector('.page-container');
+                        const containerRect = container.getBoundingClientRect();
+                        window.pendingAnnotation = {
+                            x: rect.left - containerRect.left + 20,
+                            y: rect.top - containerRect.top + 20,
+                            page: currentPage
+                        };
+                    }
+                    
+                    new bootstrap.Modal(document.getElementById('annotationModal')).show();
+                    break;
+                    
+                case 'clipToNotes':
+                    const fileKey = currentFileName || 'current';
+                    if (!clippedNotes[fileKey]) clippedNotes[fileKey] = [];
+                    
+                    clippedNotes[fileKey].push({
+                        page: currentPage,
+                        text: selectedText,
+                        fileName: currentFileName,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    saveData('clippedNotes', clippedNotes);
+                    updateNotesList();
+                    // No alert - silent clip
+                    break;
+                    
+                case 'search':
+                    document.getElementById('searchInput').value = selectedText;
+                    openSearch();
+                    setTimeout(() => performSearch(), 100);
+                    break;
+                    
+                case 'dictionary':
+                    const word = selectedText.split(/\s+/)[0].replace(/[^a-zA-Z]/g, '');
+                    if (word) {
+                        showDictionary(word, window.innerWidth / 2, window.innerHeight / 2);
+                    }
+                    break;
+            }
+            
+            contextMenuSelection = null;
         }
 
         function clearReadingStats() {
@@ -1968,10 +3210,18 @@
         updateBookmarksList();
         updateHighlightsList();
         updateRecentFilesList();
+        updateNotesList();
         
         // Start stats tracking if there's a file loaded
         if (currentFile) {
             startReadingSession();
+        }
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('displayTheme');
+        if (savedTheme) {
+            document.getElementById('displayTheme').value = savedTheme;
+            changeDisplayTheme(savedTheme);
         }
     </script>
 </body>

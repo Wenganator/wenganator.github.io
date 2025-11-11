@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },
                 { name: "Chess", url: "/chess.html" },
+                { name: "File Viewer", url: "/file-viewer.html" },
                 { name: "Notes App", url: "/notes.html" },
                 { name: "Price Pilot", url: "/price-pilot.html" },
                 { name: "Tier List Maker", url: "/tier-list.html" },
