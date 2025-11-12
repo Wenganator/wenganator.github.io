@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blind Rank</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            font-size: 22px;
+            color: #555;
+            margin-bottom: 16px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .player-card {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .player-card.me {
+            background: #667eea;
+            color: white;
+            border-color: #5568d3;
+        }
+        
+        .playing-card {
+            font-size: 48px;
+            margin: 8px 0;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        
+        .alert-info {
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #4299e1;
+        }
+        
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #48bb78;
+        }
+        
+        .phase-banner {
+            background: #fef5e7;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+            margin-bottom: 20px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .result-card {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .correct {
+            color: #48bb78;
+        }
+        
+        .incorrect {
+            color: #f56565;
+        }
+        
+        .score-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .announcement-list {
+            background: #ebf8ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .announcement-item {
+            margin-bottom: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="app">
+            <div class="loading">Loading game...</div>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THESE WITH YOUR FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyCx-m0HeY6i7wyzq9TWKyykpzr_Bv684Po",
+            authDomain: "blind-rank.firebaseapp.com",
+            databaseURL: "https://blind-rank-default-rtdb.firebaseio.com",
+            projectId: "blind-rank",
+            storageBucket: "blind-rank.firebasestorage.app",
+            messagingSenderId: "1087187727443",
+            appId: "1:1087187727443:web:adfe42d823a556c66f02a6",
+            measurementId: "G-DDML51FCX2"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const gameRef = database.ref('game');
+
+        const SUITS = ['♠', '♥', '♦', '♣'];
+        const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const RANK_VALUES = { 'A': 14, 'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2 };
+
+        let gameState = null;
+        let playerName = localStorage.getItem('playerName') || '';
+
+        function createDeck() {
+            const deck = [];
+            for (let rank of RANKS) {
+                for (let suit of SUITS) {
+                    deck.push({ rank, suit });
+                }
+            }
+            return deck.sort(() => Math.random() - 0.5);
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (!gameState) {
+                app.innerHTML = renderLobby();
+            } else if (gameState.phase === 'waiting') {
+                app.innerHTML = renderWaiting();
+            } else if (gameState.phase === 'announcing') {
+                app.innerHTML = renderAnnouncing();
+            } else if (gameState.phase === 'round1') {
+                app.innerHTML = renderRound1();
+            } else if (gameState.phase === 'round2') {
+                app.innerHTML = renderRound2();
+            } else if (gameState.phase === 'finished') {
+                app.innerHTML = renderResults();
+            }
+            
+            attachEventListeners();
+        }
+
+        function renderLobby() {
+            return `
+                <div class="card">
+                    <h1>🎴 Blind Rank: A Cooperative Card Game</h1>
+                    <div style="margin-bottom: 24px;">
+                        <h2>Start New Game</h2>
+                        <input type="text" id="newGameName" placeholder="Enter your name" value="${playerName}">
+                        <button class="btn-primary" onclick="startNewGame()">Create Game</button>
+                    </div>
+                    <div>
+                        <h2>Join Existing Game</h2>
+                        <input type="text" id="joinGameName" placeholder="Enter your name" value="${playerName}">
+                        <button class="btn-success" onclick="joinGame()">Join Game</button>
+                    </div>
+                    <div id="error" class="hidden"></div>
+                </div>
+            `;
+        }
+
+        function renderWaiting() {
+            const isHost = gameState.players[0].name === playerName;
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1>🎴 Blind Rank: A Cooperative Card Game</h1>
+                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Game ID:</strong> Share this page URL with your friends to join!
+                    </div>
+                    
+                    <h2>Players (${gameState.players.length})</h2>
+                    <div class="players-grid">
+                        ${gameState.players.map(p => `
+                            <div class="player-card ${p.name === playerName ? 'me' : ''}">
+                                ${p.name}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${isHost ? `
+                        <button class="btn-primary" onclick="startGame()" ${gameState.players.length < 2 ? 'disabled' : ''}>
+                            Start Game ${gameState.players.length < 2 ? '(Need 2+ players)' : ''}
+                        </button>
+                    ` : `
+                        <div class="alert alert-info">Waiting for host to start the game...</div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderAnnouncing() {
+            const myPlayer = gameState.players.find(p => p.name === playerName);
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1>🎴 Announcement Phase</h1>
+                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                    </div>
+                    
+                    <div class="phase-banner">
+                        <strong>Look at other players' cards.</strong> If you see duplicates (pairs, triples, etc.), announce them!
+                    </div>
+                    
+                    <h2>Other Players' Cards</h2>
+                    <div class="players-grid">
+                        ${gameState.players.filter(p => p.name !== playerName).map(p => `
+                            <div class="player-card">
+                                <div><strong>${p.name}</strong></div>
+                                <div class="playing-card">${p.card.rank}${p.card.suit}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${gameState.announcements && gameState.announcements.length > 0 ? `
+                        <div class="announcement-list">
+                            <strong>Announcements:</strong>
+                            ${gameState.announcements.map(a => `
+                                <div class="announcement-item"><strong>${a.player}:</strong> ${a.text}</div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <input type="text" id="announcement" placeholder="Announce duplicates (e.g., 'I see a pair')">
+                    <div class="btn-group">
+                        <button class="btn-primary" onclick="makeAnnouncement()">Make Announcement</button>
+                        <button class="btn-success" onclick="startRound1()">Start Round 1</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRound1() {
+            const myPlayer = gameState.players.find(p => p.name === playerName);
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const isMyTurn = currentPlayer.name === playerName;
+            
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1>🎴 Round 1: Rank Guessing</h1>
+                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                    </div>
+                    
+                    <div class="phase-banner">
+                        <strong>Current Turn:</strong> ${currentPlayer.name}
+                        ${isMyTurn ? ' (Your turn!)' : ''}
+                    </div>
+                    
+                    <h2>Other Players' Cards</h2>
+                    <div class="players-grid">
+                        ${gameState.players.filter(p => p.name !== playerName).map(p => `
+                            <div class="player-card">
+                                <div><strong>${p.name}</strong></div>
+                                <div class="playing-card">${p.card.rank}${p.card.suit}</div>
+                                ${p.rankGuess ? `<div class="correct">Rank: ${p.rankGuess}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${isMyTurn && !myPlayer.rankGuess ? `
+                        <div class="alert alert-info">
+                            What rank is your card? (1 = highest, ${gameState.players.length} = lowest)
+                        </div>
+                        <input type="number" id="rankGuess" min="1" max="${gameState.players.length}" placeholder="Enter rank (1-${gameState.players.length})">
+                        <button class="btn-primary" onclick="submitRankGuess()">Submit Rank Guess</button>
+                    ` : myPlayer.rankGuess ? `
+                        <div class="alert alert-success">
+                            You guessed rank: <strong>${myPlayer.rankGuess}</strong><br>
+                            Waiting for other players...
+                        </div>
+                    ` : `
+                        <div class="alert alert-info">Waiting for ${currentPlayer.name} to guess...</div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderRound2() {
+            const myPlayer = gameState.players.find(p => p.name === playerName);
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const isMyTurn = currentPlayer.name === playerName;
+            
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1>🎴 Round 2: Card Guessing</h1>
+                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                    </div>
+                    
+                    <div class="phase-banner">
+                        <strong>Current Turn:</strong> ${currentPlayer.name}
+                        ${isMyTurn ? ' (Your turn!)' : ''}
+                    </div>
+                    
+                    <h2>Other Players' Cards</h2>
+                    <div class="players-grid">
+                        ${gameState.players.filter(p => p.name !== playerName).map(p => `
+                            <div class="player-card">
+                                <div><strong>${p.name}</strong></div>
+                                <div class="playing-card">${p.card.rank}${p.card.suit}</div>
+                                <div style="font-size: 12px; margin-top: 4px;">Rank guess: ${p.rankGuess}</div>
+                                ${p.revealed && p.finalGuess ? `
+                                    <div class="correct" style="font-size: 12px;">
+                                        Guessed: ${p.finalGuess.rank}${p.finalGuess.suit}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${isMyTurn && !myPlayer.revealed ? `
+                        <div class="alert alert-info">
+                            What is your exact card? (Rank and Suit)
+                        </div>
+                        <select id="cardRank">
+                            <option value="">Select Rank</option>
+                            ${RANKS.map(r => `<option value="${r}">${r}</option>`).join('')}
+                        </select>
+                        <select id="cardSuit">
+                            <option value="">Select Suit</option>
+                            ${SUITS.map(s => `<option value="${s}">${s}</option>`).join('')}
+                        </select>
+                        <button class="btn-primary" onclick="submitFinalGuess()">Submit Final Guess & Reveal</button>
+                    ` : myPlayer.revealed ? `
+                        <div class="alert alert-success">
+                            <strong>Your card:</strong> ${myPlayer.card.rank}${myPlayer.card.suit}<br>
+                            <strong>You guessed:</strong> ${myPlayer.finalGuess.rank}${myPlayer.finalGuess.suit}<br>
+                            Waiting for other players...
+                        </div>
+                    ` : `
+                        <div class="alert alert-info">Waiting for ${currentPlayer.name} to reveal...</div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderResults() {
+            const results = calculateResults();
+            
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1>🏆 Game Results</h1>
+                        <button class="btn-danger" onclick="resetGame()">New Game</button>
+                    </div>
+                    
+                    <div class="score-banner">
+                        <h2 style="color: white; margin-bottom: 12px;">Team Score</h2>
+                        <div style="font-size: 20px;">
+                            Correct Ranks: <strong>${results.correctRanks}/${results.total}</strong><br>
+                            Correct Cards: <strong>${results.correctCards}/${results.total}</strong>
+                        </div>
+                        <div style="font-size: 32px; margin-top: 16px;">
+                            <strong>Total: ${results.correctRanks + results.correctCards}/${results.total * 2}</strong>
+                        </div>
+                    </div>
+                    
+                    <h2>Individual Results</h2>
+                    <div class="results-grid">
+                        ${gameState.players.map(p => {
+                            const sortedPlayers = [...gameState.players].sort((a, b) => 
+                                RANK_VALUES[b.card.rank] - RANK_VALUES[a.card.rank]
+                            );
+                            let actualRank = 1;
+                            for (let i = 0; i < sortedPlayers.length; i++) {
+                                if (sortedPlayers[i].name === p.name) {
+                                    if (i > 0 && RANK_VALUES[sortedPlayers[i].card.rank] < RANK_VALUES[sortedPlayers[i-1].card.rank]) {
+                                        actualRank = i + 1;
+                                    }
+                                    break;
+                                }
+                            }
+                            
+                            const rankCorrect = p.rankGuess === actualRank;
+                            const cardCorrect = p.finalGuess.rank === p.card.rank && p.finalGuess.suit === p.card.suit;
+                            
+                            return `
+                                <div class="result-card">
+                                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">${p.name}</div>
+                                    <div class="playing-card">${p.card.rank}${p.card.suit}</div>
+                                    <div class="${rankCorrect ? 'correct' : 'incorrect'}" style="margin-top: 8px;">
+                                        Rank: Guessed ${p.rankGuess}, Actual ${actualRank} ${rankCorrect ? '✓' : '✗'}
+                                    </div>
+                                    <div class="${cardCorrect ? 'correct' : 'incorrect'}">
+                                        Card: Guessed ${p.finalGuess.rank}${p.finalGuess.suit} ${cardCorrect ? '✓' : '✗'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateResults() {
+            const sortedPlayers = [...gameState.players].sort((a, b) => 
+                RANK_VALUES[b.card.rank] - RANK_VALUES[a.card.rank]
+            );
+
+            let correctRanks = 0;
+            let correctCards = 0;
+
+            gameState.players.forEach(player => {
+                let actualRank = 1;
+                for (let i = 0; i < sortedPlayers.length; i++) {
+                    if (sortedPlayers[i].name === player.name) {
+                        if (i > 0 && RANK_VALUES[sortedPlayers[i].card.rank] < RANK_VALUES[sortedPlayers[i-1].card.rank]) {
+                            actualRank = i + 1;
+                        }
+                        break;
+                    }
+                }
+                
+                if (player.rankGuess === actualRank) correctRanks++;
+                if (player.finalGuess.rank === player.card.rank && player.finalGuess.suit === player.card.suit) {
+                    correctCards++;
+                }
+            });
+
+            return { correctRanks, correctCards, total: gameState.players.length };
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            if (errorDiv) {
+                errorDiv.className = 'alert alert-error';
+                errorDiv.textContent = message;
+            } else {
+                alert(message);
+            }
+        }
+
+        async function startNewGame() {
+            const name = document.getElementById('newGameName').value.trim();
+            if (!name) {
+                showError('Please enter your name');
+                return;
+            }
+
+            localStorage.setItem('playerName', name);
+            playerName = name;
+
+            const deck = createDeck();
+            const newGame = {
+                players: [{ 
+                    name: name, 
+                    card: deck[0], 
+                    rankGuess: null, 
+                    finalGuess: null, 
+                    revealed: false 
+                }],
+                deck: deck.slice(1),
+                phase: 'waiting',
+                currentPlayerIndex: 0,
+                announcements: [],
+                createdAt: Date.now()
+            };
+
+            await gameRef.set(newGame);
+        }
+
+        async function joinGame() {
+            const name = document.getElementById('joinGameName').value.trim();
+            if (!name) {
+                showError('Please enter your name');
+                return;
+            }
+
+            if (!gameState) {
+                showError('No active game to join');
+                return;
+            }
+
+            if (gameState.phase !== 'waiting') {
+                showError('Game already started');
+                return;
+            }
+
+            if (gameState.players.some(p => p.name === name)) {
+                showError('Name already taken');
+                return;
+            }
+
+            localStorage.setItem('playerName', name);
+            playerName = name;
+
+            const card = gameState.deck[0];
+            const updatedPlayers = [...gameState.players, { 
+                name: name, 
+                card: card, 
+                rankGuess: null, 
+                finalGuess: null, 
+                revealed: false 
+            }];
+
+            await gameRef.update({
+                players: updatedPlayers,
+                deck: gameState.deck.slice(1)
+            });
+        }
+
+        async function startGame() {
+            if (gameState.players.length < 2) {
+                showError('Need at least 2 players');
+                return;
+            }
+
+            await gameRef.update({ phase: 'announcing' });
+        }
+
+        async function makeAnnouncement() {
+            const announcement = document.getElementById('announcement').value.trim();
+            if (!announcement) return;
+
+            const announcements = gameState.announcements || [];
+            announcements.push({ player: playerName, text: announcement });
+
+            await gameRef.update({ announcements });
+            document.getElementById('announcement').value = '';
+        }
+
+        async function startRound1() {
+            const announcements = gameState.announcements || [];
+            const lastAnnouncer = announcements.length > 0 
+                ? gameState.players.findIndex(p => p.name === announcements[announcements.length - 1].player)
+                : Math.floor(Math.random() * gameState.players.length);
+
+            await gameRef.update({
+                phase: 'round1',
+                currentPlayerIndex: lastAnnouncer
+            });
+        }
+
+        async function submitRankGuess() {
+            const rank = parseInt(document.getElementById('rankGuess').value);
+            if (!rank || rank < 1 || rank > gameState.players.length) {
+                showError(`Rank must be between 1 and ${gameState.players.length}`);
+                return;
+            }
+
+            const playerIndex = gameState.players.findIndex(p => p.name === playerName);
+            const updatedPlayers = [...gameState.players];
+            updatedPlayers[playerIndex].rankGuess = rank;
+
+            const allGuessed = updatedPlayers.every(p => p.rankGuess !== null);
+            const nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+
+            await gameRef.update({
+                players: updatedPlayers,
+                currentPlayerIndex: allGuessed ? gameState.currentPlayerIndex : nextIndex,
+                phase: allGuessed ? 'round2' : 'round1'
+            });
+        }
+
+        async function submitFinalGuess() {
+            const rank = document.getElementById('cardRank').value;
+            const suit = document.getElementById('cardSuit').value;
+
+            if (!rank || !suit) {
+                showError('Please select both rank and suit');
+                return;
+            }
+
+            const playerIndex = gameState.players.findIndex(p => p.name === playerName);
+            const updatedPlayers = [...gameState.players];
+            updatedPlayers[playerIndex].finalGuess = { rank, suit };
+            updatedPlayers[playerIndex].revealed = true;
+
+            const allRevealed = updatedPlayers.every(p => p.revealed);
+            const nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+
+            await gameRef.update({
+                players: updatedPlayers,
+                currentPlayerIndex: allRevealed ? 0 : nextIndex,
+                phase: allRevealed ? 'finished' : 'round2'
+            });
+        }
+
+        async function resetGame() {
+            if (confirm('Are you sure you want to reset the game?')) {
+                await gameRef.remove();
+                localStorage.removeItem('playerName');
+                playerName = '';
+            }
+        }
+
+        function attachEventListeners() {
+            // Event listeners are attached via onclick in HTML
+        }
+
+        // Listen for game state changes
+        gameRef.on('value', (snapshot) => {
+            gameState = snapshot.val();
+            render();
+        });
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
