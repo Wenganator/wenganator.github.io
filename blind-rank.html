@@ -64,12 +64,17 @@
             font-weight: 600;
         }
         
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .btn-primary {
             background: #667eea;
             color: white;
         }
         
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #5568d3;
         }
         
@@ -78,7 +83,7 @@
             color: white;
         }
         
-        .btn-success:hover {
+        .btn-success:hover:not(:disabled) {
             background: #38a169;
         }
         
@@ -206,6 +211,39 @@
             font-size: 18px;
             color: white;
         }
+
+        .game-code-box {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #4299e1;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .game-code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 4px;
+            margin: 12px 0;
+            font-family: monospace;
+        }
+
+        .copy-button {
+            background: #4299e1;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .copy-button:hover {
+            background: #3182ce;
+        }
     </style>
 </head>
 <body>
@@ -218,19 +256,17 @@
     <script>
         // REPLACE THESE WITH YOUR FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "AIzaSyCx-m0HeY6i7wyzq9TWKyykpzr_Bv684Po",
-            authDomain: "blind-rank.firebaseapp.com",
-            databaseURL: "https://blind-rank-default-rtdb.firebaseio.com",
-            projectId: "blind-rank",
-            storageBucket: "blind-rank.firebasestorage.app",
-            messagingSenderId: "1087187727443",
-            appId: "1:1087187727443:web:adfe42d823a556c66f02a6",
-            measurementId: "G-DDML51FCX2"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const gameRef = database.ref('game');
 
         const SUITS = ['♠', '♥', '♦', '♣'];
         const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -238,6 +274,38 @@
 
         let gameState = null;
         let playerName = localStorage.getItem('playerName') || '';
+        let gameId = null;
+        let gameRef = null;
+
+        // Get game ID from URL or localStorage
+        function getGameId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlGameId = urlParams.get('game');
+            
+            if (urlGameId) {
+                localStorage.setItem('currentGameId', urlGameId);
+                return urlGameId;
+            }
+            
+            return localStorage.getItem('currentGameId');
+        }
+
+        // Generate random game code
+        function generateGameCode() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return code;
+        }
+
+        // Update URL with game ID
+        function updateURL(newGameId) {
+            const url = new URL(window.location);
+            url.searchParams.set('game', newGameId);
+            window.history.pushState({}, '', url);
+        }
 
         function createDeck() {
             const deck = [];
@@ -252,8 +320,10 @@
         function render() {
             const app = document.getElementById('app');
             
-            if (!gameState) {
+            if (!gameId) {
                 app.innerHTML = renderLobby();
+            } else if (!gameState) {
+                app.innerHTML = '<div class="loading">Loading game...</div>';
             } else if (gameState.phase === 'waiting') {
                 app.innerHTML = renderWaiting();
             } else if (gameState.phase === 'announcing') {
@@ -274,12 +344,13 @@
                 <div class="card">
                     <h1>🎴 Blind Rank: A Cooperative Card Game</h1>
                     <div style="margin-bottom: 24px;">
-                        <h2>Start New Game</h2>
+                        <h2>Create New Game</h2>
                         <input type="text" id="newGameName" placeholder="Enter your name" value="${playerName}">
                         <button class="btn-primary" onclick="startNewGame()">Create Game</button>
                     </div>
-                    <div>
+                    <div style="border-top: 2px solid #e2e8f0; padding-top: 24px;">
                         <h2>Join Existing Game</h2>
+                        <input type="text" id="joinGameCode" placeholder="Enter 6-digit game code (e.g., ABC123)" maxlength="6" style="text-transform: uppercase;">
                         <input type="text" id="joinGameName" placeholder="Enter your name" value="${playerName}">
                         <button class="btn-success" onclick="joinGame()">Join Game</button>
                     </div>
@@ -290,15 +361,24 @@
 
         function renderWaiting() {
             const isHost = gameState.players[0].name === playerName;
+            const gameUrl = window.location.origin + window.location.pathname + '?game=' + gameId;
+            
             return `
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h1>🎴 Blind Rank: A Cooperative Card Game</h1>
-                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                        <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
-                    <div class="alert alert-info">
-                        <strong>Game ID:</strong> Share this page URL with your friends to join!
+                    <div class="game-code-box">
+                        <div style="font-size: 14px; color: #555; margin-bottom: 8px;">Share this game code with your friends:</div>
+                        <div class="game-code">${gameId}</div>
+                        <button class="copy-button" onclick="copyGameCode()">📋 Copy Game Code</button>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">Or share this link:</div>
+                            <input type="text" id="gameUrl" value="${gameUrl}" readonly style="font-size: 12px; margin-bottom: 8px;">
+                            <button class="copy-button" onclick="copyGameUrl()">📋 Copy Link</button>
+                        </div>
                     </div>
                     
                     <h2>Players (${gameState.players.length})</h2>
@@ -315,7 +395,7 @@
                             Start Game ${gameState.players.length < 2 ? '(Need 2+ players)' : ''}
                         </button>
                     ` : `
-                        <div class="alert alert-info">Waiting for host to start the game...</div>
+                        <div class="alert alert-info">Waiting for ${gameState.players[0].name} to start the game...</div>
                     `}
                 </div>
             `;
@@ -325,9 +405,9 @@
             const myPlayer = gameState.players.find(p => p.name === playerName);
             return `
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="display: flex; justify-between: space-between; align-items: center; margin-bottom: 20px;">
                         <h1>🎴 Announcement Phase</h1>
-                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                        <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
                     <div class="phase-banner">
@@ -371,7 +451,7 @@
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h1>🎴 Round 1: Rank Guessing</h1>
-                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                        <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
                     <div class="phase-banner">
@@ -417,7 +497,7 @@
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h1>🎴 Round 2: Card Guessing</h1>
-                        <button class="btn-danger" onclick="resetGame()">Reset Game</button>
+                        <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
                     <div class="phase-banner">
@@ -474,7 +554,7 @@
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h1>🏆 Game Results</h1>
-                        <button class="btn-danger" onclick="resetGame()">New Game</button>
+                        <button class="btn-danger" onclick="leaveGame()">New Game</button>
                     </div>
                     
                     <div class="score-banner">
@@ -573,6 +653,7 @@
             localStorage.setItem('playerName', name);
             playerName = name;
 
+            const newGameId = generateGameCode();
             const deck = createDeck();
             const newGame = {
                 players: [{ 
@@ -589,27 +670,44 @@
                 createdAt: Date.now()
             };
 
-            await gameRef.set(newGame);
+            await database.ref('games/' + newGameId).set(newGame);
+            
+            // Set up listener for new game
+            gameId = newGameId;
+            localStorage.setItem('currentGameId', gameId);
+            updateURL(gameId);
+            setupGameListener();
         }
 
         async function joinGame() {
+            const code = document.getElementById('joinGameCode').value.trim().toUpperCase();
             const name = document.getElementById('joinGameName').value.trim();
+            
+            if (!code) {
+                showError('Please enter a game code');
+                return;
+            }
+            
             if (!name) {
                 showError('Please enter your name');
                 return;
             }
 
-            if (!gameState) {
-                showError('No active game to join');
+            // Check if game exists
+            const gameSnapshot = await database.ref('games/' + code).once('value');
+            const game = gameSnapshot.val();
+            
+            if (!game) {
+                showError('Game not found. Check the code and try again.');
                 return;
             }
 
-            if (gameState.phase !== 'waiting') {
+            if (game.phase !== 'waiting') {
                 showError('Game already started');
                 return;
             }
 
-            if (gameState.players.some(p => p.name === name)) {
+            if (game.players.some(p => p.name === name)) {
                 showError('Name already taken');
                 return;
             }
@@ -617,8 +715,8 @@
             localStorage.setItem('playerName', name);
             playerName = name;
 
-            const card = gameState.deck[0];
-            const updatedPlayers = [...gameState.players, { 
+            const card = game.deck[0];
+            const updatedPlayers = [...game.players, { 
                 name: name, 
                 card: card, 
                 rankGuess: null, 
@@ -626,10 +724,15 @@
                 revealed: false 
             }];
 
-            await gameRef.update({
+            await database.ref('games/' + code).update({
                 players: updatedPlayers,
-                deck: gameState.deck.slice(1)
+                deck: game.deck.slice(1)
             });
+
+            gameId = code;
+            localStorage.setItem('currentGameId', gameId);
+            updateURL(gameId);
+            setupGameListener();
         }
 
         async function startGame() {
@@ -709,26 +812,81 @@
             });
         }
 
-        async function resetGame() {
-            if (confirm('Are you sure you want to reset the game?')) {
-                await gameRef.remove();
-                localStorage.removeItem('playerName');
-                playerName = '';
+        function leaveGame() {
+            if (confirm('Are you sure you want to leave this game?')) {
+                if (gameRef) {
+                    gameRef.off();
+                }
+                gameId = null;
+                gameState = null;
+                localStorage.removeItem('currentGameId');
+                const url = new URL(window.location);
+                url.searchParams.delete('game');
+                window.history.pushState({}, '', url);
+                render();
             }
+        }
+
+        function copyGameCode() {
+            navigator.clipboard.writeText(gameId).then(() => {
+                alert('Game code copied to clipboard!');
+            });
+        }
+
+        function copyGameUrl() {
+            const urlInput = document.getElementById('gameUrl');
+            urlInput.select();
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                alert('Game link copied to clipboard!');
+            });
         }
 
         function attachEventListeners() {
             // Event listeners are attached via onclick in HTML
         }
 
-        // Listen for game state changes
-        gameRef.on('value', (snapshot) => {
-            gameState = snapshot.val();
-            render();
-        });
+        function setupGameListener() {
+            if (gameRef) {
+                gameRef.off();
+            }
+            
+            gameRef = database.ref('games/' + gameId);
+            
+            gameRef.on('value', (snapshot) => {
+                gameState = snapshot.val();
+                
+                if (!gameState) {
+                    // Game was deleted
+                    alert('This game has ended or been deleted.');
+                    leaveGame();
+                    return;
+                }
+                
+                render();
+            });
+        }
 
-        // Initial render
-        render();
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            gameId = getGameId();
+            
+            if (gameId) {
+                // Check if game exists
+                database.ref('games/' + gameId).once('value').then((snapshot) => {
+                    if (snapshot.val()) {
+                        setupGameListener();
+                    } else {
+                        // Game doesn't exist
+                        alert('Game not found. Please create a new game or join with a valid code.');
+                        localStorage.removeItem('currentGameId');
+                        gameId = null;
+                        render();
+                    }
+                });
+            } else {
+                render();
+            }
+        });
     </script>
 </body>
 </html>
