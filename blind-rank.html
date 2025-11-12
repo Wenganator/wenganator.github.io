@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blind Rank</title>
+    <title>Blind Rank - A Cooperative Card Game</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
@@ -45,13 +45,24 @@
             margin-bottom: 16px;
         }
         
-        input, select {
+        h3 {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
             margin-bottom: 12px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
         }
         
         button {
@@ -95,6 +106,15 @@
         .btn-danger:hover {
             background: #e53e3e;
         }
+
+        .btn-warning {
+            background: #ed8936;
+            color: white;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #dd6b20;
+        }
         
         .players-grid {
             display: grid;
@@ -120,6 +140,10 @@
         .playing-card {
             font-size: 48px;
             margin: 8px 0;
+        }
+
+        .red-suit {
+            color: #dc2626;
         }
         
         .alert {
@@ -199,10 +223,15 @@
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 16px;
+            max-height: 200px;
+            overflow-y: auto;
         }
         
         .announcement-item {
             margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
         }
         
         .loading {
@@ -244,6 +273,168 @@
         .copy-button:hover {
             background: #3182ce;
         }
+
+        .settings-box {
+            background: #f7fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .settings-row label {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .settings-row input {
+            width: 80px;
+            margin: 0;
+        }
+
+        .turn-order {
+            background: #e6fffa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .chat-box {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .chat-messages {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .chat-message {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+        }
+
+        .chat-message strong {
+            color: #667eea;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-group input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .chat-input-group button {
+            margin: 0;
+        }
+
+        .session-results {
+            background: #faf5ff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .game-history-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 4px solid #9f7aea;
+        }
+
+        .announcement-input-box {
+            background: #fef5e7;
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid #f39c12;
+            margin-bottom: 16px;
+        }
+
+        .instructions-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .instructions-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .instructions-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .settings-row-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .settings-row-flex label {
+            flex: 1;
+            margin: 0;
+        }
+
+        .settings-row-flex input[type="checkbox"],
+        .settings-row-flex input[type="number"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .settings-indent {
+            margin-left: 20px;
+            padding-left: 12px;
+            border-left: 3px solid #e2e8f0;
+        }
     </style>
 </head>
 <body>
@@ -256,13 +447,14 @@
     <script>
         // REPLACE THESE WITH YOUR FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyCx-m0HeY6i7wyzq9TWKyykpzr_Bv684Po",
+            authDomain: "blind-rank.firebaseapp.com",
+            databaseURL: "https://blind-rank-default-rtdb.firebaseio.com",
+            projectId: "blind-rank",
+            storageBucket: "blind-rank.firebasestorage.app",
+            messagingSenderId: "1087187727443",
+            appId: "1:1087187727443:web:adfe42d823a556c66f02a6",
+            measurementId: "G-DDML51FCX2"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -276,8 +468,13 @@
         let playerName = localStorage.getItem('playerName') || '';
         let gameId = null;
         let gameRef = null;
+        let lastPlayerCount = 0;
 
-        // Get game ID from URL or localStorage
+        function getCardHTML(rank, suit) {
+            const isRed = suit === '♥' || suit === '♦';
+            return `<span class="${isRed ? 'red-suit' : ''}">${rank}${suit}</span>`;
+        }
+
         function getGameId() {
             const urlParams = new URLSearchParams(window.location.search);
             const urlGameId = urlParams.get('game');
@@ -290,7 +487,6 @@
             return localStorage.getItem('currentGameId');
         }
 
-        // Generate random game code
         function generateGameCode() {
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let code = '';
@@ -300,7 +496,6 @@
             return code;
         }
 
-        // Update URL with game ID
         function updateURL(newGameId) {
             const url = new URL(window.location);
             url.searchParams.set('game', newGameId);
@@ -317,13 +512,46 @@
             return deck.sort(() => Math.random() - 0.5);
         }
 
+        function calculateRelativeRanks(players) {
+            const sorted = [...players].sort((a, b) => 
+                RANK_VALUES[b.card.rank] - RANK_VALUES[a.card.rank]
+            );
+
+            const ranks = new Map();
+            let currentRank = 1;
+            
+            sorted.forEach((player, idx) => {
+                if (idx > 0 && RANK_VALUES[player.card.rank] < RANK_VALUES[sorted[idx - 1].card.rank]) {
+                    currentRank = ranks.size + 1;
+                }
+                ranks.set(player.name, currentRank);
+            });
+
+            return ranks;
+        }
+
+        function getNumRelativeRanks(players) {
+            const values = players.map(p => RANK_VALUES[p.card.rank]);
+            const uniqueValues = [...new Set(values)];
+            return uniqueValues.length;
+        }
+
         function render() {
             const app = document.getElementById('app');
+            
+            // Check for player left notification
+            if (gameState && gameState.playerLeftNotification && gameState.awaitingHostDecision) {
+                app.innerHTML = renderPlayerLeftNotification();
+                attachEventListeners();
+                return;
+            }
             
             if (!gameId) {
                 app.innerHTML = renderLobby();
             } else if (!gameState) {
                 app.innerHTML = '<div class="loading">Loading game...</div>';
+            } else if (gameState.phase === 'setup') {
+                app.innerHTML = renderSetup();
             } else if (gameState.phase === 'waiting') {
                 app.innerHTML = renderWaiting();
             } else if (gameState.phase === 'announcing') {
@@ -339,10 +567,58 @@
             attachEventListeners();
         }
 
+        function renderPlayerLeftNotification() {
+            const notification = gameState.playerLeftNotification;
+            const isHost = gameState.players[0].name === playerName;
+            
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h1>🎴 Blind Rank</h1>
+                            <p style="font-size: 14px; color: #666;">Player Left</p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-error">
+                        <h3 style="margin-bottom: 8px;">⚠️ ${notification.playerName} has left the game</h3>
+                        ${notification.wasHost ? `<p><strong>${notification.newHost}</strong> is now the host.</p>` : ''}
+                    </div>
+                    
+                    ${isHost ? `
+                        <div class="alert alert-info" style="margin-top: 20px;">
+                            <h3 style="margin-bottom: 12px;">What would you like to do?</h3>
+                            <p style="margin-bottom: 16px;">You can continue the game without ${notification.playerName}, or end the game and return to setup.</p>
+                            <div class="btn-group">
+                                <button class="btn-success" onclick="continueWithoutPlayer()">Continue Game</button>
+                                <button class="btn-danger" onclick="endGameDueToLeave()">End Game</button>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="alert alert-info" style="margin-top: 20px;">
+                            Waiting for the host (<strong>${gameState.players[0].name}</strong>) to decide whether to continue or end the game...
+                        </div>
+                    `}
+                    
+                    <h3 style="margin-top: 24px;">Remaining Players (${gameState.players.length})</h3>
+                    <div class="players-grid">
+                        ${gameState.players.map((p, idx) => `
+                            <div class="player-card ${p.name === playerName ? 'me' : ''}">
+                                ${p.name} ${idx === 0 ? '👑' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         function renderLobby() {
             return `
                 <div class="card">
-                    <h1>🎴 Blind Rank: A Cooperative Card Game</h1>
+                    <h1>🎴 Blind Rank</h1>
+                    <p style="font-size: 18px; color: #666; margin-bottom: 12px;">A Cooperative Card Game</p>
+                    <button class="btn-primary" onclick="showInstructions()" style="margin-bottom: 24px; padding: 8px 16px; font-size: 14px;">📖 How to Play</button>
+                    
                     <div style="margin-bottom: 24px;">
                         <h2>Create New Game</h2>
                         <input type="text" id="newGameName" placeholder="Enter your name" value="${playerName}">
@@ -359,14 +635,144 @@
             `;
         }
 
-        function renderWaiting() {
+        function showInstructions() {
+            const modal = document.createElement('div');
+            modal.className = 'instructions-modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) hideInstructions();
+            };
+            
+            modal.innerHTML = `
+                <div class="instructions-content">
+                    <button class="instructions-close" onclick="hideInstructions()">×</button>
+                    <h1 style="margin-bottom: 16px;">🎴 How to Play Blind Rank</h1>
+                    
+                    <h2 style="color: #667eea; margin-top: 24px;">Game Overview</h2>
+                    <p>Blind Rank is a cooperative card game where players work together to guess their card ranks without seeing their own cards. The goal is to maximize your team's score by making accurate guesses.</p>
+                    
+                    <h2 style="color: #667eea; margin-top: 24px;">Quick Start</h2>
+                    <ol style="line-height: 1.8;">
+                        <li><strong>Setup:</strong> Host creates a game and sets scoring rules. Players join using the game code or link.</li>
+                        <li><strong>Deal:</strong> Each player receives one card face-up that only other players can see.</li>
+                        <li><strong>Announcement Phase:</strong> Players announce if they see duplicate cards (pairs, triples, etc.).</li>
+                        <li><strong>Round 1:</strong> Each player guesses their card's relative rank (1 = highest).</li>
+                        <li><strong>Round 2:</strong> Each player guesses their relative rank AND card identity, then reveals.</li>
+                        <li><strong>Scoring:</strong> Earn points for correct guesses based on the scoring rules set by the host.</li>
+                    </ol>
+                    
+                    <h2 style="color: #667eea; margin-top: 24px;">Detailed Rules</h2>
+                    
+                    <h3 style="margin-top: 16px;">Understanding Relative Ranks</h3>
+                    <p><strong>Relative rank</strong> refers to how your card compares to all cards in play:</p>
+                    <ul style="line-height: 1.8; margin-bottom: 12px;">
+                        <li>Relative rank 1 = highest card(s) in play</li>
+                        <li>Relative rank 2 = second highest card(s)</li>
+                        <li>And so on...</li>
+                    </ul>
+                    
+                    <p><strong>Important:</strong> Cards of the same rank (but different suits) share the same relative rank.</p>
+                    
+                    <p style="margin-top: 12px;"><strong>Example 1:</strong> Cards in play are A♠, K♥, 7♦, 2♣</p>
+                    <ul style="line-height: 1.6;">
+                        <li>A♠ has relative rank 1 (highest)</li>
+                        <li>K♥ has relative rank 2</li>
+                        <li>7♦ has relative rank 3</li>
+                        <li>2♣ has relative rank 4 (lowest)</li>
+                        <li>Total: 4 relative ranks</li>
+                    </ul>
+                    
+                    <p style="margin-top: 12px;"><strong>Example 2:</strong> Cards in play are A♠, A♥, 7♦, 7♣, 2♠</p>
+                    <ul style="line-height: 1.6;">
+                        <li>Both A♠ and A♥ have relative rank 1 (highest)</li>
+                        <li>Both 7♦ and 7♣ have relative rank 2</li>
+                        <li>2♠ has relative rank 3 (lowest)</li>
+                        <li>Total: 3 relative ranks (even though there are 5 cards)</li>
+                    </ul>
+                    
+                    <p style="margin-top: 12px;"><strong>Edge Case:</strong> If everyone's card is part of a duplicate (e.g., A♠, A♥, A♦, A♣), no one will know the true number of relative ranks until all cards are revealed!</p>
+                    
+                    <h3 style="margin-top: 16px;">Announcement Phase</h3>
+                    <p>Players look at everyone else's cards (but not their own):</p>
+                    <ul style="line-height: 1.8;">
+                        <li>If you see duplicates, click <strong>"Make Announcement"</strong> to claim the announcement slot</li>
+                        <li>Describe what you see (e.g., "I see a pair" or "I see two pairs")</li>
+                        <li>If another player sees MORE duplicates than announced, they can announce next</li>
+                        <li>If you don't see any additional duplicates beyond what's been announced, click <strong>"I See No Further Duplicates"</strong></li>
+                        <li>Once all players have either announced or clicked "No Further Duplicates," the host starts Round 1</li>
+                        <li><strong>Important:</strong> Don't say which cards are duplicates or who has them - just that duplicates exist!</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 16px;">Round 1: Relative Rank Guessing</h3>
+                    <ul style="line-height: 1.8;">
+                        <li>The last person to announce goes first; if no one announced, order is random</li>
+                        <li>Players take turns guessing their card's relative rank (1 = highest)</li>
+                        <li>You can see other players' cards and their guesses to help you decide</li>
+                        <li>The host controls whether Round 1 guesses are scored (default: not scored)</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 16px;">Round 2: Full Guessing</h3>
+                    <ul style="line-height: 1.8;">
+                        <li>Same turn order as Round 1</li>
+                        <li>Guess your relative rank again (1 = highest)</li>
+                        <li>Also guess your card identity (A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2)</li>
+                        <li><strong>Note:</strong> You do NOT guess the suit - only the card rank</li>
+                        <li>After guessing, your card is revealed to everyone (including you)</li>
+                        <li>The host controls scoring for Round 2 guesses (default: scored)</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 16px;">Scoring</h3>
+                    <p>The host sets scoring rules at game start:</p>
+                    <ul style="line-height: 1.8;">
+                        <li><strong>Round 1 Scoring:</strong> Points for correct relative rank guess (default: 0 pts, not scored)</li>
+                        <li><strong>Round 2 Scoring:</strong> Points for correct relative rank guess (default: 1 pt)</li>
+                        <li><strong>Round 2 Scoring:</strong> Points for correct card identity guess (default: 2 pts)</li>
+                    </ul>
+                    <p style="margin-top: 12px;">Your team's goal is to maximize the total points across all players!</p>
+                    
+                    <h3 style="margin-top: 16px;">Session Mode</h3>
+                    <ul style="line-height: 1.8;">
+                        <li>After a game ends, the host can start a new game without recreating the room</li>
+                        <li>Results from all games in the session are tracked and can be exported</li>
+                        <li>Players can join or leave between games</li>
+                        <li>If the host leaves, the next player becomes the new host</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 16px;">Tips for Success</h3>
+                    <ul style="line-height: 1.8;">
+                        <li>Pay close attention to announcements - they give crucial information</li>
+                        <li>Use other players' guesses to help inform your own</li>
+                        <li>Remember that duplicate cards share the same relative rank</li>
+                        <li>In Round 2, your Round 1 guess is shown to help you reassess</li>
+                        <li>Communication during announcements is key to team success!</li>
+                    </ul>
+                    
+                    <div style="margin-top: 32px; text-align: center;">
+                        <button class="btn-primary" onclick="hideInstructions()">Got it! Let's Play</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function hideInstructions() {
+            const modal = document.querySelector('.instructions-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function renderSetup() {
             const isHost = gameState.players[0].name === playerName;
             const gameUrl = window.location.origin + window.location.pathname + '?game=' + gameId;
             
             return `
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h1>🎴 Blind Rank: A Cooperative Card Game</h1>
+                        <div>
+                            <h1>🎴 Blind Rank</h1>
+                            <p style="font-size: 14px; color: #666;">Game Setup</p>
+                        </div>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
@@ -381,21 +787,99 @@
                         </div>
                     </div>
                     
+                    ${isHost ? `
+                        <div class="settings-box">
+                            <h3>⚙️ Game Settings</h3>
+                            <div class="settings-row-flex">
+                                <label><strong>Score Round 1</strong> (Relative Rank Only)</label>
+                                <input type="checkbox" id="scoreRound1" ${gameState.settings.scoreRound1 ? 'checked' : ''} onchange="render()">
+                            </div>
+                            ${gameState.settings.scoreRound1 || document.getElementById('scoreRound1')?.checked ? `
+                                <div class="settings-indent">
+                                    <div class="settings-row-flex">
+                                        <label>Points for correct relative rank (Round 1):</label>
+                                        <input type="number" id="round1Points" value="${gameState.settings.round1Points || 1}" min="0" max="10" style="width: 60px;">
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="settings-row-flex">
+                                <label><strong>Score Round 2</strong> (Relative Rank + Card Identity)</label>
+                                <input type="checkbox" id="scoreRound2" ${gameState.settings.scoreRound2 ? 'checked' : ''} onchange="render()">
+                            </div>
+                            ${gameState.settings.scoreRound2 || document.getElementById('scoreRound2')?.checked ? `
+                                <div class="settings-indent">
+                                    <div class="settings-row-flex">
+                                        <label>Points for correct relative rank (Round 2):</label>
+                                        <input type="number" id="round2RankPoints" value="${gameState.settings.round2RankPoints || 1}" min="0" max="10" style="width: 60px;">
+                                    </div>
+                                    <div class="settings-row-flex">
+                                        <label>Points for correct card identity:</label>
+                                        <input type="number" id="cardPoints" value="${gameState.settings.cardPoints || 2}" min="0" max="10" style="width: 60px;">
+                                    </div>
+                                </div>
+                            ` : ''}
+                            <button class="btn-primary" onclick="updateSettings()" style="margin-top: 12px;">Save Settings</button>
+                        </div>
+                    ` : `
+                        <div class="settings-box">
+                            <h3>⚙️ Current Settings</h3>
+                            <p><strong>Round 1 Scoring:</strong> ${gameState.settings.scoreRound1 ? `Enabled (${gameState.settings.round1Points || 1} pt)` : 'Disabled'}</p>
+                            <p><strong>Round 2 Scoring:</strong> ${gameState.settings.scoreRound2 ? `Enabled (${gameState.settings.round2RankPoints || 1} pt for rank, ${gameState.settings.cardPoints || 2} pts for card)` : 'Disabled'}</p>
+                            <p style="margin-top: 8px; font-size: 14px; color: #666;">Only the host can change settings</p>
+                        </div>
+                    `}
+                    
                     <h2>Players (${gameState.players.length})</h2>
                     <div class="players-grid">
-                        ${gameState.players.map(p => `
+                        ${gameState.players.map((p, idx) => `
                             <div class="player-card ${p.name === playerName ? 'me' : ''}">
-                                ${p.name}
+                                ${p.name} ${idx === 0 ? '👑' : ''}
                             </div>
                         `).join('')}
                     </div>
                     
                     ${isHost ? `
-                        <button class="btn-primary" onclick="startGame()" ${gameState.players.length < 2 ? 'disabled' : ''}>
-                            Start Game ${gameState.players.length < 2 ? '(Need 2+ players)' : ''}
+                        <button class="btn-primary" onclick="startWaiting()" ${gameState.players.length < 2 ? 'disabled' : ''}>
+                            Continue ${gameState.players.length < 2 ? '(Need 2+ players)' : ''}
                         </button>
                     ` : `
-                        <div class="alert alert-info">Waiting for ${gameState.players[0].name} to start the game...</div>
+                        <div class="alert alert-info">Waiting for ${gameState.players[0].name} to continue...</div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderWaiting() {
+            const isHost = gameState.players[0].name === playerName;
+            
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h1>🎴 Blind Rank</h1>
+                            <p style="font-size: 14px; color: #666;">Ready to Start</p>
+                        </div>
+                        <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        All players are ready! When the host starts the game, cards will be dealt.
+                    </div>
+                    
+                    <h2>Players (${gameState.players.length})</h2>
+                    <div class="players-grid">
+                        ${gameState.players.map((p, idx) => `
+                            <div class="player-card ${p.name === playerName ? 'me' : ''}">
+                                ${p.name} ${idx === 0 ? '👑' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${isHost ? `
+                        <button class="btn-success" onclick="dealCards()">Deal Cards & Start Game</button>
+                    ` : `
+                        <div class="alert alert-info">Waiting for ${gameState.players[0].name} to deal cards...</div>
                     `}
                 </div>
             `;
@@ -403,40 +887,81 @@
 
         function renderAnnouncing() {
             const myPlayer = gameState.players.find(p => p.name === playerName);
+            const announcer = gameState.currentAnnouncer;
+            const noAnnouncePlayers = gameState.noAnnouncementPlayers || [];
+            const isMyTurnToAnnounce = announcer === playerName;
+            const haveIClickedNoAnnounce = noAnnouncePlayers.includes(playerName);
+            const canClickAnnounce = !announcer && !haveIClickedNoAnnounce;
+            const allClickedNoAnnounce = noAnnouncePlayers.length === gameState.players.length;
+            const isHost = gameState.players[0].name === playerName;
+            
             return `
                 <div class="card">
-                    <div style="display: flex; justify-between: space-between; align-items: center; margin-bottom: 20px;">
-                        <h1>🎴 Announcement Phase</h1>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h1>🎴 Blind Rank</h1>
+                            <p style="font-size: 14px; color: #666;">Announcement Phase</p>
+                        </div>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
                     <div class="phase-banner">
-                        <strong>Look at other players' cards.</strong> If you see duplicates (pairs, triples, etc.), announce them!
+                        <strong>Look at other players' cards.</strong> If you see duplicates (pairs, triples, etc.), click "Make Announcement" and describe them!
                     </div>
+                    
+                    ${announcer ? `
+                        <div class="announcement-input-box">
+                            ${isMyTurnToAnnounce ? `
+                                <h3>✏️ Your turn to announce</h3>
+                                <p style="margin-bottom: 12px;">Describe the duplicates you see (e.g., "I see a pair" or "I see two pairs")</p>
+                                <textarea id="announcementText" placeholder="Enter your announcement..."></textarea>
+                                <div class="btn-group">
+                                    <button class="btn-success" onclick="submitAnnouncement()">Submit Announcement</button>
+                                    <button class="btn-warning" onclick="cancelAnnouncement()">Cancel</button>
+                                </div>
+                            ` : `
+                                <p><strong>${announcer}</strong> is making an announcement...</p>
+                            `}
+                        </div>
+                    ` : ''}
                     
                     <h2>Other Players' Cards</h2>
                     <div class="players-grid">
                         ${gameState.players.filter(p => p.name !== playerName).map(p => `
                             <div class="player-card">
                                 <div><strong>${p.name}</strong></div>
-                                <div class="playing-card">${p.card.rank}${p.card.suit}</div>
+                                <div class="playing-card">${getCardHTML(p.card.rank, p.card.suit)}</div>
                             </div>
                         `).join('')}
                     </div>
                     
                     ${gameState.announcements && gameState.announcements.length > 0 ? `
                         <div class="announcement-list">
-                            <strong>Announcements:</strong>
-                            ${gameState.announcements.map(a => `
-                                <div class="announcement-item"><strong>${a.player}:</strong> ${a.text}</div>
+                            <strong>📢 Announcements:</strong>
+                            ${gameState.announcements.map((a, idx) => `
+                                <div class="announcement-item">
+                                    <strong>${idx + 1}. ${a.player}:</strong> ${a.text}
+                                </div>
                             `).join('')}
                         </div>
                     ` : ''}
                     
-                    <input type="text" id="announcement" placeholder="Announce duplicates (e.g., 'I see a pair')">
+                    <div style="margin-bottom: 12px;">
+                        <strong>Players who see no further duplicates:</strong> ${noAnnouncePlayers.length}/${gameState.players.length}
+                    </div>
+                    
                     <div class="btn-group">
-                        <button class="btn-primary" onclick="makeAnnouncement()">Make Announcement</button>
-                        <button class="btn-success" onclick="startRound1()">Start Round 1</button>
+                        <button class="btn-primary" onclick="claimAnnouncement()" ${!canClickAnnounce ? 'disabled' : ''}>
+                            ${haveIClickedNoAnnounce ? '✓ You clicked No Further Duplicates' : 'Make Announcement'}
+                        </button>
+                        <button class="btn-warning" onclick="noAnnouncement()" ${announcer || haveIClickedNoAnnounce ? 'disabled' : ''}>
+                            ${haveIClickedNoAnnounce ? '✓ No Further Duplicates (Clicked)' : 'I See No Further Duplicates'}
+                        </button>
+                        ${allClickedNoAnnounce && isHost ? `
+                            <button class="btn-success" onclick="startRound1()">Start Round 1</button>
+                        ` : allClickedNoAnnounce && !isHost ? `
+                            <div class="alert alert-info" style="margin: 0;">Waiting for host to start Round 1...</div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -444,19 +969,32 @@
 
         function renderRound1() {
             const myPlayer = gameState.players.find(p => p.name === playerName);
-            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-            const isMyTurn = currentPlayer.name === playerName;
+            const turnOrder = gameState.turnOrder || [];
+            const currentPlayerName = turnOrder[gameState.currentTurnIndex];
+            const isMyTurn = currentPlayerName === playerName;
+            const numRanks = getNumRelativeRanks(gameState.players);
+            const myGuess = myPlayer && myPlayer.round1Guess !== null && myPlayer.round1Guess !== undefined ? myPlayer.round1Guess : null;
             
             return `
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h1>🎴 Round 1: Rank Guessing</h1>
+                        <h1>🎴 Round 1: Relative Rank Guessing</h1>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
+                    <div class="turn-order">
+                        <strong>Turn Order:</strong> ${turnOrder.map((name, idx) => {
+                            const player = gameState.players.find(p => p.name === name);
+                            const done = player && player.round1Guess !== null && player.round1Guess !== undefined;
+                            return `<span style="color: ${done ? '#48bb78' : idx === gameState.currentTurnIndex ? '#667eea' : '#666'}; font-weight: ${idx === gameState.currentTurnIndex ? 'bold' : 'normal'};">${name}${done ? ' ✓' : ''}</span>`;
+                        }).join(' → ')}
+                    </div>
+                    
                     <div class="phase-banner">
-                        <strong>Current Turn:</strong> ${currentPlayer.name}
+                        <strong>Current Turn:</strong> ${currentPlayerName}
                         ${isMyTurn ? ' (Your turn!)' : ''}
+                        <br>
+                        <strong>Number of relative ranks:</strong> ${numRanks} (1 = highest, ${numRanks} = lowest)
                     </div>
                     
                     <h2>Other Players' Cards</h2>
@@ -464,25 +1002,25 @@
                         ${gameState.players.filter(p => p.name !== playerName).map(p => `
                             <div class="player-card">
                                 <div><strong>${p.name}</strong></div>
-                                <div class="playing-card">${p.card.rank}${p.card.suit}</div>
-                                ${p.rankGuess ? `<div class="correct">Rank: ${p.rankGuess}</div>` : ''}
+                                <div class="playing-card">${getCardHTML(p.card.rank, p.card.suit)}</div>
+                                ${p.round1Guess !== null && p.round1Guess !== undefined ? `<div class="correct">Relative Rank: ${p.round1Guess}</div>` : ''}
                             </div>
                         `).join('')}
                     </div>
                     
-                    ${isMyTurn && !myPlayer.rankGuess ? `
+                    ${isMyTurn && myGuess === null ? `
                         <div class="alert alert-info">
-                            What rank is your card? (1 = highest, ${gameState.players.length} = lowest)
+                            What is your card's relative rank? (1 = highest, ${numRanks} = lowest)
                         </div>
-                        <input type="number" id="rankGuess" min="1" max="${gameState.players.length}" placeholder="Enter rank (1-${gameState.players.length})">
-                        <button class="btn-primary" onclick="submitRankGuess()">Submit Rank Guess</button>
-                    ` : myPlayer.rankGuess ? `
+                        <input type="number" id="round1Guess" min="1" max="${numRanks}" placeholder="Enter relative rank (1-${numRanks})">
+                        <button class="btn-primary" onclick="submitRound1Guess()">Submit Relative Rank</button>
+                    ` : myGuess !== null ? `
                         <div class="alert alert-success">
-                            You guessed rank: <strong>${myPlayer.rankGuess}</strong><br>
+                            You guessed relative rank: <strong>${myGuess}</strong><br>
                             Waiting for other players...
                         </div>
                     ` : `
-                        <div class="alert alert-info">Waiting for ${currentPlayer.name} to guess...</div>
+                        <div class="alert alert-info">Waiting for ${currentPlayerName} to guess...</div>
                     `}
                 </div>
             `;
@@ -490,19 +1028,31 @@
 
         function renderRound2() {
             const myPlayer = gameState.players.find(p => p.name === playerName);
-            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-            const isMyTurn = currentPlayer.name === playerName;
+            const turnOrder = gameState.turnOrder || [];
+            const currentPlayerName = turnOrder[gameState.currentTurnIndex];
+            const isMyTurn = currentPlayerName === playerName;
+            const numRanks = getNumRelativeRanks(gameState.players);
             
             return `
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h1>🎴 Round 2: Card Guessing</h1>
+                        <h1>🎴 Round 2: Card Identity Guessing</h1>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
+                    <div class="turn-order">
+                        <strong>Turn Order:</strong> ${turnOrder.map((name, idx) => {
+                            const player = gameState.players.find(p => p.name === name);
+                            const done = player && player.revealed;
+                            return `<span style="color: ${done ? '#48bb78' : idx === gameState.currentTurnIndex ? '#667eea' : '#666'}; font-weight: ${idx === gameState.currentTurnIndex ? 'bold' : 'normal'};">${name}${done ? ' ✓' : ''}</span>`;
+                        }).join(' → ')}
+                    </div>
+                    
                     <div class="phase-banner">
-                        <strong>Current Turn:</strong> ${currentPlayer.name}
+                        <strong>Current Turn:</strong> ${currentPlayerName}
                         ${isMyTurn ? ' (Your turn!)' : ''}
+                        <br>
+                        Guess your relative rank AND card identity (rank only, not suit)
                     </div>
                     
                     <h2>Other Players' Cards</h2>
@@ -510,11 +1060,11 @@
                         ${gameState.players.filter(p => p.name !== playerName).map(p => `
                             <div class="player-card">
                                 <div><strong>${p.name}</strong></div>
-                                <div class="playing-card">${p.card.rank}${p.card.suit}</div>
-                                <div style="font-size: 12px; margin-top: 4px;">Rank guess: ${p.rankGuess}</div>
-                                ${p.revealed && p.finalGuess ? `
+                                <div class="playing-card">${getCardHTML(p.card.rank, p.card.suit)}</div>
+                                <div style="font-size: 12px; margin-top: 4px;">Round 1: ${p.round1Guess}</div>
+                                ${p.revealed && p.round2Guess ? `
                                     <div class="correct" style="font-size: 12px;">
-                                        Guessed: ${p.finalGuess.rank}${p.finalGuess.suit}
+                                        Guessed: Rank ${p.round2Guess.relativeRank}, ${p.round2Guess.cardRank}
                                     </div>
                                 ` : ''}
                             </div>
@@ -523,114 +1073,164 @@
                     
                     ${isMyTurn && !myPlayer.revealed ? `
                         <div class="alert alert-info">
-                            What is your exact card? (Rank and Suit)
+                            Guess your relative rank (1-${numRanks}) and card identity (A, K, Q, J, 10, etc.)
                         </div>
-                        <select id="cardRank">
-                            <option value="">Select Rank</option>
+                        <input type="number" id="round2RelativeRank" min="1" max="${numRanks}" placeholder="Relative rank (1-${numRanks})">
+                        <select id="round2CardRank">
+                            <option value="">Select card identity</option>
                             ${RANKS.map(r => `<option value="${r}">${r}</option>`).join('')}
                         </select>
-                        <select id="cardSuit">
-                            <option value="">Select Suit</option>
-                            ${SUITS.map(s => `<option value="${s}">${s}</option>`).join('')}
-                        </select>
-                        <button class="btn-primary" onclick="submitFinalGuess()">Submit Final Guess & Reveal</button>
+                        <button class="btn-primary" onclick="submitRound2Guess()">Submit Guess & Reveal</button>
                     ` : myPlayer.revealed ? `
                         <div class="alert alert-success">
-                            <strong>Your card:</strong> ${myPlayer.card.rank}${myPlayer.card.suit}<br>
-                            <strong>You guessed:</strong> ${myPlayer.finalGuess.rank}${myPlayer.finalGuess.suit}<br>
+                            <strong>Your card:</strong> ${getCardHTML(myPlayer.card.rank, myPlayer.card.suit)}<br>
+                            <strong>You guessed:</strong> Relative Rank ${myPlayer.round2Guess.relativeRank}, Card ${myPlayer.round2Guess.cardRank}<br>
                             Waiting for other players...
                         </div>
                     ` : `
-                        <div class="alert alert-info">Waiting for ${currentPlayer.name} to reveal...</div>
+                        <div class="alert alert-info">Waiting for ${currentPlayerName} to reveal...</div>
                     `}
                 </div>
             `;
         }
 
         function renderResults() {
-            const results = calculateResults();
+            const isHost = gameState.players[0].name === playerName;
+            const results = calculateGameResults();
+            const sessionHistory = gameState.sessionHistory || [];
             
             return `
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h1>🏆 Game Results</h1>
-                        <button class="btn-danger" onclick="leaveGame()">New Game</button>
+                        <button class="btn-danger" onclick="leaveGame()">Leave Session</button>
                     </div>
                     
                     <div class="score-banner">
-                        <h2 style="color: white; margin-bottom: 12px;">Team Score</h2>
+                        <h2 style="color: white; margin-bottom: 12px;">Game ${sessionHistory.length} Results</h2>
                         <div style="font-size: 20px;">
-                            Correct Ranks: <strong>${results.correctRanks}/${results.total}</strong><br>
-                            Correct Cards: <strong>${results.correctCards}/${results.total}</strong>
+                            Total Points Earned: <strong>${results.totalPoints}</strong>
                         </div>
-                        <div style="font-size: 32px; margin-top: 16px;">
-                            <strong>Total: ${results.correctRanks + results.correctCards}/${results.total * 2}</strong>
+                        <div style="font-size: 16px; margin-top: 12px; line-height: 1.6;">
+                            ${gameState.settings.scoreRound1 ? `Correct Relative Ranks (Round 1): ${results.round1CorrectRanks}/${results.total} (${results.round1CorrectRanks * (gameState.settings.round1Points || 1)} pts)<br>` : ''}
+                            ${gameState.settings.scoreRound2 ? `Correct Relative Ranks (Round 2): ${results.round2CorrectRanks}/${results.total} (${results.round2CorrectRanks * (gameState.settings.round2RankPoints || 1)} pts)<br>` : ''}
+                            ${gameState.settings.scoreRound2 ? `Correct Card Identities: ${results.correctCards}/${results.total} (${results.correctCards * (gameState.settings.cardPoints || 2)} pts)` : ''}
                         </div>
                     </div>
                     
                     <h2>Individual Results</h2>
                     <div class="results-grid">
                         ${gameState.players.map(p => {
-                            const sortedPlayers = [...gameState.players].sort((a, b) => 
-                                RANK_VALUES[b.card.rank] - RANK_VALUES[a.card.rank]
-                            );
-                            let actualRank = 1;
-                            for (let i = 0; i < sortedPlayers.length; i++) {
-                                if (sortedPlayers[i].name === p.name) {
-                                    if (i > 0 && RANK_VALUES[sortedPlayers[i].card.rank] < RANK_VALUES[sortedPlayers[i-1].card.rank]) {
-                                        actualRank = i + 1;
-                                    }
-                                    break;
-                                }
-                            }
+                            const relativeRanks = calculateRelativeRanks(gameState.players);
+                            const actualRank = relativeRanks.get(p.name);
                             
-                            const rankCorrect = p.rankGuess === actualRank;
-                            const cardCorrect = p.finalGuess.rank === p.card.rank && p.finalGuess.suit === p.card.suit;
+                            const round1Correct = p.round1Guess === actualRank;
+                            const round2RankCorrect = p.round2Guess.relativeRank === actualRank;
+                            const round2CardCorrect = p.round2Guess.cardRank === p.card.rank;
+                            
+                            const points = (round1Correct ? gameState.settings.rankPoints : 0) + 
+                                         (round2RankCorrect ? gameState.settings.rankPoints : 0) + 
+                                         (round2CardCorrect ? gameState.settings.cardPoints : 0);
                             
                             return `
                                 <div class="result-card">
                                     <div style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">${p.name}</div>
-                                    <div class="playing-card">${p.card.rank}${p.card.suit}</div>
-                                    <div class="${rankCorrect ? 'correct' : 'incorrect'}" style="margin-top: 8px;">
-                                        Rank: Guessed ${p.rankGuess}, Actual ${actualRank} ${rankCorrect ? '✓' : '✗'}
+                                    <div class="playing-card">${getCardHTML(p.card.rank, p.card.suit)}</div>
+                                    <div style="margin-top: 8px; font-weight: bold;">Points: ${points}</div>
+                                    <div class="${round1Correct ? 'correct' : 'incorrect'}" style="margin-top: 8px;">
+                                        Round 1 Rank: ${p.round1Guess} (Actual: ${actualRank}) ${round1Correct ? '✓' : '✗'}
                                     </div>
-                                    <div class="${cardCorrect ? 'correct' : 'incorrect'}">
-                                        Card: Guessed ${p.finalGuess.rank}${p.finalGuess.suit} ${cardCorrect ? '✓' : '✗'}
+                                    <div class="${round2RankCorrect ? 'correct' : 'incorrect'}">
+                                        Round 2 Rank: ${p.round2Guess.relativeRank} (Actual: ${actualRank}) ${round2RankCorrect ? '✓' : '✗'}
+                                    </div>
+                                    <div class="${round2CardCorrect ? 'correct' : 'incorrect'}">
+                                        Card Identity: ${p.round2Guess.cardRank} (Actual: ${p.card.rank}) ${round2CardCorrect ? '✓' : '✗'}
                                     </div>
                                 </div>
                             `;
                         }).join('')}
                     </div>
+                    
+                    ${sessionHistory.length > 0 ? `
+                        <div class="session-results">
+                            <h2>📊 Session History (${sessionHistory.length} game${sessionHistory.length > 1 ? 's' : ''})</h2>
+                            ${sessionHistory.map((game, idx) => `
+                                <div class="game-history-item">
+                                    <strong>Game ${idx + 1}</strong> - ${game.totalPoints} points
+                                    <div style="font-size: 14px; margin-top: 4px;">
+                                        Round 1 Ranks: ${game.round1CorrectRanks || 0}/${game.total} | 
+                                        Round 2 Ranks: ${game.round2CorrectRanks || 0}/${game.total} | 
+                                        Cards: ${game.correctCards}/${game.total}
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <button class="btn-primary" onclick="exportResults()" style="margin-top: 12px;">📥 Export All Results</button>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="chat-box">
+                        <h3>💬 Chat</h3>
+                        <div class="chat-messages" id="chatMessages">
+                            ${(gameState.chatMessages || []).map(msg => `
+                                <div class="chat-message">
+                                    <strong>${msg.player}:</strong> ${msg.text}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="chat-input-group">
+                            <input type="text" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                            <button class="btn-primary" onclick="sendChatMessage()">Send</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        ${isHost ? `
+                            <div class="btn-group">
+                                <button class="btn-success" onclick="startNewRound()" ${gameState.players.length < 2 ? 'disabled' : ''}>
+                                    Start New Game ${gameState.players.length < 2 ? '(Need 2+ players)' : ''}
+                                </button>
+                                <button class="btn-warning" onclick="endSession()">End Session & Clear History</button>
+                            </div>
+                        ` : `
+                            <div class="alert alert-info">
+                                Waiting for ${gameState.players[0].name} to start a new game or end the session...
+                            </div>
+                        `}
+                    </div>
                 </div>
             `;
         }
 
-        function calculateResults() {
-            const sortedPlayers = [...gameState.players].sort((a, b) => 
-                RANK_VALUES[b.card.rank] - RANK_VALUES[a.card.rank]
-            );
-
-            let correctRanks = 0;
+        function calculateGameResults() {
+            const relativeRanks = calculateRelativeRanks(gameState.players);
+            let round1CorrectRanks = 0;
+            let round2CorrectRanks = 0;
             let correctCards = 0;
 
             gameState.players.forEach(player => {
-                let actualRank = 1;
-                for (let i = 0; i < sortedPlayers.length; i++) {
-                    if (sortedPlayers[i].name === player.name) {
-                        if (i > 0 && RANK_VALUES[sortedPlayers[i].card.rank] < RANK_VALUES[sortedPlayers[i-1].card.rank]) {
-                            actualRank = i + 1;
-                        }
-                        break;
-                    }
-                }
+                const actualRank = relativeRanks.get(player.name);
                 
-                if (player.rankGuess === actualRank) correctRanks++;
-                if (player.finalGuess.rank === player.card.rank && player.finalGuess.suit === player.card.suit) {
-                    correctCards++;
-                }
+                if (player.round1Guess === actualRank) round1CorrectRanks++;
+                if (player.round2Guess.relativeRank === actualRank) round2CorrectRanks++;
+                if (player.round2Guess.cardRank === player.card.rank) correctCards++;
             });
 
-            return { correctRanks, correctCards, total: gameState.players.length };
+            let totalPoints = 0;
+            if (gameState.settings.scoreRound1) {
+                totalPoints += round1CorrectRanks * (gameState.settings.round1Points || 1);
+            }
+            if (gameState.settings.scoreRound2) {
+                totalPoints += round2CorrectRanks * (gameState.settings.round2RankPoints || 1);
+                totalPoints += correctCards * (gameState.settings.cardPoints || 2);
+            }
+
+            return { 
+                round1CorrectRanks,
+                round2CorrectRanks,
+                correctCards, 
+                total: gameState.players.length,
+                totalPoints
+            };
         }
 
         function showError(message) {
@@ -654,25 +1254,24 @@
             playerName = name;
 
             const newGameId = generateGameCode();
-            const deck = createDeck();
             const newGame = {
                 players: [{ 
-                    name: name, 
-                    card: deck[0], 
-                    rankGuess: null, 
-                    finalGuess: null, 
-                    revealed: false 
+                    name: name
                 }],
-                deck: deck.slice(1),
-                phase: 'waiting',
-                currentPlayerIndex: 0,
-                announcements: [],
+                phase: 'setup',
+                settings: {
+                    scoreRound1: false,
+                    round1Points: 1,
+                    scoreRound2: true,
+                    round2RankPoints: 1,
+                    cardPoints: 2
+                },
+                sessionHistory: [],
                 createdAt: Date.now()
             };
 
             await database.ref('games/' + newGameId).set(newGame);
             
-            // Set up listener for new game
             gameId = newGameId;
             localStorage.setItem('currentGameId', gameId);
             updateURL(gameId);
@@ -680,10 +1279,10 @@
         }
 
         async function joinGame() {
-            const code = document.getElementById('joinGameCode').value.trim().toUpperCase();
-            const name = document.getElementById('joinGameName').value.trim();
+            const code = document.getElementById('joinGameCode') ? document.getElementById('joinGameCode').value.trim().toUpperCase() : '';
+            const name = document.getElementById('joinGameName') ? document.getElementById('joinGameName').value.trim() : '';
             
-            if (!code) {
+            if (!code && !gameId) {
                 showError('Please enter a game code');
                 return;
             }
@@ -693,8 +1292,8 @@
                 return;
             }
 
-            // Check if game exists
-            const gameSnapshot = await database.ref('games/' + code).once('value');
+            const targetGameId = code || gameId;
+            const gameSnapshot = await database.ref('games/' + targetGameId).once('value');
             const game = gameSnapshot.val();
             
             if (!game) {
@@ -702,8 +1301,8 @@
                 return;
             }
 
-            if (game.phase !== 'waiting') {
-                showError('Game already started');
+            if (game.phase !== 'setup' && game.phase !== 'finished') {
+                showError('Cannot join - game is in progress');
                 return;
             }
 
@@ -715,108 +1314,325 @@
             localStorage.setItem('playerName', name);
             playerName = name;
 
-            const card = game.deck[0];
-            const updatedPlayers = [...game.players, { 
-                name: name, 
-                card: card, 
-                rankGuess: null, 
-                finalGuess: null, 
-                revealed: false 
-            }];
+            const updatedPlayers = [...game.players, { name: name }];
 
-            await database.ref('games/' + code).update({
-                players: updatedPlayers,
-                deck: game.deck.slice(1)
+            await database.ref('games/' + targetGameId).update({
+                players: updatedPlayers
             });
 
-            gameId = code;
+            gameId = targetGameId;
             localStorage.setItem('currentGameId', gameId);
             updateURL(gameId);
             setupGameListener();
         }
 
-        async function startGame() {
+        async function updateSettings() {
+            const scoreRound1 = document.getElementById('scoreRound1').checked;
+            const scoreRound2 = document.getElementById('scoreRound2').checked;
+            const round1Points = parseInt(document.getElementById('round1Points')?.value || 1);
+            const round2RankPoints = parseInt(document.getElementById('round2RankPoints')?.value || 1);
+            const cardPoints = parseInt(document.getElementById('cardPoints')?.value || 2);
+
+            if (round1Points < 0 || round2RankPoints < 0 || cardPoints < 0) {
+                showError('Points must be 0 or greater');
+                return;
+            }
+
+            await gameRef.update({
+                'settings/scoreRound1': scoreRound1,
+                'settings/round1Points': round1Points,
+                'settings/scoreRound2': scoreRound2,
+                'settings/round2RankPoints': round2RankPoints,
+                'settings/cardPoints': cardPoints
+            });
+        }
+
+        async function startWaiting() {
             if (gameState.players.length < 2) {
                 showError('Need at least 2 players');
                 return;
             }
 
-            await gameRef.update({ phase: 'announcing' });
+            await gameRef.update({ phase: 'waiting' });
         }
 
-        async function makeAnnouncement() {
-            const announcement = document.getElementById('announcement').value.trim();
-            if (!announcement) return;
+        async function dealCards() {
+            const deck = createDeck();
+            const updatedPlayers = gameState.players.map((p, idx) => ({
+                ...p,
+                card: deck[idx],
+                round1Guess: null,
+                round2Guess: null,
+                revealed: false
+            }));
+
+            await gameRef.update({
+                players: updatedPlayers,
+                phase: 'announcing',
+                currentAnnouncer: null,
+                announcements: [],
+                noAnnouncementPlayers: []
+            });
+        }
+
+        async function claimAnnouncement() {
+            await gameRef.update({
+                currentAnnouncer: playerName
+            });
+        }
+
+        async function submitAnnouncement() {
+            const text = document.getElementById('announcementText').value.trim();
+            if (!text) {
+                showError('Please enter an announcement');
+                return;
+            }
 
             const announcements = gameState.announcements || [];
-            announcements.push({ player: playerName, text: announcement });
+            announcements.push({ player: playerName, text: text });
 
-            await gameRef.update({ announcements });
-            document.getElementById('announcement').value = '';
+            await gameRef.update({
+                announcements: announcements,
+                currentAnnouncer: null
+            });
+        }
+
+        async function cancelAnnouncement() {
+            await gameRef.update({
+                currentAnnouncer: null
+            });
+        }
+
+        async function noAnnouncement() {
+            const noAnnouncePlayers = gameState.noAnnouncementPlayers || [];
+            noAnnouncePlayers.push(playerName);
+
+            await gameRef.update({
+                noAnnouncementPlayers: noAnnouncePlayers
+            });
         }
 
         async function startRound1() {
             const announcements = gameState.announcements || [];
-            const lastAnnouncer = announcements.length > 0 
-                ? gameState.players.findIndex(p => p.name === announcements[announcements.length - 1].player)
-                : Math.floor(Math.random() * gameState.players.length);
+            let turnOrder;
+            
+            if (announcements.length > 0) {
+                const lastAnnouncer = announcements[announcements.length - 1].player;
+                const lastAnnouncerIndex = gameState.players.findIndex(p => p.name === lastAnnouncer);
+                
+                turnOrder = [];
+                for (let i = 0; i < gameState.players.length; i++) {
+                    const idx = (lastAnnouncerIndex + i) % gameState.players.length;
+                    turnOrder.push(gameState.players[idx].name);
+                }
+            } else {
+                const startIndex = Math.floor(Math.random() * gameState.players.length);
+                turnOrder = [];
+                for (let i = 0; i < gameState.players.length; i++) {
+                    const idx = (startIndex + i) % gameState.players.length;
+                    turnOrder.push(gameState.players[idx].name);
+                }
+            }
 
             await gameRef.update({
                 phase: 'round1',
-                currentPlayerIndex: lastAnnouncer
+                turnOrder: turnOrder,
+                currentTurnIndex: 0
             });
         }
 
-        async function submitRankGuess() {
-            const rank = parseInt(document.getElementById('rankGuess').value);
-            if (!rank || rank < 1 || rank > gameState.players.length) {
-                showError(`Rank must be between 1 and ${gameState.players.length}`);
+        async function submitRound1Guess() {
+            const guessInput = document.getElementById('round1Guess');
+            if (!guessInput) {
+                showError('Could not find input field');
+                return;
+            }
+            
+            const guess = parseInt(guessInput.value);
+            const numRanks = getNumRelativeRanks(gameState.players);
+            
+            if (isNaN(guess) || guess < 1 || guess > numRanks) {
+                showError(`Relative rank must be between 1 and ${numRanks}`);
                 return;
             }
 
             const playerIndex = gameState.players.findIndex(p => p.name === playerName);
-            const updatedPlayers = [...gameState.players];
-            updatedPlayers[playerIndex].rankGuess = rank;
+            if (playerIndex === -1) {
+                showError('Player not found');
+                return;
+            }
 
-            const allGuessed = updatedPlayers.every(p => p.rankGuess !== null);
-            const nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            const updatedPlayers = gameState.players.map((p, idx) => 
+                idx === playerIndex ? { ...p, round1Guess: guess } : p
+            );
+
+            const allGuessed = updatedPlayers.every(p => p.round1Guess !== null && p.round1Guess !== undefined);
+            const nextTurnIndex = gameState.currentTurnIndex + 1;
 
             await gameRef.update({
                 players: updatedPlayers,
-                currentPlayerIndex: allGuessed ? gameState.currentPlayerIndex : nextIndex,
+                currentTurnIndex: allGuessed ? 0 : nextTurnIndex,
                 phase: allGuessed ? 'round2' : 'round1'
             });
         }
 
-        async function submitFinalGuess() {
-            const rank = document.getElementById('cardRank').value;
-            const suit = document.getElementById('cardSuit').value;
+        async function submitRound2Guess() {
+            const relativeRank = parseInt(document.getElementById('round2RelativeRank').value);
+            const cardRank = document.getElementById('round2CardRank').value;
+            const numRanks = getNumRelativeRanks(gameState.players);
 
-            if (!rank || !suit) {
-                showError('Please select both rank and suit');
+            if (!relativeRank || relativeRank < 1 || relativeRank > numRanks) {
+                showError(`Relative rank must be between 1 and ${numRanks}`);
+                return;
+            }
+
+            if (!cardRank) {
+                showError('Please select a card rank');
                 return;
             }
 
             const playerIndex = gameState.players.findIndex(p => p.name === playerName);
             const updatedPlayers = [...gameState.players];
-            updatedPlayers[playerIndex].finalGuess = { rank, suit };
+            updatedPlayers[playerIndex].round2Guess = { relativeRank, cardRank };
             updatedPlayers[playerIndex].revealed = true;
 
             const allRevealed = updatedPlayers.every(p => p.revealed);
-            const nextIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            const nextTurnIndex = gameState.currentTurnIndex + 1;
+
+            if (allRevealed) {
+                const results = calculateGameResults();
+                const sessionHistory = gameState.sessionHistory || [];
+                sessionHistory.push(results);
+
+                await gameRef.update({
+                    players: updatedPlayers,
+                    phase: 'finished',
+                    sessionHistory: sessionHistory,
+                    chatMessages: []
+                });
+            } else {
+                await gameRef.update({
+                    players: updatedPlayers,
+                    currentTurnIndex: nextTurnIndex
+                });
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            const chatMessages = gameState.chatMessages || [];
+            chatMessages.push({ player: playerName, text: text, timestamp: Date.now() });
 
             await gameRef.update({
-                players: updatedPlayers,
-                currentPlayerIndex: allRevealed ? 0 : nextIndex,
-                phase: allRevealed ? 'finished' : 'round2'
+                chatMessages: chatMessages
             });
+
+            input.value = '';
+            
+            setTimeout(() => {
+                const chatBox = document.getElementById('chatMessages');
+                if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+            }, 100);
+        }
+
+        async function startNewRound() {
+            if (gameState.players.length < 2) {
+                showError('Need at least 2 players');
+                return;
+            }
+
+            await gameRef.update({ phase: 'waiting' });
+        }
+
+        async function endSession() {
+            if (confirm('Are you sure you want to end this session? All history will be cleared.')) {
+                await gameRef.update({
+                    sessionHistory: [],
+                    phase: 'setup'
+                });
+            }
+        }
+
+        function exportResults() {
+            const results = {
+                gameCode: gameId,
+                settings: gameState.settings,
+                players: gameState.players.map(p => p.name),
+                sessionHistory: gameState.sessionHistory,
+                detailedResults: gameState.sessionHistory.map((game, gameNum) => ({
+                    gameNumber: gameNum + 1,
+                    totalPoints: game.totalPoints,
+                    round1CorrectRanks: game.round1CorrectRanks || 0,
+                    round2CorrectRanks: game.round2CorrectRanks || 0,
+                    correctCards: game.correctCards
+                }))
+            };
+
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `blind-rank-results-${gameId}-${Date.now()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
         }
 
         function leaveGame() {
             if (confirm('Are you sure you want to leave this game?')) {
-                if (gameRef) {
-                    gameRef.off();
+                const playerIndex = gameState.players.findIndex(p => p.name === playerName);
+                const wasHost = playerIndex === 0;
+                const isInProgress = gameState.phase !== 'setup' && gameState.phase !== 'finished';
+                
+                if (wasHost && gameState.players.length > 1) {
+                    // Host leaving - transfer to next player
+                    const updatedPlayers = gameState.players.slice(1);
+                    const notification = {
+                        type: 'player-left',
+                        playerName: playerName,
+                        wasHost: true,
+                        newHost: updatedPlayers[0].name,
+                        timestamp: Date.now()
+                    };
+                    
+                    if (isInProgress) {
+                        gameRef.update({ 
+                            players: updatedPlayers,
+                            playerLeftNotification: notification,
+                            awaitingHostDecision: true
+                        });
+                    } else {
+                        gameRef.update({ players: updatedPlayers });
+                    }
+                } else if (gameState.players.length === 1) {
+                    // Last player leaving - delete game
+                    gameRef.remove();
+                } else {
+                    // Regular player leaving
+                    const updatedPlayers = gameState.players.filter(p => p.name !== playerName);
+                    const notification = {
+                        type: 'player-left',
+                        playerName: playerName,
+                        wasHost: false,
+                        timestamp: Date.now()
+                    };
+                    
+                    if (isInProgress) {
+                        gameRef.update({ 
+                            players: updatedPlayers,
+                            playerLeftNotification: notification,
+                            awaitingHostDecision: true
+                        });
+                    } else {
+                        gameRef.update({ players: updatedPlayers });
+                    }
                 }
+                
+                if (gameRef) gameRef.off();
                 gameId = null;
                 gameState = null;
                 localStorage.removeItem('currentGameId');
@@ -825,6 +1641,43 @@
                 window.history.pushState({}, '', url);
                 render();
             }
+        }
+
+        async function continueWithoutPlayer() {
+            const updatedPlayers = gameState.players.map(p => ({ ...p }));
+            
+            // Recalculate turn order if needed
+            if (gameState.turnOrder) {
+                const leftPlayerName = gameState.playerLeftNotification.playerName;
+                const updatedTurnOrder = gameState.turnOrder.filter(name => name !== leftPlayerName);
+                
+                // Adjust current turn index
+                let newTurnIndex = gameState.currentTurnIndex;
+                if (gameState.currentTurnIndex >= updatedTurnOrder.length) {
+                    newTurnIndex = 0;
+                }
+                
+                await gameRef.update({
+                    turnOrder: updatedTurnOrder,
+                    currentTurnIndex: newTurnIndex,
+                    playerLeftNotification: null,
+                    awaitingHostDecision: false
+                });
+            } else {
+                await gameRef.update({
+                    playerLeftNotification: null,
+                    awaitingHostDecision: false
+                });
+            }
+        }
+
+        async function endGameDueToLeave() {
+            await gameRef.update({
+                phase: 'setup',
+                playerLeftNotification: null,
+                awaitingHostDecision: false,
+                sessionHistory: gameState.sessionHistory || []
+            });
         }
 
         function copyGameCode() {
@@ -856,7 +1709,6 @@
                 gameState = snapshot.val();
                 
                 if (!gameState) {
-                    // Game was deleted
                     alert('This game has ended or been deleted.');
                     leaveGame();
                     return;
@@ -866,17 +1718,26 @@
             });
         }
 
-        // Initialize on page load
         window.addEventListener('DOMContentLoaded', () => {
             gameId = getGameId();
             
             if (gameId) {
-                // Check if game exists
                 database.ref('games/' + gameId).once('value').then((snapshot) => {
                     if (snapshot.val()) {
-                        setupGameListener();
+                        const game = snapshot.val();
+                        
+                        // Check if player is already in the game
+                        if (!playerName || !game.players.some(p => p.name === playerName)) {
+                            // Show join prompt for link users
+                            if (!playerName) {
+                                setupGameListener();
+                            } else {
+                                setupGameListener();
+                            }
+                        } else {
+                            setupGameListener();
+                        }
                     } else {
-                        // Game doesn't exist
                         alert('Game not found. Please create a new game or join with a valid code.');
                         localStorage.removeItem('currentGameId');
                         gameId = null;
