@@ -26,9 +26,12 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Library", url: "/library.html" },
             { name: "Blog", url: "/blog.html" },
             { name: "Gallery", url: "/gallery.html" },
+            { name: "Games", group: true, children: [
+                { name: "Blind Rank", url: "/blind-rank.html" },
+                { name: "Chess", url: "/chess.html" },
+            ]},
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },
-                { name: "Chess", url: "/chess.html" },
                 { name: "File Viewer", url: "/file-viewer.html" },
                 { name: "Notes App", url: "/notes.html" },
                 { name: "Price Pilot", url: "/price-pilot.html" },
