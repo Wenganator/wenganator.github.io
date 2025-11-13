@@ -406,7 +406,11 @@
             height: 32px;
             cursor: pointer;
             font-size: 20px;
-            line-height: 1;
+            line-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
         }
 
         .settings-row-flex {
@@ -462,6 +466,7 @@
 
         const SUITS = ['♠', '♥', '♦', '♣'];
         const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const RANKS_HIGH_TO_LOW = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'];
         const RANK_VALUES = { 'A': 14, 'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2 };
 
         let gameState = null;
@@ -576,7 +581,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
                             <h1>🎴 Blind Rank</h1>
-                            <p style="font-size: 14px; color: #666;">Player Left</p>
+                            <p style="font-size: 20px; font-style: italic; color: #666;">Player Left</p>
                         </div>
                     </div>
                     
@@ -616,7 +621,7 @@
             return `
                 <div class="card">
                     <h1>🎴 Blind Rank</h1>
-                    <p style="font-size: 18px; color: #666; margin-bottom: 12px;">A Cooperative Card Game</p>
+                    <p style="font-size: 20px; font-style: italic; color: #666; margin-bottom: 20px;">A Cooperative Card Game</p>
                     <button class="btn-primary" onclick="showInstructions()" style="margin-bottom: 24px; padding: 8px 16px; font-size: 14px;">📖 How to Play</button>
                     
                     <div style="margin-bottom: 24px;">
@@ -672,24 +677,34 @@
                     
                     <p><strong>Important:</strong> Cards of the same rank (but different suits) share the same relative rank.</p>
                     
-                    <p style="margin-top: 12px;"><strong>Example 1:</strong> Cards in play are A♠, K♥, 7♦, 2♣</p>
+                    <p style="margin-top: 12px;"><strong>Example 1:</strong> Cards in play are <span class="red-suit">A♠</span>, <span class="red-suit">K♥</span>, <span class="red-suit">7♦</span>, 2♣</p>
                     <ul style="line-height: 1.6;">
                         <li>A♠ has relative rank 1 (highest)</li>
-                        <li>K♥ has relative rank 2</li>
-                        <li>7♦ has relative rank 3</li>
+                        <li><span class="red-suit">K♥</span> has relative rank 2</li>
+                        <li><span class="red-suit">7♦</span> has relative rank 3</li>
                         <li>2♣ has relative rank 4 (lowest)</li>
                         <li>Total: 4 relative ranks</li>
                     </ul>
                     
-                    <p style="margin-top: 12px;"><strong>Example 2:</strong> Cards in play are A♠, A♥, 7♦, 7♣, 2♠</p>
+                    <p style="margin-top: 12px;"><strong>Example 2:</strong> Cards in play are A♠, <span class="red-suit">A♥</span>, <span class="red-suit">7♦</span>, 7♣, 2♠</p>
                     <ul style="line-height: 1.6;">
-                        <li>Both A♠ and A♥ have relative rank 1 (highest)</li>
-                        <li>Both 7♦ and 7♣ have relative rank 2</li>
+                        <li>Both A♠ and <span class="red-suit">A♥</span> have relative rank 1 (highest)</li>
+                        <li>Both <span class="red-suit">7♦</span> and 7♣ have relative rank 2</li>
                         <li>2♠ has relative rank 3 (lowest)</li>
                         <li>Total: 3 relative ranks (even though there are 5 cards)</li>
                     </ul>
                     
-                    <p style="margin-top: 12px;"><strong>Edge Case:</strong> If everyone's card is part of a duplicate (e.g., A♠, A♥, A♦, A♣), no one will know the true number of relative ranks until all cards are revealed!</p>
+                    <p style="margin-top: 12px;"><strong>Critical Edge Case:</strong> Cards in play are A♠, <span class="red-suit">A♥</span>, <span class="red-suit">7♦</span>, 7♣</p>
+                    <ul style="line-height: 1.6;">
+                        <li>One player with an A announces "I see a pair" (they see <span class="red-suit">7♦</span>, 7♣)</li>
+                        <li>Everyone else also only sees one pair, so no one makes additional announcements</li>
+                        <li>Players will assume there are 3 relative ranks (4 cards with 1 pair)</li>
+                        <li><strong>BUT</strong> the true answer is only 2 relative ranks (two pairs!)</li>
+                        <li>No one knows the true count until all cards are revealed</li>
+                        <li>This is why the game allows guesses from 1 to N (number of players)</li>
+                    </ul>
+                    
+                    <p style="margin-top: 12px;"><strong>Extreme Edge Case:</strong> If everyone's card is part of a duplicate (e.g., A♠, <span class="red-suit">A♥</span>, <span class="red-suit">A♦</span>, A♣), no one will know there's only 1 relative rank until all cards are revealed!</p>
                     
                     <h3 style="margin-top: 16px;">Announcement Phase</h3>
                     <p>Players look at everyone else's cards (but not their own):</p>
@@ -743,7 +758,7 @@
                         <li>Use other players' guesses to help inform your own</li>
                         <li>Remember that duplicate cards share the same relative rank</li>
                         <li>In Round 2, your Round 1 guess is shown to help you reassess</li>
-                        <li>Communication during announcements is key to team success!</li>
+                        <li>Thinking about what cards everyone else sees is key to team success!</li>
                     </ul>
                     
                     <div style="margin-top: 32px; text-align: center;">
@@ -771,7 +786,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
                             <h1>🎴 Blind Rank</h1>
-                            <p style="font-size: 14px; color: #666;">Game Setup</p>
+                            <p style="font-size: 20px; font-style: italic; color: #666;">Game Setup</p>
                         </div>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
@@ -792,22 +807,22 @@
                             <h3>⚙️ Game Settings</h3>
                             <div class="settings-row-flex">
                                 <label><strong>Score Round 1</strong> (Relative Rank Only)</label>
-                                <input type="checkbox" id="scoreRound1" ${gameState.settings.scoreRound1 ? 'checked' : ''} onchange="render()">
+                                <input type="checkbox" id="scoreRound1" ${gameState.settings.scoreRound1 ? 'checked' : ''}>
                             </div>
-                            ${gameState.settings.scoreRound1 || document.getElementById('scoreRound1')?.checked ? `
+                            <div id="round1Settings" style="${gameState.settings.scoreRound1 ? '' : 'display: none;'}">
                                 <div class="settings-indent">
                                     <div class="settings-row-flex">
                                         <label>Points for correct relative rank (Round 1):</label>
                                         <input type="number" id="round1Points" value="${gameState.settings.round1Points || 1}" min="0" max="10" style="width: 60px;">
                                     </div>
                                 </div>
-                            ` : ''}
+                            </div>
                             
                             <div class="settings-row-flex">
                                 <label><strong>Score Round 2</strong> (Relative Rank + Card Identity)</label>
-                                <input type="checkbox" id="scoreRound2" ${gameState.settings.scoreRound2 ? 'checked' : ''} onchange="render()">
+                                <input type="checkbox" id="scoreRound2" ${gameState.settings.scoreRound2 ? 'checked' : ''}>
                             </div>
-                            ${gameState.settings.scoreRound2 || document.getElementById('scoreRound2')?.checked ? `
+                            <div id="round2Settings" style="${gameState.settings.scoreRound2 ? '' : 'display: none;'}">
                                 <div class="settings-indent">
                                     <div class="settings-row-flex">
                                         <label>Points for correct relative rank (Round 2):</label>
@@ -818,9 +833,17 @@
                                         <input type="number" id="cardPoints" value="${gameState.settings.cardPoints || 2}" min="0" max="10" style="width: 60px;">
                                     </div>
                                 </div>
-                            ` : ''}
+                            </div>
                             <button class="btn-primary" onclick="updateSettings()" style="margin-top: 12px;">Save Settings</button>
                         </div>
+                        <script>
+                            document.getElementById('scoreRound1').addEventListener('change', function() {
+                                document.getElementById('round1Settings').style.display = this.checked ? '' : 'none';
+                            });
+                            document.getElementById('scoreRound2').addEventListener('change', function() {
+                                document.getElementById('round2Settings').style.display = this.checked ? '' : 'none';
+                            });
+                        <\/script>
                     ` : `
                         <div class="settings-box">
                             <h3>⚙️ Current Settings</h3>
@@ -858,7 +881,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
                             <h1>🎴 Blind Rank</h1>
-                            <p style="font-size: 14px; color: #666;">Ready to Start</p>
+                            <p style="font-size: 20px; font-style: italic; color: #666;">Ready to Start</p>
                         </div>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
@@ -899,14 +922,13 @@
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
-                            <h1>🎴 Blind Rank</h1>
-                            <p style="font-size: 14px; color: #666;">Announcement Phase</p>
+                            <h1>🎴 Announcement Phase</h1>
                         </div>
                         <button class="btn-danger" onclick="leaveGame()">Leave Game</button>
                     </div>
                     
                     <div class="phase-banner">
-                        <strong>Look at other players' cards.</strong> If you see duplicates (pairs, triples, etc.), click "Make Announcement" and describe them!
+                        <strong>Look at other players' cards.</strong> If you see duplicates (pairs, triples, etc.), click "Make Announcement" and describe how many duplicates you see. After someone has made an announcement, only players who see MORE duplicates can announce next. If you see no further duplicates beyond what's been announced, click "I See No Further Duplicates."
                     </div>
                     
                     ${announcer ? `
@@ -972,7 +994,7 @@
             const turnOrder = gameState.turnOrder || [];
             const currentPlayerName = turnOrder[gameState.currentTurnIndex];
             const isMyTurn = currentPlayerName === playerName;
-            const numRanks = getNumRelativeRanks(gameState.players);
+            const numPlayers = gameState.players.length;
             const myGuess = myPlayer && myPlayer.round1Guess !== null && myPlayer.round1Guess !== undefined ? myPlayer.round1Guess : null;
             
             return `
@@ -986,7 +1008,9 @@
                         <strong>Turn Order:</strong> ${turnOrder.map((name, idx) => {
                             const player = gameState.players.find(p => p.name === name);
                             const done = player && player.round1Guess !== null && player.round1Guess !== undefined;
-                            return `<span style="color: ${done ? '#48bb78' : idx === gameState.currentTurnIndex ? '#667eea' : '#666'}; font-weight: ${idx === gameState.currentTurnIndex ? 'bold' : 'normal'};">${name}${done ? ' ✓' : ''}</span>`;
+                            const color = done ? '#48bb78' : (idx === gameState.currentTurnIndex ? '#667eea' : '#666');
+                            const weight = idx === gameState.currentTurnIndex ? 'bold' : 'normal';
+                            return '<span style="color: ' + color + '; font-weight: ' + weight + ';">' + name + (done ? ' ✓' : '') + '</span>';
                         }).join(' → ')}
                     </div>
                     
@@ -994,25 +1018,21 @@
                         <strong>Current Turn:</strong> ${currentPlayerName}
                         ${isMyTurn ? ' (Your turn!)' : ''}
                         <br>
-                        <strong>Number of relative ranks:</strong> ${numRanks} (1 = highest, ${numRanks} = lowest)
+                        Guess a relative rank from 1 (highest) to ${numPlayers} (lowest possible). Remember that there may be fewer relative ranks than the number of cards in play if there are any duplicates.
                     </div>
                     
                     <h2>Other Players' Cards</h2>
                     <div class="players-grid">
-                        ${gameState.players.filter(p => p.name !== playerName).map(p => `
-                            <div class="player-card">
-                                <div><strong>${p.name}</strong></div>
-                                <div class="playing-card">${getCardHTML(p.card.rank, p.card.suit)}</div>
-                                ${p.round1Guess !== null && p.round1Guess !== undefined ? `<div class="correct">Relative Rank: ${p.round1Guess}</div>` : ''}
-                            </div>
-                        `).join('')}
+                        ${gameState.players.filter(p => p.name !== playerName).map(p => {
+                            return '<div class="player-card"><div><strong>' + p.name + '</strong></div><div class="playing-card">' + getCardHTML(p.card.rank, p.card.suit) + '</div>' + (p.round1Guess !== null && p.round1Guess !== undefined ? '<div class="correct">Relative Rank: ' + p.round1Guess + '</div>' : '') + '</div>';
+                        }).join('')}
                     </div>
                     
                     ${isMyTurn && myGuess === null ? `
                         <div class="alert alert-info">
-                            What is your card's relative rank? (1 = highest, ${numRanks} = lowest)
+                            What is your card's relative rank?
                         </div>
-                        <input type="number" id="round1Guess" min="1" max="${numRanks}" placeholder="Enter relative rank (1-${numRanks})">
+                        <input type="number" id="round1Guess" min="1" max="${numPlayers}" placeholder="Relative rank">
                         <button class="btn-primary" onclick="submitRound1Guess()">Submit Relative Rank</button>
                     ` : myGuess !== null ? `
                         <div class="alert alert-success">
@@ -1031,6 +1051,7 @@
             const turnOrder = gameState.turnOrder || [];
             const currentPlayerName = turnOrder[gameState.currentTurnIndex];
             const isMyTurn = currentPlayerName === playerName;
+            const numPlayers = gameState.players.length;
             const numRanks = getNumRelativeRanks(gameState.players);
             
             return `
@@ -1044,7 +1065,9 @@
                         <strong>Turn Order:</strong> ${turnOrder.map((name, idx) => {
                             const player = gameState.players.find(p => p.name === name);
                             const done = player && player.revealed;
-                            return `<span style="color: ${done ? '#48bb78' : idx === gameState.currentTurnIndex ? '#667eea' : '#666'}; font-weight: ${idx === gameState.currentTurnIndex ? 'bold' : 'normal'};">${name}${done ? ' ✓' : ''}</span>`;
+                            const color = done ? '#48bb78' : (idx === gameState.currentTurnIndex ? '#667eea' : '#666');
+                            const weight = idx === gameState.currentTurnIndex ? 'bold' : 'normal';
+                            return '<span style="color: ' + color + '; font-weight: ' + weight + ';">' + name + (done ? ' ✓' : '') + '</span>';
                         }).join(' → ')}
                     </div>
                     
@@ -1052,7 +1075,7 @@
                         <strong>Current Turn:</strong> ${currentPlayerName}
                         ${isMyTurn ? ' (Your turn!)' : ''}
                         <br>
-                        Guess your relative rank AND card identity (rank only, not suit)
+                        Guess your relative rank AND card identity
                     </div>
                     
                     <h2>Other Players' Cards</h2>
@@ -1073,12 +1096,12 @@
                     
                     ${isMyTurn && !myPlayer.revealed ? `
                         <div class="alert alert-info">
-                            Guess your relative rank (1-${numRanks}) and card identity (A, K, Q, J, 10, etc.)
+                            Guess your relative rank and card identity
                         </div>
-                        <input type="number" id="round2RelativeRank" min="1" max="${numRanks}" placeholder="Relative rank (1-${numRanks})">
+                        <input type="number" id="round2RelativeRank" min="1" max="${numPlayers}" placeholder="Relative rank">
                         <select id="round2CardRank">
                             <option value="">Select card identity</option>
-                            ${RANKS.map(r => `<option value="${r}">${r}</option>`).join('')}
+                            ${RANKS_HIGH_TO_LOW.map(r => `<option value="${r}">${r}</option>`).join('')}
                         </select>
                         <button class="btn-primary" onclick="submitRound2Guess()">Submit Guess & Reveal</button>
                     ` : myPlayer.revealed ? `
@@ -1128,9 +1151,14 @@
                             const round2RankCorrect = p.round2Guess.relativeRank === actualRank;
                             const round2CardCorrect = p.round2Guess.cardRank === p.card.rank;
                             
-                            const points = (round1Correct ? gameState.settings.rankPoints : 0) + 
-                                         (round2RankCorrect ? gameState.settings.rankPoints : 0) + 
-                                         (round2CardCorrect ? gameState.settings.cardPoints : 0);
+                            let points = 0;
+                            if (gameState.settings.scoreRound1 && round1Correct) {
+                                points += gameState.settings.round1Points || 1;
+                            }
+                            if (gameState.settings.scoreRound2) {
+                                if (round2RankCorrect) points += gameState.settings.round2RankPoints || 1;
+                                if (round2CardCorrect) points += gameState.settings.cardPoints || 2;
+                            }
                             
                             return `
                                 <div class="result-card">
@@ -1162,6 +1190,16 @@
                                         Round 2 Ranks: ${game.round2CorrectRanks || 0}/${game.total} | 
                                         Cards: ${game.correctCards}/${game.total}
                                     </div>
+                                    ${game.turnOrder ? `
+                                        <div style="font-size: 12px; margin-top: 6px; color: #666;">
+                                            <strong>Turn order:</strong> ${game.turnOrder.join(' → ')}
+                                        </div>
+                                    ` : ''}
+                                    ${game.playerScores ? `
+                                        <div style="font-size: 12px; margin-top: 4px;">
+                                            ${game.playerScores.map(ps => `<span style="margin-right: 12px;">${ps.name}: ${ps.points} pts</span>`).join('')}
+                                        </div>
+                                    ` : ''}
                                 </div>
                             `).join('')}
                             <button class="btn-primary" onclick="exportResults()" style="margin-top: 12px;">📥 Export All Results</button>
@@ -1207,12 +1245,33 @@
             let round2CorrectRanks = 0;
             let correctCards = 0;
 
-            gameState.players.forEach(player => {
+            const playerScores = gameState.players.map(player => {
                 const actualRank = relativeRanks.get(player.name);
                 
-                if (player.round1Guess === actualRank) round1CorrectRanks++;
-                if (player.round2Guess.relativeRank === actualRank) round2CorrectRanks++;
-                if (player.round2Guess.cardRank === player.card.rank) correctCards++;
+                const round1Correct = player.round1Guess === actualRank;
+                const round2RankCorrect = player.round2Guess.relativeRank === actualRank;
+                const round2CardCorrect = player.round2Guess.cardRank === player.card.rank;
+                
+                if (round1Correct) round1CorrectRanks++;
+                if (round2RankCorrect) round2CorrectRanks++;
+                if (round2CardCorrect) correctCards++;
+                
+                let points = 0;
+                if (gameState.settings.scoreRound1 && round1Correct) {
+                    points += gameState.settings.round1Points || 1;
+                }
+                if (gameState.settings.scoreRound2) {
+                    if (round2RankCorrect) points += gameState.settings.round2RankPoints || 1;
+                    if (round2CardCorrect) points += gameState.settings.cardPoints || 2;
+                }
+                
+                return {
+                    name: player.name,
+                    points: points,
+                    round1Correct: round1Correct,
+                    round2RankCorrect: round2RankCorrect,
+                    round2CardCorrect: round2CardCorrect
+                };
             });
 
             let totalPoints = 0;
@@ -1229,7 +1288,9 @@
                 round2CorrectRanks,
                 correctCards, 
                 total: gameState.players.length,
-                totalPoints
+                totalPoints,
+                playerScores,
+                turnOrder: gameState.turnOrder
             };
         }
 
@@ -1449,10 +1510,10 @@
             }
             
             const guess = parseInt(guessInput.value);
-            const numRanks = getNumRelativeRanks(gameState.players);
+            const maxPossibleRank = gameState.players.length;
             
-            if (isNaN(guess) || guess < 1 || guess > numRanks) {
-                showError(`Relative rank must be between 1 and ${numRanks}`);
+            if (isNaN(guess) || guess < 1 || guess > maxPossibleRank) {
+                showError(`Relative rank must be between 1 and ${maxPossibleRank}`);
                 return;
             }
 
@@ -1479,15 +1540,15 @@
         async function submitRound2Guess() {
             const relativeRank = parseInt(document.getElementById('round2RelativeRank').value);
             const cardRank = document.getElementById('round2CardRank').value;
-            const numRanks = getNumRelativeRanks(gameState.players);
+            const numPlayers = gameState.players.length;
 
-            if (!relativeRank || relativeRank < 1 || relativeRank > numRanks) {
-                showError(`Relative rank must be between 1 and ${numRanks}`);
+            if (!relativeRank || relativeRank < 1 || relativeRank > numPlayers) {
+                showError(`Relative rank must be between 1 and ${numPlayers}`);
                 return;
             }
 
             if (!cardRank) {
-                showError('Please select a card rank');
+                showError('Please select a card identity');
                 return;
             }
 
@@ -1568,7 +1629,9 @@
                     totalPoints: game.totalPoints,
                     round1CorrectRanks: game.round1CorrectRanks || 0,
                     round2CorrectRanks: game.round2CorrectRanks || 0,
-                    correctCards: game.correctCards
+                    correctCards: game.correctCards,
+                    turnOrder: game.turnOrder || [],
+                    playerScores: game.playerScores || []
                 }))
             };
 
@@ -1727,14 +1790,15 @@
                         const game = snapshot.val();
                         
                         // Check if player is already in the game
-                        if (!playerName || !game.players.some(p => p.name === playerName)) {
-                            // Show join prompt for link users
-                            if (!playerName) {
-                                setupGameListener();
-                            } else {
-                                setupGameListener();
-                            }
+                        const existingPlayer = game.players.find(p => p.name === playerName);
+                        if (existingPlayer) {
+                            // Player is rejoining - just set up listener
+                            setupGameListener();
+                        } else if (playerName && (game.phase === 'setup' || game.phase === 'finished')) {
+                            // Player has a name but isn't in game, and game allows joining
+                            setupGameListener();
                         } else {
+                            // New player needs to join
                             setupGameListener();
                         }
                     } else {
