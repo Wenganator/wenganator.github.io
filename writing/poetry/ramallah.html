@@ -20,6 +20,28 @@
         <link rel="stylesheet" href="/styles/fonts.css">
         <link rel="stylesheet" href="/styles/style.css">
         <link rel="stylesheet" href="/styles/writing.css">
+        <style>
+            /* Pure CSS to display alternate text when hovering over default text */
+            .hover-text {
+                position: relative;
+            }
+
+            .hover-text .default {
+                display: inline;
+            }
+
+            .hover-text .alternate {
+                display: none;
+            }
+
+            .hover-text:hover .default {
+                display: none;
+            }
+
+            .hover-text:hover .alternate {
+                display: inline;
+            }
+        </style>
     </head>
     <body>
         <div id="header"></div>
@@ -29,21 +51,70 @@
             <!-- Theme selector buttons (see theme-buttons.html) -->
             <div id="theme-buttons-container"></div>
 
-            <div style="max-width: 400px;">
-                <img src="/assets/images/writing/bei-dao.webp" class="img-fluid">
-            </div>
+            <span class="hover-text">
+                <span class="default">
+                    <div style="max-width: 286px;">
+                        <img src="/assets/images/writing/bei-dao.webp" class="img-fluid">
+                    </div>
+                </span>
+                <span class="alternate">
+                    <div style="max-width: 286px;">
+                        <img src="/assets/images/writing/ramallah.png" class="img-fluid">
+                    </div>
+                </span>
+            </span>
+            
 
             <h1>Ramallah</h1>
             <h3>Bei Dao (1949 - )</h3>
-            <h4><a href="https://poets.org/poem/ramallah">Source: poets.org</a></h4>
+            <span class="hover-text">
+                <span class="default">
+                    <h4><a href="https://poets.org/poem/ramallah">Source: poets.org</a></h4>
+                </span>
+                <span class="alternate">
+                    <h4><a href="https://thepoemarium.wordpress.com/2009/01/01/%E5%8C%97%E5%B3%B6-%E6%8B%89%E5%A7%86%E5%AE%89%E6%8B%89-bei-dao-ramallah/">Source: the poemarium</a></h4>
+                </span>
+            </span>
             <br>
             
             <div>
-                <div class="field field--body"><p><span class="long-line">in Ramallah</span><br><span class="long-line">the ancients play chess in the starry sky</span><br><span class="long-line">the endgame flickers</span><br><span class="long-line">a bird locked in a clock</span><br><span class="long-line">jumps out to tell the time</span></p>
-                    <p><span class="long-line">in Ramallah</span><br><span class="long-line">the sun climbs over the wall like an old man</span><br><span class="long-line">and goes through the market</span><br><span class="long-line">throwing mirror light on</span><br><span class="long-line">a rusted copper plate</span></p>
-                    <p><span class="long-line">in Ramallah</span><br><span class="long-line">gods drink water from earthen jars</span><br><span class="long-line">a bow asks a string for directions</span><br><span class="long-line">a boy sets out to inherit the ocean</span><br><span class="long-line">from the edge of the sky</span></p>
-                    <p><span class="long-line">in Ramallah</span><br><span class="long-line">seeds sown along the high noon</span><br><span class="long-line">death blossoms outside my window</span><br><span class="long-line">resisting, the tree takes on a hurricane's</span><br><span class="long-line">violent original shape</span></p>
-                </div>
+                <span class="hover-text">
+                    <span class="default">
+                        <div class="field field--body"><p><span class="long-line">in Ramallah</span><br><span class="long-line">the ancients play chess in the starry sky</span><br><span class="long-line">the endgame flickers</span><br><span class="long-line">a bird locked in a clock</span><br><span class="long-line">jumps out to tell the time</span></p>
+                            <p><span class="long-line">in Ramallah</span><br><span class="long-line">the sun climbs over the wall like an old man</span><br><span class="long-line">and goes through the market</span><br><span class="long-line">throwing mirror light on</span><br><span class="long-line">a rusted copper plate</span></p>
+                            <p><span class="long-line">in Ramallah</span><br><span class="long-line">gods drink water from earthen jars</span><br><span class="long-line">a bow asks a string for directions</span><br><span class="long-line">a boy sets out to inherit the ocean</span><br><span class="long-line">from the edge of the sky</span></p>
+                            <p><span class="long-line">in Ramallah</span><br><span class="long-line">seeds sown along the high noon</span><br><span class="long-line">death blossoms outside my window</span><br><span class="long-line">resisting, the tree takes on a hurricane's</span><br><span class="long-line">violent original shape</span></p>
+                        </div>
+                    </span>
+                    <span class="alternate">
+                        <span>
+                            在拉姆安拉<br>
+                            古人在星空對奕<br>
+                            殘局忽明忽暗<br>
+                            那被鐘關住的鳥<br>
+                            跳出來報時<br>
+                            <br>
+                            在拉姆安拉<br>
+                            太陽象老頭翻牆<br>
+                            穿過农贸市場<br>
+                            在生鏽的銅盤上<br>
+                            照亮了自己<br>
+                            <br>
+                            在拉姆安拉<br>
+                            諸神從瓦罐飲水<br>
+                            弓向獨弦問路<br>
+                            一個少年到天邊<br>
+                            去繼承大海<br>
+                            <br>
+                            在拉姆安拉<br>
+                            死亡沿正午播種<br>
+                            在我窗前開花<br>
+                            抗拒中樹得颶風<br>
+                            那狂暴原形<br>
+                        </span>
+                    </span>
+                </span>
+
                 <div style="font-size: small;">
                     <p>“Ramallah” by Bei Dao, from <i>World Beat: International Poetry Now</i>, copyright © 2006 by Zhao Zhenkai, Translation © Eliot Weinberger and Iona Man-Cheong. Reprinted by permission of New Directions Publishing Corp.</p>
                 </div>
