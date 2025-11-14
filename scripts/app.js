@@ -33,6 +33,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },
                 { name: "File Viewer", url: "/file-viewer.html" },
+                { name: "Mood Palette", url: "/mood-palette.html" },
                 { name: "Notes App", url: "/notes.html" },
                 { name: "Price Pilot", url: "/price-pilot.html" },
                 { name: "Tier List Maker", url: "/tier-list.html" },
