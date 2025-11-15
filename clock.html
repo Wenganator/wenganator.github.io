@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII World Clock Suite</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
+        }
+
+        #clockContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        #asciiClock {
+            font-family: monospace;
+            font-size: 16px;
+            line-height: 1.1;
+            letter-spacing: 0;
+            user-select: none;
+            white-space: pre;
+            margin: 0;
+            padding: 20px;
+            transition: color 0.5s ease, text-shadow 0.5s ease, transform 0.3s ease, font-size 0.3s ease;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #backgroundImage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.3;
+            transition: opacity 0.5s ease;
+        }
+
+        .controls-btn, .mode-btn {
+            position: absolute;
+            top: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .controls-btn { right: 20px; }
+        .mode-btn { left: 20px; }
+
+        .controls-panel {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 320px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        .mode-panel {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 350px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+            color: #333;
+        }
+
+        .form-select, .form-control {
+            font-size: 14px;
+        }
+
+        .timezone-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0.8;
+            transition: color 0.5s ease;
+        }
+
+        .date-label {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            opacity: 0.8;
+            transition: color 0.5s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .date-label:hover {
+            opacity: 1;
+        }
+
+        .calendar-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            z-index: 9999;
+            display: none;
+            min-width: 320px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .calendar-header button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #333;
+        }
+
+        .calendar-header button:hover {
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-weight: bold;
+            color: #666;
+            font-size: 12px;
+            padding: 5px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .calendar-day:hover {
+            background: #e3f2fd;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        .calendar-day.today {
+            background: #2196F3;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-footer {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .canvas-clock {
+            display: block;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+
+        .alarm-dismiss {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .alarm-dismiss h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .alarm-dismiss button {
+            font-size: 24px;
+            padding: 15px 40px;
+        }
+
+        .lap-times {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .lap-item {
+            padding: 5px;
+            margin: 2px 0;
+            background: white;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .animate-pulse { animation: pulse 2s ease-in-out infinite; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-rotate { animation: rotate 20s linear infinite; }
+        .animate-slide { animation: slideIn 2s ease-in-out infinite; }
+        .animate-rainbow { animation: rainbow 5s linear infinite; }
+    </style>
+</head>
+<body>
+    <div id="clockContainer">
+        <img id="backgroundImage" style="display: none;">
+        <button class="btn btn-primary mode-btn" id="toggleMode">Mode: Clock</button>
+        <button class="btn btn-primary controls-btn" id="toggleControls">Settings</button>
+        
+        <div class="mode-panel d-none" id="modePanel">
+            <div class="btn-group-vertical w-100 mb-3">
+                <button class="btn btn-outline-primary" onclick="switchMode('clock')">World Clock</button>
+                <button class="btn btn-outline-success" onclick="switchMode('stopwatch')">Stopwatch</button>
+                <button class="btn btn-outline-warning" onclick="switchMode('timer')">Timer</button>
+                <button class="btn btn-outline-danger" onclick="switchMode('alarm')">Alarm</button>
+            </div>
+
+            <!-- Stopwatch Controls -->
+            <div id="stopwatchControls" class="d-none">
+                <button class="btn btn-success w-100 mb-2" onclick="toggleStopwatch()">Start</button>
+                <button class="btn btn-warning w-100 mb-2" onclick="lapStopwatch()">Lap</button>
+                <button class="btn btn-danger w-100 mb-2" onclick="resetStopwatch()">Reset</button>
+                <button class="btn btn-info w-100 mb-2" onclick="exportLaps()">Export Laps</button>
+                <div class="lap-times" id="lapTimes"></div>
+            </div>
+
+            <!-- Timer Controls -->
+            <div id="timerControls" class="d-none">
+                <div class="mb-2">
+                    <label>Hours:</label>
+                    <input type="number" class="form-control" id="timerHours" min="0" max="23" value="0">
+                </div>
+                <div class="mb-2">
+                    <label>Minutes:</label>
+                    <input type="number" class="form-control" id="timerMinutes" min="0" max="59" value="0">
+                </div>
+                <div class="mb-2">
+                    <label>Seconds:</label>
+                    <input type="number" class="form-control" id="timerSeconds" min="0" max="59" value="0">
+                </div>
+                <button class="btn btn-success w-100 mb-2" onclick="startTimer()">Start</button>
+                <button class="btn btn-warning w-100 mb-2" onclick="pauseTimer()">Pause</button>
+                <button class="btn btn-danger w-100 mb-2" onclick="resetTimer()">Reset</button>
+            </div>
+
+            <!-- Alarm Controls -->
+            <div id="alarmControls" class="d-none">
+                <div class="mb-2">
+                    <label>Alarm Time:</label>
+                    <input type="time" class="form-control" id="alarmTime">
+                </div>
+                <div class="mb-2">
+                    <label>Alarm Sound:</label>
+                    <select class="form-select" id="alarmSound">
+                        <option value="beep">Beep</option>
+                        <option value="chime">Chime</option>
+                        <option value="bell">Bell</option>
+                        <option value="digital">Digital</option>
+                    </select>
+                </div>
+                <button class="btn btn-success w-100 mb-2" onclick="setAlarm()">Set Alarm</button>
+                <button class="btn btn-danger w-100 mb-2" onclick="cancelAlarm()">Cancel Alarm</button>
+                <div id="alarmStatus" class="mt-2 text-center"></div>
+            </div>
+        </div>
+        
+        <div class="controls-panel d-none" id="controlsPanel">
+            <div class="control-group">
+                <label for="timezoneSelect">Time Zone</label>
+                <select class="form-select" id="timezoneSelect">
+                    <option value="local">Local Time</option>
+                    <option value="UTC">UTC (GMT)</option>
+                    <option value="America/New_York">New York (EST/EDT)</option>
+                    <option value="America/Chicago">Chicago (CST/CDT)</option>
+                    <option value="America/Denver">Denver (MST/MDT)</option>
+                    <option value="America/Los_Angeles">Los Angeles (PST/PDT)</option>
+                    <option value="Europe/London">London (GMT/BST)</option>
+                    <option value="Europe/Paris">Paris (CET/CEST)</option>
+                    <option value="Europe/Moscow">Moscow (MSK)</option>
+                    <option value="Asia/Dubai">Dubai (GST)</option>
+                    <option value="Asia/Kolkata">Mumbai (IST)</option>
+                    <option value="Asia/Shanghai">Shanghai (CST)</option>
+                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    <option value="Asia/Taipei">Taipei (TST)</option>
+                    <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                    <option value="Pacific/Auckland">Auckland (NZDT/NZST)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="styleSelect">Style</label>
+                <select class="form-select" id="styleSelect">
+                    <option value="blocks">Blocks</option>
+                    <option value="dots">Dots</option>
+                    <option value="lines">Lines</option>
+                    <option value="mixed">Mixed</option>
+                    <option value="wave">Wave Pattern</option>
+                    <option value="geometric">Geometric</option>
+                    <option value="pixel">Pixel Art</option>
+                    <option value="canvas-modern">Clock Face - Modern</option>
+                    <option value="canvas-classic">Clock Face - Classic</option>
+                    <option value="canvas-minimalist">Clock Face - Minimalist</option>
+                    <option value="canvas-elegant">Clock Face - Elegant</option>
+                    <option value="clock-full">ASCII Clock (Full)</option>
+                    <option value="clock-simple">ASCII Clock (Simple)</option>
+                    <option value="clock-minimal">ASCII Clock (Minimal)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="dateFormatSelect">Date Format</label>
+                <select class="form-select" id="dateFormatSelect">
+                    <option value="full">Full (Wednesday, January 15, 2025)</option>
+                    <option value="long">Long (January 15, 2025)</option>
+                    <option value="short">Short (Jan 15, 2025)</option>
+                    <option value="numeric">Numeric (01/15/2025)</option>
+                    <option value="iso">ISO (2025-01-15)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Precision Display</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="showTenths">
+                    <label class="form-check-label" for="showTenths">Show Deciseconds</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="showHundredths">
+                    <label class="form-check-label" for="showHundredths">Show Centiseconds</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="showMilliseconds">
+                    <label class="form-check-label" for="showMilliseconds">Show Milliseconds</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="colorSelect">Color Theme</label>
+                <select class="form-select" id="colorSelect">
+                    <option value="minimal">Minimal</option>
+                    <option value="warmth">Warmth</option>
+                    <option value="elegant">Elegant</option>
+                    <option value="natural">Natural</option>
+                    <option value="twilight">Twilight</option>
+                    <option value="monochrome">Monochrome</option>
+                    <option value="ocean">Ocean Deep</option>
+                    <option value="sunset">Sunset</option>
+                    <option value="forest">Forest</option>
+                    <option value="lavender">Lavender</option>
+                    <option value="neon-green">Neon Green</option>
+                    <option value="neon-blue">Neon Blue</option>
+                    <option value="neon-pink">Neon Pink</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="animationSelect">Animation</label>
+                <select class="form-select" id="animationSelect">
+                    <option value="none">None</option>
+                    <option value="pulse">Pulse</option>
+                    <option value="glow">Glow</option>
+                    <option value="float">Float</option>
+                    <option value="rotate">Rotate</option>
+                    <option value="slide">Slide</option>
+                    <option value="rainbow">Rainbow</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="sizeSlider">Text Size</label>
+                <input type="range" class="form-range" id="sizeSlider" min="6" max="32" value="16" step="1">
+                <small class="text-muted">Smaller ← → Larger</small>
+            </div>
+
+            <div class="control-group">
+                <label>Background Image</label>
+                <input type="file" class="form-control mb-2" id="imageUpload" accept="image/*">
+                <button class="btn btn-sm btn-secondary w-100 mb-2" onclick="pasteImageFromClipboard()">Paste from Clipboard</button>
+                <button class="btn btn-sm btn-danger w-100" onclick="clearBackgroundImage()">Clear Background</button>
+                <input type="range" class="form-range mt-2" id="bgOpacitySlider" min="0" max="100" value="30">
+                <small class="text-muted">Background Opacity</small>
+            </div>
+        </div>
+
+        <pre id="asciiClock"></pre>
+        <canvas id="canvasClock" class="canvas-clock" width="400" height="400" style="display: none;"></canvas>
+
+        <div class="date-label" id="dateLabel" onclick="toggleCalendar()"></div>
+        <div class="timezone-label" id="timezoneLabel"></div>
+
+        <div class="calendar-popup" id="calendarPopup">
+            <div class="calendar-header">
+                <button onclick="changeMonth(-1)">◀</button>
+                <div class="calendar-title" id="calendarTitle"></div>
+                <button onclick="changeMonth(1)">▶</button>
+            </div>
+            <div class="calendar-header" style="border: none; margin-bottom: 10px;">
+                <button onclick="changeYear(-1)">◀◀</button>
+                <button onclick="goToToday()" class="btn btn-sm btn-primary">Today</button>
+                <button onclick="changeYear(1)">▶▶</button>
+            </div>
+            <div class="calendar-weekdays">
+                <div class="calendar-weekday">Sun</div>
+                <div class="calendar-weekday">Mon</div>
+                <div class="calendar-weekday">Tue</div>
+                <div class="calendar-weekday">Wed</div>
+                <div class="calendar-weekday">Thu</div>
+                <div class="calendar-weekday">Fri</div>
+                <div class="calendar-weekday">Sat</div>
+            </div>
+            <div class="calendar-days" id="calendarDays"></div>
+            <div class="calendar-footer" id="calendarInfo"></div>
+        </div>
+
+        <div class="alarm-dismiss" id="alarmDismiss">
+            <h2 id="alarmMessage">⏰ ALARM!</h2>
+            <button class="btn btn-danger btn-lg" onclick="dismissAlarm()">DISMISS</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ASCII digit patterns (11 rows tall for more detail)
+        const digitPatterns = {
+            blocks: {
+                '0': ['███████████','██       ██','██       ██','██       ██','██       ██','██       ██','██       ██','██       ██','██       ██','██       ██','███████████'],
+                '1': ['    ███    ','    ███    ','    ███    ','    ███    ','    ███    ','    ███    ','    ███    ','    ███    ','    ███    ','    ███    ','    ███    '],
+                '2': ['███████████','         ██','         ██','         ██','███████████','██         ','██         ','██         ','██         ','██         ','███████████'],
+                '3': ['███████████','         ██','         ██','         ██','███████████','         ██','         ██','         ██','         ██','         ██','███████████'],
+                '4': ['██       ██','██       ██','██       ██','██       ██','███████████','         ██','         ██','         ██','         ██','         ██','         ██'],
+                '5': ['███████████','██         ','██         ','██         ','███████████','         ██','         ██','         ██','         ██','         ██','███████████'],
+                '6': ['███████████','██         ','██         ','██         ','███████████','██       ██','██       ██','██       ██','██       ██','██       ██','███████████'],
+                '7': ['███████████','         ██','         ██','         ██','         ██','         ██','         ██','         ██','         ██','         ██','         ██'],
+                '8': ['███████████','██       ██','██       ██','██       ██','███████████','██       ██','██       ██','██       ██','██       ██','██       ██','███████████'],
+                '9': ['███████████','██       ██','██       ██','██       ██','███████████','         ██','         ██','         ██','         ██','         ██','███████████'],
+                ':': ['           ','           ','    ███    ','    ███    ','           ','           ','           ','    ███    ','    ███    ','           ','           ']
+            },
+            matrix: {
+                '0': ['╔═══════════╗','║ ｻﾘｰｷ   ╔╗ ║','║ ﾊﾐﾂｽ   ║║ ║','║ ｱﾇｴｷ   ║║ ║','║ ﾘｰｻｱ   ║║ ║','║ ﾂﾇｴｷ   ║║ ║','║ ﾘｰｻｱ   ║║ ║','║ ﾂﾇｴｷ   ║║ ║','║ ｱﾇｴｷ   ║║ ║','║ ﾊﾐﾂｽ   ╚╝ ║','╚═══════════╝'],
+                '1': ['    ╔═══╗    ','    ║ ﾐ ║    ','    ║ ﾊ ║    ','    ║ ﾂ ║    ','    ║ ﾇ ║    ','    ║ ｴ ║    ','    ║ ｷ ║    ','    ║ ｱ ║    ','    ║ ﾘ ║    ','    ║ ｻ ║    ','    ╚═══╝    '],
+                '2': ['╔═══════════╗','║ ｻﾘｰｷ    ﾊ║','║         ﾐ║','║         ﾂ║','╠═══════════╣','║ﾇ          ║','║ｴ          ║','║ｷ          ║','║ｱ          ║','║ﾘ          ║','╚═══════════╝'],
+                '3': ['╔═══════════╗','║ ｻﾘｰｷ    ﾊ║','║         ﾐ║','║         ﾂ║','╠═══════════╣','║         ﾇ║','║         ｴ║','║         ｷ║','║         ｱ║','║ ﾊﾐﾂｽ    ﾘ║','╚═══════════╝'],
+                '4': ['╔═══╗   ╔═══╗','║ ﾊ ║   ║ ﾐ ║','║ ﾐ ║   ║ ﾂ ║','║ ﾂ ║   ║ ﾇ ║','╚═══╩═══╩═══╝','        ║ ｴ ║','        ║ ｷ ║','        ║ ｱ ║','        ║ ﾘ ║','        ║ ｻ ║','        ╚═══╝'],
+                '5': ['╔═══════════╗','║ﾊ          ║','║ﾐ          ║','║ﾂ          ║','╠═══════════╣','║         ﾇ║','║         ｴ║','║         ｷ║','║         ｱ║','║ ｻﾘｰｷ    ﾘ║','╚═══════════╝'],
+                '6': ['╔═══════════╗','║ﾊ          ║','║ﾐ          ║','║ﾂ          ║','╠═══════════╗','║ ﾇ      ║ｴ║','║ ｴ      ║ｷ║','║ ｷ      ║ｱ║','║ ｱ      ║ﾘ║','║ ﾘ ｻｱ  ║ｻ║','╚═══════════╝'],
+                '7': ['╔═══════════╗','║         ﾊ║','║         ﾐ║','║         ﾂ║','║         ﾇ║','║         ｴ║','║         ｷ║','║         ｱ║','║         ﾘ║','║         ｻ║','╚═══════════╝'],
+                '8': ['╔═══════════╗','║ ﾊ  ｻｱ  ﾐ║','║ ﾐ      ﾂ║','║ ﾂ      ﾇ║','╠═══════════╣','║ ｴ      ｷ║','║ ｷ      ｱ║','║ ｱ      ﾘ║','║ ﾘ      ｻ║','║ ｻ  ﾘｱ  ﾊ║','╚═══════════╝'],
+                '9': ['╔═══════════╗','║ ﾊ      ﾐ║','║ ﾐ      ﾂ║','║ ﾂ      ﾇ║','╚═══════════╣','║         ｴ║','║         ｷ║','║         ｱ║','║         ﾘ║','║    ｻｱ   ｻ║','╚═══════════╝'],
+                ':': ['           ','           ','    ╔═╗    ','    ║█║    ','    ╚═╝    ','           ','    ╔═╗    ','    ║█║    ','    ╚═╝    ','           ','           ']
+            },
+            organic: {
+                '0': ['╭───────────╮','│ ≋≈∿  ∿≈≋ │','│≈⌇      ⌇≈│','│∼         ∼│','│∿    ⌇    ∿│','│≋   ∿≈∿   ≋│','│∿    ⌇    ∿│','│∼         ∼│','│≈⌇      ⌇≈│','│ ≋≈∿  ∿≈≋ │','╰───────────╯'],
+                '1': ['    ╭───╮    ','    │ ∿ │    ','    │≈≋ │    ','    │ ⌇ │    ','    │ ∿ │    ','    │≈≋ │    ','    │ ⌇ │    ','    │ ∿ │    ','    │≈≋ │    ','    │ ⌇ │    ','    ╰───╯    '],
+                '2': ['╭───────────╮','│ ≋≈∿  ∿≈⌇ │','│         ≋∼│','│         ∿ │','╰──────╮  ≈ │','╭──────╯  ∿ │','│∼         ≋│','│≋         ⌇│','│∿         ∼│','│⌇ ∿≈≋≈∿  ≈│','╰───────────╯'],
+                '3': ['╭───────────╮','│ ≋≈∿  ∿≈⌇ │','│         ≋∼│','│         ∿ │','├───────╮ ≈ │','╰───────┤ ∿ │','│         ≋│','│         ⌇│','│         ∼│','│ ≋≈∿  ∿≈≈│','╰───────────╯'],
+                '4': ['╭───╮   ╭───╮','│ ∿ │   │≈≋ │','│≈⌇ │   │ ∿ │','│ ∼ │   │≈⌇ │','╰───┴───┴───╯','        │ ∼ │','        │ ∿ │','        │≈≋ │','        │ ⌇ │','        │ ∼ │','        ╰───╯'],
+                '5': ['╭───────────╮','│∿          │','│≋          │','│⌇          │','╰───────────╮','╭───────────┤','│         ∼ │','│         ∿ │','│         ≋│','│ ≋≈∿  ∿≈⌇│','╰───────────╯'],
+                '6': ['╭───────────╮','│∿          │','│≋          │','│⌇          │','├───────────╮','│ ∼     │ ∿ │','│ ∿     │≈≋ │','│≈≋     │ ⌇ │','│ ⌇     │ ∼ │','│ ∼ ≈∿  │ ∿ │','╰───────────╯'],
+                '7': ['╭───────────╮','│         ∿ │','│         ≋│','│         ⌇│','│         ∼│','│         ∿│','│         ≋│','│         ⌇│','│         ∼│','│         ∿│','╰───────────╯'],
+                '8': ['╭───────────╮','│ ∿  ≈∿  ≋ │','│≈⌇      ⌇≈│','│ ∼      ∼ │','├───────────┤','│ ∿      ∿ │','│≈⌇      ⌇≈│','│ ∼      ∼ │','│ ∿      ∿ │','│ ≋  ≈∿  ⌇ │','╰───────────╯'],
+                '9': ['╭───────────╮','│ ∿      ≋ │','│≈⌇      ⌇≈│','│ ∼      ∼ │','╰───────────┤','│         ∿ │','│         ≋│','│         ⌇│','│         ∼│','│    ≈∿   ∿│','╰───────────╯'],
+                ':': ['           ','           ','    ╭─╮    ','    │∿│    ','    ╰─╯    ','           ','    ╭─╮    ','    │∿│    ','    ╰─╯    ','           ','           ']
+            },
+            pixel: {
+                '0': ['▓▓▓▓▓▓▓▓▓▓▓','▓▓░░░░░░░▓▓','▓░░▒▒▒▒▒░░▓','▓░▒▓▓▓▓▓▒░▓','▓░▒▓███▓▒░▓','▓░▒▓███▓▒░▓','▓░▒▓███▓▒░▓','▓░▒▓▓▓▓▓▒░▓','▓░░▒▒▒▒▒░░▓','▓▓░░░░░░░▓▓','▓▓▓▓▓▓▓▓▓▓▓'],
+                '1': ['    ▓▓▓    ','   ▓▓▓▓    ','  ▓▓▓▓▓    ','    ▓▓▓    ','    ▓▓▓    ','    ▓▓▓    ','    ▓▓▓    ','    ▓▓▓    ','    ▓▓▓    ','  ▓▓▓▓▓▓▓  ','  ▓▓▓▓▓▓▓  '],
+                '2': ['▓▓▓▓▓▓▓▓▓▓▓','▓░░░░░░░░▓▓','░░▒▒▒▒▒▒▒▓▓','▓▓▓▓▓▓▓▒▓▓▓','     ▓▓▒░▓▓','   ▓▓▓▒░▓▓ ',' ▓▓▓▓▒░▓▓  ','▓▓▓▓▒░▓▓   ','▓▓▒░░▓▓    ','▓░░░▓▓▓▓▓▓▓','▓▓▓▓▓▓▓▓▓▓▓'],
+                '3': ['▓▓▓▓▓▓▓▓▓▓▓','▓░░░░░░░░▓▓','░░▒▒▒▒▒▒▒▓▓','▓▓▓▓▓▓▓▒▓▓▓','     ▓▓▒░▓▓','   ▓▓▓▒▒▓▓▓','     ▓▓▒░▓▓','▓▓▓▓▓▓▓▒▓▓▓','░░▒▒▒▒▒▓▓▓ ','▓░░░░░░▓▓▓ ','▓▓▓▓▓▓▓▓▓▓▓'],
+                '4': ['▓▓▓    ▓▓▓ ','▓▓▓   ▓▓▓▓ ','▓▓▓  ▓▓▓▓▓ ','▓▓▓ ▓▓ ▓▓▓ ','▓▓▓▓▓  ▓▓▓ ','▓▓▓▓▓▓▓▓▓▓▓','░░░░░░░▓▓▓ ','       ▓▓▓ ','       ▓▓▓ ','       ▓▓▓ ','       ▓▓▓ '],
+                '5': ['▓▓▓▓▓▓▓▓▓▓▓','▓▓░░░░░░░░░','▓▓▒▒▒▒▒░░░░','▓▓▓▓▓▓▓▒░░░','      ░▒▓▓▓','  ░░░░▒▓▓▓▓','▓▓▓▓▓▓▒▓▓▓▓','▓▓▓▓▓▓▒░▓▓▓','░░▒▒▒▒░░▓▓ ','▓░░░░░░▓▓▓ ','▓▓▓▓▓▓▓▓▓▓▓'],
+                '6': ['▓▓▓▓▓▓▓▓▓▓▓','▓▓░░░░░░░░░','▓▓▒▒▒▒▒░░░░','▓▓▓▓▓▓▓▒░░░','▓▓▓▓▓▓▓▓▓▓▓','▓▓░▒▒▒▒▒░▓▓','▓▓░▒▓▓▓▒░▓▓','▓░░▒▓▓▓▒░░▓','▓░░▒▒▒▒▒░░▓','▓▓░░░░░░░▓▓','▓▓▓▓▓▓▓▓▓▓▓'],
+                '7': ['▓▓▓▓▓▓▓▓▓▓▓','░░░░░░░░▓▓▓','▒▒▒▒▒▒▒▓▓▓ ','▓▓▓▓▓▓▓▓▓  ','      ▓▓▓  ','     ▓▓▓   ','    ▓▓▓    ','   ▓▓▓     ','  ▓▓▓      ',' ▓▓▓       ','▓▓▓        '],
+                '8': ['▓▓▓▓▓▓▓▓▓▓▓','▓▓░░░░░░░▓▓','▓░░▒▒▒▒▒░░▓','▓░▒▓▓▓▓▓▒░▓','▓▓▓▓▓▓▓▓▓▓▓','▓░▒▓▓▓▓▓▒░▓','▓░▒▓███▓▒░▓','▓░▒▓▓▓▓▓▒░▓','▓░░▒▒▒▒▒░░▓','▓▓░░░░░░░▓▓','▓▓▓▓▓▓▓▓▓▓▓'],
+                '9': ['▓▓▓▓▓▓▓▓▓▓▓','▓▓░░░░░░░▓▓','▓░░▒▒▒▒▒░░▓','▓░▒▓▓▓▓▓▒░▓','▓░▒▓███▓▒░▓','▓▓▓▓▓▓▓▓▓▓▓','       ▓▒░▓','▓▓▓▓▓▓▓▒░▓ ','░░▒▒▒▒▒░░▓ ','▓░░░░░░░▓▓ ','▓▓▓▓▓▓▓▓▓▓▓'],
+                ':': ['           ','           ','    ▓▓▓    ','   ▓███▓   ','    ▓▓▓    ','           ','    ▓▓▓    ','   ▓███▓   ','    ▓▓▓    ','           ','           ']
+            },
+            circuit: {
+                '0': ['╔═══════════╗','║─┐     ┌─║','║ ├─────┤ ║','║ │>───<│ ║','║ │ ▓▓▓ │ ║','║ │ ▓█▓ │ ║','║ │ ▓▓▓ │ ║','║ │>───<│ ║','║ ├─────┤ ║','║─┘     └─║','╚═══════════╝'],
+                '1': ['    ║───║    ','    ║ │ ║    ','    ║ ▓ ║    ','    ║ █ ║    ','    ║ ▓ ║    ','    ║ █ ║    ','    ║ ▓ ║    ','    ║ █ ║    ','    ║ ▓ ║    ','    ║ │ ║    ','    ╚═══╝    '],
+                '2': ['╔═══════════╗','║─┐   ┌───>║','║ └───┤ ▓▓║','║     │ ▓█║','║  ┌──┘ ▓▓║','║  └────┐  ║','║ ▓▓ ┌─┘  ║','║ █▓ │    ║','║ ▓▓ │    ║','║<───┴────║','╚═══════════╝'],
+                '3': ['╔═══════════╗','║─┐   ┌───>║','║ └───┤ ▓▓║','║     │ ▓█║','╠═════╪═══╣','║     │ ▓█║','║     │ ▓▓║','║     │ ▓█║','║ ┌───┤ ▓▓║','║─┘   └───>║','╚═══════════╝'],
+                '4': ['║─┐   ┌───║','║ │   │ ▓ ║','║ │   │ █ ║','║ │   │ ▓ ║','╚═╧═══╧═══╝','      │ █ ║','      │ ▓ ║','      │ █ ║','      │ ▓ ║','      │ │ ║','      ╚═══╝'],
+                '5': ['╔═══════════╗','║<────┐    ║','║ ▓▓  │    ║','║ █▓  │    ║','║ ▓▓──┘  ┌─║','╠═════════┤ ║','║       │ ▓║','║       │ █║','║ ┌─────┤ ▓║','║─┘     └──>║','╚═══════════╝'],
+                '6': ['╔═══════════╗','║<────┐    ║','║ ▓▓  │    ║','║ █▓  │    ║','║ ▓▓──┴──┐ ║','╠═════════╗ ║','║ ▓ ┌─> ║█║','║ █ │   ║▓║','║ ▓ ├─< ║█║','║─┐ └─> ║▓║','╚═╧═════╩═╝'],
+                '7': ['╔═══════════╗','║       ┌─>║','║       │ ▓║','║       │ █║','║       │ ▓║','║       │ █║','║       │ ▓║','║       │ █║','║       │ ▓║','║       │ █║','╚═══════╧═══╝'],
+                '8': ['╔═══════════╗','║─┐ ▓▓▓ ┌─║','║ ├─█▓█─┤ ║','║ │ ▓▓▓ │ ║','╠═╪═════╪═╣','║ │ ▓▓▓ │ ║','║ │ █▓█ │ ║','║ │ ▓▓▓ │ ║','║ ├─────┤ ║','║─┘     └─║','╚═══════════╝'],
+                '9': ['╔═══════════╗','║─┐ ▓▓▓ ┌─║','║ ├─█▓█─┤ ║','║ │ ▓▓▓ │ ║','╚═╪═════╧═╝','  │       ▓║','  │       █║','  │       ▓║','  ├─────> █║','  └─────> ▓║','╚═══════════╝'],
+                ':': ['           ','           ','    ╔═╗    ','    ║█║    ','    ╚═╝    ','           ','    ╔═╗    ','    ║█║    ','    ╚═╝    ','           ','           ']
+            },
+            dots: ['●●●●●','●   ●','●   ●','●   ●','●   ●','●   ●','●●●●●','     ','  ●  ','  ●  ','  ●  '],
+            lines: ['┌───┐','│   │','│   │','│   │','│   │','│   │','└───┘','     ','  │  ','  │  ','  │  '],
+            mixed: ['▓▓▓▓▓','▓   ▓','▓ ░ ▓','▓ ░ ▓','▓ ░ ▓','▓   ▓','▓▓▓▓▓','     ','  ▓  ','  ▓  ','  ▓  '],
+            wave: ['░▒▓█▓▒░','▓░    ▓','█  ░▒ █','█ ▒▓░ █','█ ▒░  █','▓░    ▓','░▒▓█▓▒░','       ','  ░▓█  ','  ░▓█  ','  ░▓█  '],
+            geometric: ['◢█████◣','█◢▓▓▓◣█','█◥▒▒▒◤█','█◢░░░◣█','█◥▒▒▒◤█','█◥▓▓▓◤█','◥█████◤','       ','  ◢█◣  ','  ◢█◣  ','  ◢█◣  ']
+        };
+
+        // Simpler patterns for basic styles (7 rows for compatibility)
+        digitPatterns.dots = {
+            '0': ['●●●●●●●','●     ●','●     ●','●     ●','●     ●','●     ●','●●●●●●●','       ','       ','       ','       '],
+            '1': ['   ●   ','   ●   ','   ●   ','   ●   ','   ●   ','   ●   ','   ●   ','       ','       ','       ','       '],
+            '2': ['●●●●●●●','      ●','      ●','●●●●●●●','●      ','●      ','●●●●●●●','       ','       ','       ','       '],
+            '3': ['●●●●●●●','      ●','      ●','●●●●●●●','      ●','      ●','●●●●●●●','       ','       ','       ','       '],
+            '4': ['●     ●','●     ●','●     ●','●●●●●●●','      ●','      ●','      ●','       ','       ','       ','       '],
+            '5': ['●●●●●●●','●      ','●      ','●●●●●●●','      ●','      ●','●●●●●●●','       ','       ','       ','       '],
+            '6': ['●●●●●●●','●      ','●      ','●●●●●●●','●     ●','●     ●','●●●●●●●','       ','       ','       ','       '],
+            '7': ['●●●●●●●','      ●','      ●','      ●','      ●','      ●','      ●','       ','       ','       ','       '],
+            '8': ['●●●●●●●','●     ●','●     ●','●●●●●●●','●     ●','●     ●','●●●●●●●','       ','       ','       ','       '],
+            '9': ['●●●●●●●','●     ●','●     ●','●●●●●●●','      ●','      ●','●●●●●●●','       ','       ','       ','       '],
+            ':': ['       ','   ●   ','       ','       ','   ●   ','       ','       ','       ','       ','       ','       ']
+        };
+        digitPatterns.lines = {
+            '0': ['┌─────┐','│     │','│     │','│     │','│     │','│     │','└─────┘','       ','       ','       ','       '],
+            '1': ['   │   ','   │   ','   │   ','   │   ','   │   ','   │   ','   │   ','       ','       ','       ','       '],
+            '2': ['┌─────┐','      │','      │','┌─────┘','│      ','│      ','└─────┘','       ','       ','       ','       '],
+            '3': ['┌─────┐','      │','      │','├─────┤','      │','      │','└─────┘','       ','       ','       ','       '],
+            '4': ['│     │','│     │','│     │','└─────┤','      │','      │','      │','       ','       ','       ','       '],
+            '5': ['┌─────┐','│      ','│      ','└─────┐','      │','      │','└─────┘','       ','       ','       ','       '],
+            '6': ['┌─────┐','│      ','│      ','├─────┐','│     │','│     │','└─────┘','       ','       ','       ','       '],
+            '7': ['┌─────┐','      │','      │','      │','      │','      │','      │','       ','       ','       ','       '],
+            '8': ['┌─────┐','│     │','│     │','├─────┤','│     │','│     │','└─────┘','       ','       ','       ','       '],
+            '9': ['┌─────┐','│     │','│     │','└─────┤','      │','      │','└─────┘','       ','       ','       ','       '],
+            ':': ['       ','   ●   ','       ','       ','   ●   ','       ','       ','       ','       ','       ','       ']
+        };
+        digitPatterns.mixed = {
+            '0': ['▓▓▓▓▓▓▓','▓     ▓','▓ ░░  ▓','▓ ░░  ▓','▓  ░░ ▓','▓     ▓','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '1': ['   ▓   ','  ▓▓   ','   ▓   ','   ▓   ','   ▓   ','   ▓   ','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '2': ['▓▓▓▓▓▓▓','░     ▓','      ▓',' ▓▓▓▓▓▓','▓      ','▓      ','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '3': ['▓▓▓▓▓▓▓','░     ▓','      ▓','  ▓▓▓▓▓','      ▓','░     ▓','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '4': ['▓     ▓','▓     ▓','▓ ░   ▓','▓▓▓▓▓▓▓','░     ▓','      ▓','      ▓','       ','       ','       ','       '],
+            '5': ['▓▓▓▓▓▓▓','▓      ','▓ ░    ','▓▓▓▓▓▓▓','      ▓','░     ▓','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '6': ['▓▓▓▓▓▓▓','▓      ','▓      ','▓▓▓▓▓▓▓','▓ ░   ▓','▓     ▓','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '7': ['▓▓▓▓▓▓▓','░     ▓','      ▓','     ▓ ','    ▓  ','   ▓   ','  ▓    ','       ','       ','       ','       '],
+            '8': ['▓▓▓▓▓▓▓','▓ ░   ▓','▓     ▓','▓▓▓▓▓▓▓','▓     ▓','▓ ░   ▓','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            '9': ['▓▓▓▓▓▓▓','▓     ▓','▓ ░   ▓','▓▓▓▓▓▓▓','░     ▓','      ▓','▓▓▓▓▓▓▓','       ','       ','       ','       '],
+            ':': ['       ','   ▓   ','       ','       ','   ▓   ','       ','       ','       ','       ','       ','       ']
+        };
+        digitPatterns.wave = {
+            '0': ['░▒▓█▓▒░','▓░    ▓','█  ░▒ █','█ ▒▓░ █','█ ▒░  █','▓░    ▓','░▒▓█▓▒░','       ','       ','       ','       '],
+            '1': ['  ░▓█  ','  ▒▓█  ','   ▓█  ','   ▓█  ','   ▓█  ','  ░▓█  ','░▒▓█▓▒░','       ','       ','       ','       '],
+            '2': ['░▒▓█▓▒░','▓░   ▒█','    ░▓█','  ▒▓▒░ ','░▓▒░   ','█▓     ','█▓▓▓▓▓▓','       ','       ','       ','       '],
+            '3': ['░▒▓█▓▒░','▓░   ▒█','    ░▓█',' ░▒▓▓▒░','    ░▓█','▓░   ▒█','░▒▓█▓▒░','       ','       ','       ','       '],
+            '4': ['█░    █','█░  ░▒█','█░ ░▓▒█','█▓▓█▓▓█','    ░▓█','    ░▓█','     ▓█','       ','       ','       ','       '],
+            '5': ['█▓▓▓▓▓░','█▓     ','█▓▒░   ','░▒▓▓▓▒░','    ░▓█','▓░   ▒█','░▒▓█▓▒░','       ','       ','       ','       '],
+            '6': ['░▒▓█▓▒░','▓░     ','█▓▒░   ','█▓▓█▓▒░','█░ ░▒▓█','▓░   ▒█','░▒▓█▓▒░','       ','       ','       ','       '],
+            '7': ['█▓▓▓▓▓█','▓░   ▒█','    ░▓█','   ░▓▒ ','  ░▓▒  ',' ░▓▒   ','░▓▒    ','       ','       ','       ','       '],
+            '8': ['░▒▓█▓▒░','▓░ ░▒▓█','█░ ░▒▓█','░▒▓█▓▒░','█▓▒░ ▒█','█▓▒░ ▒█','░▒▓█▓▒░','       ','       ','       ','       '],
+            '9': ['░▒▓█▓▒░','▓░   ▒█','█▓▒░ ▒█','░▒▓█▓▓█','     ▒█','▓░   ▒█','░▒▓█▓▒░','       ','       ','       ','       '],
+            ':': ['       ','  ░▓█  ','       ','       ','  ░▓█  ','       ','       ','       ','       ','       ','       ']
+        };
+        digitPatterns.geometric = {
+            '0': ['◢█████◣','█◢▓▓▓◣█','█◥▒▒▒◤█','█◢░░░◣█','█◥▒▒▒◤█','█◥▓▓▓◤█','◥█████◤','       ','       ','       ','       '],
+            '1': ['  ◢█◣  ','  ◢█◣  ','   █◣  ','   █◣  ','   █◣  ','  ◢█◣  ','◢█████◣','       ','       ','       ','       '],
+            '2': ['◢█████◣','◥▓▓▓▓█◣','     █◣','  ◢██◤ ','◢█◤    ','█◤     ','███████','       ','       ','       ','       '],
+            '3': ['◢█████◣','◥▓▓▓▓█◣','     █◣',' ◢███◣ ','     █◣','◥▓▓▓▓█◣','◥█████◤','       ','       ','       ','       '],
+            '4': ['█◣   ◢█','█◣  ◢█◣','█◣ ◢██◣','███████','    ◢█◣','    ◢█◣','     █◣','       ','       ','       ','       '],
+            '5': ['███████','█◤     ','█◤     ','◥████◣ ','     █◣','◥▓▓▓▓█◣','◥█████◤','       ','       ','       ','       '],
+            '6': ['◢█████◣','█◤     ','█◤     ','█████◣ ','█◣  ◢█◣','◥▓▓▓▓█◣','◥█████◤','       ','       ','       ','       '],
+            '7': ['███████','◥▓▓▓▓█◣','     █◣','    █◤ ','   █◤  ','  █◤   ',' █◤    ','       ','       ','       ','       '],
+            '8': ['◢█████◣','█◣  ◢█◣','◥▓▓▓▓█◤','◢█████◣','█◣  ◢█◣','◥▓▓▓▓█◤','◥█████◤','       ','       ','       ','       '],
+            '9': ['◢█████◣','█◣  ◢█◣','◥▓▓▓▓█◣','◥█████◣','     █◣','◥▓▓▓▓█◣','◥█████◤','       ','       ','       ','       '],
+            ':': ['       ','  ◢█◣  ','       ','       ','  ◢█◣  ','       ','       ','       ','       ','       ','       ']
+        };
+
+        // Color Themes
+        const colorThemes = {
+            'minimal': { bg: '#F0EEE6', text: '#333333', shadow: 'none' },
+            'warmth': { bg: '#FFF8E7', text: '#8B4513', shadow: 'none' },
+            'elegant': { bg: '#2C3E50', text: '#ECF0F1', shadow: 'none' },
+            'natural': { bg: '#E8F5E9', text: '#2E7D32', shadow: 'none' },
+            'twilight': { bg: '#1A237E', text: '#B39DDB', shadow: 'none' },
+            'monochrome': { bg: '#FFFFFF', text: '#000000', shadow: 'none' },
+            'ocean': { bg: '#0A2463', text: '#3E92CC', shadow: '0 0 5px #3E92CC' },
+            'sunset': { bg: '#2D1B00', text: '#FF6B35', shadow: '0 0 5px #FF6B35' },
+            'forest': { bg: '#1B3A1F', text: '#7FCD91', shadow: 'none' },
+            'lavender': { bg: '#3A0CA3', text: '#E0AAFF', shadow: '0 0 5px #E0AAFF' },
+            'neon-green': { bg: '#000000', text: '#00ff00', shadow: '0 0 10px #00ff00' },
+            'neon-blue': { bg: '#001a33', text: '#00d9ff', shadow: '0 0 10px #00d9ff' },
+            'neon-pink': { bg: '#1a0033', text: '#ff00ff', shadow: '0 0 10px #ff00ff' }
+        };
+
+        // Timezone data
+        const timezones = {
+            'local': 'Local Time',
+            'UTC': 'UTC (GMT)',
+            'America/New_York': 'New York (EST/EDT)',
+            'America/Chicago': 'Chicago (CST/CDT)',
+            'America/Denver': 'Denver (MST/MDT)',
+            'America/Los_Angeles': 'Los Angeles (PST/PDT)',
+            'Europe/London': 'London (GMT/BST)',
+            'Europe/Paris': 'Paris (CET/CEST)',
+            'Europe/Moscow': 'Moscow (MSK)',
+            'Asia/Dubai': 'Dubai (GST)',
+            'Asia/Kolkata': 'Mumbai (IST)',
+            'Asia/Shanghai': 'Shanghai (CST)',
+            'Asia/Tokyo': 'Tokyo (JST)',
+            'Asia/Taipei': 'Taipei (TST)',
+            'Australia/Sydney': 'Sydney (AEDT/AEST)',
+            'Pacific/Auckland': 'Auckland (NZDT/NZST)'
+        };
+
+        // Audio Context for alarms
+        let audioContext = null;
+        let currentAlarmTimeout = null;
+        let alarmTime = null;
+        let alarmOscillator = null;
+        let alarmGain = null;
+        let alarmInterval = null;
+        let alarmActive = false;
+
+        // Stopwatch state
+        let stopwatchRunning = false;
+        let stopwatchStartTime = 0;
+        let stopwatchElapsed = 0;
+        let stopwatchInterval = null;
+        let laps = [];
+
+        // Timer state
+        let timerRunning = false;
+        let timerRemaining = 0;
+        let timerInterval = null;
+        let timerTotal = 0;
+
+        // Current mode
+        let currentMode = 'clock';
+
+        // Calendar state
+        let calendarDate = new Date();
+        let calendarVisible = false;
+
+        // Load saved state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('clockSettings');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Load background image if saved
+                    if (parsed.backgroundImage) {
+                        const img = document.getElementById('backgroundImage');
+                        img.src = parsed.backgroundImage;
+                        img.style.display = 'block';
+                        if (parsed.bgOpacity !== undefined) {
+                            img.style.opacity = parsed.bgOpacity;
+                        }
+                    }
+                    return parsed;
+                } catch (e) {
+                    return getDefaultState();
+                }
+            }
+            return getDefaultState();
+        }
+
+        function getDefaultState() {
+            return {
+                timezone: 'local',
+                style: 'blocks',
+                color: 'minimal',
+                animation: 'none',
+                size: 16,
+                dateFormat: 'full',
+                showTenths: false,
+                showHundredths: false,
+                showMilliseconds: false,
+                backgroundImage: null,
+                bgOpacity: 0.3,
+                alarmTime: null,
+                alarmSound: 'beep'
+            };
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            const img = document.getElementById('backgroundImage');
+            if (img.src && img.style.display !== 'none') {
+                state.backgroundImage = img.src;
+                state.bgOpacity = parseFloat(img.style.opacity) || 0.3;
+            } else {
+                state.backgroundImage = null;
+            }
+            
+            // Save alarm settings
+            if (alarmTime) {
+                state.alarmTime = alarmTime.toISOString();
+                state.alarmSound = document.getElementById('alarmSound').value;
+            } else {
+                state.alarmTime = null;
+            }
+            
+            localStorage.setItem('clockSettings', JSON.stringify(state));
+        }
+
+        // State
+        let state = loadState();
+
+        // Elements
+        const clockEl = document.getElementById('asciiClock');
+        const bodyEl = document.body;
+        const timezoneLabelEl = document.getElementById('timezoneLabel');
+        const controlsPanelEl = document.getElementById('controlsPanel');
+        const modePanelEl = document.getElementById('modePanel');
+        const modeBtn = document.getElementById('toggleMode');
+
+        // Sound generation functions
+        function getAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        function stopAlarmSound() {
+            console.log('Stopping alarm sound...');
+            alarmActive = false;
+            
+            if (window.currentAlarmFunction) {
+                window.currentAlarmFunction();
+                window.currentAlarmFunction = null;
+            }
+            
+            // Stop all audio contexts
+            if (audioContext) {
+                try {
+                    // Get all sources and stop them
+                    if (alarmOscillator) {
+                        alarmOscillator.stop();
+                        alarmOscillator.disconnect();
+                        alarmOscillator = null;
+                    }
+                    if (alarmGain) {
+                        alarmGain.disconnect();
+                        alarmGain = null;
+                    }
+                } catch (e) {
+                    console.log('Error stopping oscillator:', e);
+                }
+            }
+            
+            if (alarmInterval) {
+                clearInterval(alarmInterval);
+                alarmInterval = null;
+            }
+            
+            console.log('Alarm sound stopped');
+        }
+
+        function playExtendedAlarm(type) {
+            stopAlarmSound();
+            
+            const ctx = getAudioContext();
+            
+            // Play continuously for up to 30 seconds
+            const startTime = Date.now();
+            const duration = 30000; // 30 seconds
+            
+            function playTone() {
+                if (Date.now() - startTime > duration) {
+                    stopAlarmSound();
+                    return;
+                }
+                
+                alarmOscillator = ctx.createOscillator();
+                alarmGain = ctx.createGain();
+                
+                alarmOscillator.connect(alarmGain);
+                alarmGain.connect(ctx.destination);
+                
+                switch(type) {
+                    case 'beep':
+                        alarmOscillator.frequency.value = 800;
+                        alarmOscillator.type = 'square';
+                        alarmGain.gain.setValueAtTime(0.3, ctx.currentTime);
+                        alarmOscillator.start(ctx.currentTime);
+                        alarmOscillator.stop(ctx.currentTime + 0.5);
+                        setTimeout(playTone, 600);
+                        break;
+                    case 'chime':
+                        // Play a sequence of tones
+                        [523.25, 659.25, 783.99].forEach((freq, i) => {
+                            setTimeout(() => {
+                                if (Date.now() - startTime > duration) return;
+                                const osc = ctx.createOscillator();
+                                const gain = ctx.createGain();
+                                osc.connect(gain);
+                                gain.connect(ctx.destination);
+                                osc.frequency.value = freq;
+                                osc.type = 'sine';
+                                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                                osc.start(ctx.currentTime);
+                                osc.stop(ctx.currentTime + 0.5);
+                            }, i * 300);
+                        });
+                        setTimeout(playTone, 1200);
+                        break;
+                    case 'bell':
+                        alarmOscillator.frequency.value = 1000;
+                        alarmOscillator.type = 'sine';
+                        alarmGain.gain.setValueAtTime(0.5, ctx.currentTime);
+                        alarmGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+                        alarmOscillator.start(ctx.currentTime);
+                        alarmOscillator.stop(ctx.currentTime + 1.5);
+                        setTimeout(playTone, 1700);
+                        break;
+                    case 'digital':
+                        for (let i = 0; i < 3; i++) {
+                            setTimeout(() => {
+                                if (Date.now() - startTime > duration) return;
+                                const osc = ctx.createOscillator();
+                                const gain = ctx.createGain();
+                                osc.connect(gain);
+                                gain.connect(ctx.destination);
+                                osc.frequency.value = 600;
+                                osc.type = 'square';
+                                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                                osc.start(ctx.currentTime);
+                                osc.stop(ctx.currentTime + 0.15);
+                            }, i * 200);
+                        }
+                        setTimeout(playTone, 800);
+                        break;
+                }
+            }
+            
+            playTone();
+        }
+
+        function playAlarmSound(type) {
+            const ctx = getAudioContext();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            switch(type) {
+                case 'beep':
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'square';
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.5);
+                    break;
+                case 'chime':
+                    // Play a sequence of tones
+                    [523.25, 659.25, 783.99].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = freq;
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.3);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.3 + 0.5);
+                        osc.start(ctx.currentTime + i * 0.3);
+                        osc.stop(ctx.currentTime + i * 0.3 + 0.5);
+                    });
+                    break;
+                case 'bell':
+                    oscillator.frequency.value = 1000;
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 1);
+                    break;
+                case 'digital':
+                    for (let i = 0; i < 3; i++) {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = 600;
+                        osc.type = 'square';
+                        gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.2);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.2 + 0.15);
+                        osc.start(ctx.currentTime + i * 0.2);
+                        osc.stop(ctx.currentTime + i * 0.2 + 0.15);
+                    }
+                    break;
+            }
+        }
+
+        // Mode switching
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('stopwatchControls').classList.add('d-none');
+            document.getElementById('timerControls').classList.add('d-none');
+            document.getElementById('alarmControls').classList.add('d-none');
+            
+            if (mode === 'stopwatch') {
+                document.getElementById('stopwatchControls').classList.remove('d-none');
+                modeBtn.textContent = 'Mode: Stopwatch';
+            } else if (mode === 'timer') {
+                document.getElementById('timerControls').classList.remove('d-none');
+                modeBtn.textContent = 'Mode: Timer';
+            } else if (mode === 'alarm') {
+                document.getElementById('alarmControls').classList.remove('d-none');
+                modeBtn.textContent = 'Mode: Alarm';
+            } else {
+                modeBtn.textContent = 'Mode: Clock';
+            }
+            
+            updateDisplay();
+        }
+
+        // Stopwatch functions
+        function toggleStopwatch() {
+            if (!stopwatchRunning) {
+                stopwatchStartTime = Date.now() - stopwatchElapsed;
+                stopwatchRunning = true;
+                stopwatchInterval = setInterval(updateDisplay, 100);
+                event.target.textContent = 'Stop';
+                event.target.classList.remove('btn-success');
+                event.target.classList.add('btn-danger');
+            } else {
+                stopwatchRunning = false;
+                clearInterval(stopwatchInterval);
+                event.target.textContent = 'Start';
+                event.target.classList.remove('btn-danger');
+                event.target.classList.add('btn-success');
+            }
+        }
+
+        function lapStopwatch() {
+            if (stopwatchRunning) {
+                const lapTime = Date.now() - stopwatchStartTime;
+                laps.push(lapTime);
+                const lapEl = document.createElement('div');
+                lapEl.className = 'lap-item';
+                lapEl.textContent = `Lap ${laps.length}: ${formatTime(lapTime)}`;
+                document.getElementById('lapTimes').appendChild(lapEl);
+            }
+        }
+
+        function resetStopwatch() {
+            stopwatchRunning = false;
+            stopwatchElapsed = 0;
+            stopwatchStartTime = 0;
+            laps = [];
+            clearInterval(stopwatchInterval);
+            document.getElementById('lapTimes').innerHTML = '';
+            const btn = document.querySelector('#stopwatchControls button');
+            btn.textContent = 'Start';
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-success');
+            updateDisplay();
+        }
+
+        function exportLaps() {
+            if (laps.length === 0) {
+                alert('No laps to export');
+                return;
+            }
+            let csv = 'Lap,Time\n';
+            laps.forEach((lap, i) => {
+                csv += `${i + 1},${formatTime(lap)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stopwatch_laps.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Timer functions
+        function startTimer() {
+            const hours = parseInt(document.getElementById('timerHours').value) || 0;
+            const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
+            const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
+            
+            timerTotal = (hours * 3600 + minutes * 60 + seconds) * 1000;
+            timerRemaining = timerTotal;
+            timerRunning = true;
+            
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timerRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    const sound = document.getElementById('alarmSound').value;
+                    playExtendedAlarm(sound);
+                    showAlarmDismiss('⏱️ TIMER FINISHED!');
+                } else {
+                    timerRemaining -= 100;
+                    updateDisplay();
+                }
+            }, 100);
+        }
+
+        function pauseTimer() {
+            timerRunning = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        function resetTimer() {
+            timerRunning = false;
+            timerRemaining = 0;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            updateDisplay();
+        }
+
+        // Alarm functions
+        function setAlarm() {
+            const timeInput = document.getElementById('alarmTime').value;
+            if (!timeInput) {
+                alert('Please select a time');
+                return;
+            }
+            
+            const [hours, minutes] = timeInput.split(':').map(Number);
+            const now = new Date();
+            alarmTime = new Date(now);
+            alarmTime.setHours(hours, minutes, 0, 0);
+            
+            if (alarmTime <= now) {
+                alarmTime.setDate(alarmTime.getDate() + 1);
+            }
+            
+            const timeUntil = alarmTime - now;
+            
+            if (currentAlarmTimeout) {
+                clearTimeout(currentAlarmTimeout);
+            }
+            
+            currentAlarmTimeout = setTimeout(() => {
+                const sound = document.getElementById('alarmSound').value;
+                playExtendedAlarm(sound);
+                showAlarmDismiss('⏰ ALARM!');
+            }, timeUntil);
+            
+            document.getElementById('alarmStatus').innerHTML = 
+                `<div class="alert alert-success">Alarm set for ${timeInput}</div>`;
+        }
+
+        function showAlarmDismiss(message) {
+            document.getElementById('alarmMessage').textContent = message;
+            document.getElementById('alarmDismiss').style.display = 'block';
+        }
+
+        function dismissAlarm() {
+            stopAlarmSound();
+            document.getElementById('alarmDismiss').style.display = 'none';
+            if (currentMode === 'timer') {
+                resetTimer();
+            }
+            if (currentMode === 'alarm' && alarmTime) {
+                cancelAlarm();
+            }
+        }
+
+        function cancelAlarm() {
+            if (currentAlarmTimeout) {
+                clearTimeout(currentAlarmTimeout);
+                currentAlarmTimeout = null;
+            }
+            alarmTime = null;
+            document.getElementById('alarmStatus').innerHTML = 
+                `<div class="alert alert-info">No alarm set</div>`;
+        }
+
+        // Time formatting
+        function formatTime(ms, forDisplay = false) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            let result = '';
+            let decimals = '';
+            
+            if (hours > 0) {
+                result = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                result = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+            
+            // Add precision based on settings (only if enabled)
+            if (forDisplay && (state.showMilliseconds || state.showHundredths || state.showTenths)) {
+                if (state.showMilliseconds) {
+                    const milliseconds = ms % 1000;
+                    decimals = `.${String(milliseconds).padStart(3, '0')}`;
+                } else if (state.showHundredths) {
+                    const centiseconds = Math.floor((ms % 1000) / 10);
+                    decimals = `.${String(centiseconds).padStart(2, '0')}`;
+                } else if (state.showTenths) {
+                    const deciseconds = Math.floor((ms % 1000) / 100);
+                    decimals = `.${deciseconds}`;
+                }
+            }
+            
+            return result + decimals;
+        }
+
+        // Event Listeners
+        document.getElementById('toggleControls').addEventListener('click', () => {
+            controlsPanelEl.classList.toggle('d-none');
+        });
+
+        document.getElementById('toggleMode').addEventListener('click', () => {
+            modePanelEl.classList.toggle('d-none');
+        });
+
+        document.getElementById('timezoneSelect').addEventListener('change', (e) => {
+            state.timezone = e.target.value;
+            saveState();
+            updateDisplay();
+        });
+
+        document.getElementById('styleSelect').addEventListener('change', (e) => {
+            state.style = e.target.value;
+            saveState();
+            updateDisplay();
+        });
+
+        document.getElementById('colorSelect').addEventListener('change', (e) => {
+            state.color = e.target.value;
+            saveState();
+            applyColorTheme();
+        });
+
+        document.getElementById('animationSelect').addEventListener('change', (e) => {
+            state.animation = e.target.value;
+            saveState();
+            applyAnimation();
+        });
+
+        document.getElementById('sizeSlider').addEventListener('input', (e) => {
+            state.size = parseInt(e.target.value);
+            saveState();
+            applyTextSize();
+        });
+
+        document.getElementById('imageUpload').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = document.getElementById('backgroundImage');
+                    img.src = event.target.result;
+                    img.style.display = 'block';
+                    saveState();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('bgOpacitySlider').addEventListener('input', (e) => {
+            const opacity = parseInt(e.target.value) / 100;
+            document.getElementById('backgroundImage').style.opacity = opacity;
+            saveState();
+        });
+
+        document.getElementById('dateFormatSelect').addEventListener('change', (e) => {
+            state.dateFormat = e.target.value;
+            saveState();
+            updateDisplay();
+        });
+
+        document.getElementById('showTenths').addEventListener('change', (e) => {
+            state.showTenths = e.target.checked;
+            if (e.target.checked) {
+                document.getElementById('showHundredths').checked = false;
+                document.getElementById('showMilliseconds').checked = false;
+                state.showHundredths = false;
+                state.showMilliseconds = false;
+            }
+            saveState();
+        });
+
+        document.getElementById('showHundredths').addEventListener('change', (e) => {
+            state.showHundredths = e.target.checked;
+            if (e.target.checked) {
+                document.getElementById('showTenths').checked = false;
+                document.getElementById('showMilliseconds').checked = false;
+                state.showTenths = false;
+                state.showMilliseconds = false;
+            }
+            saveState();
+        });
+
+        document.getElementById('showMilliseconds').addEventListener('change', (e) => {
+            state.showMilliseconds = e.target.checked;
+            if (e.target.checked) {
+                document.getElementById('showTenths').checked = false;
+                document.getElementById('showHundredths').checked = false;
+                state.showTenths = false;
+                state.showHundredths = false;
+            }
+            saveState();
+        });
+
+        // Click clock to randomize
+        clockEl.addEventListener('click', () => {
+            randomizeSettings();
+        });
+
+        document.getElementById('canvasClock').addEventListener('click', () => {
+            randomizeSettings();
+        });
+
+        // Functions
+        function getTimeForTimezone() {
+            const now = new Date();
+            if (state.timezone === 'local') {
+                return now;
+            }
+            try {
+                const localeString = now.toLocaleString('en-US', { timeZone: state.timezone });
+                return new Date(localeString);
+            } catch (e) {
+                return now;
+            }
+        }
+
+        function generateAsciiTime(timeString) {
+            const patterns = digitPatterns[state.style];
+            
+            // Check if it's a clock face style
+            if (state.style.startsWith('clock-')) {
+                return generateClockFace(timeString);
+            }
+            
+            // Check if it's a canvas clock style
+            if (state.style.startsWith('canvas-')) {
+                return null; // Will be handled by canvas
+            }
+            
+            if (!patterns) return '';
+            
+            let result = [];
+            const numRows = patterns['0'].length;
+            
+            // Initialize rows
+            for (let i = 0; i < numRows; i++) {
+                result[i] = '';
+            }
+            
+            // Build each row by concatenating digits
+            for (let char of timeString) {
+                const pattern = patterns[char];
+                if (pattern) {
+                    for (let row = 0; row < numRows; row++) {
+                        result[row] += pattern[row] + '  ';
+                    }
+                }
+            }
+            
+            return result.join('\n');
+        }
+
+        function drawCanvasClock(hours, minutes, seconds) {
+            const canvas = document.getElementById('canvasClock');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 20;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Get current color theme
+            const theme = colorThemes[state.color];
+            const isDark = theme.bg === '#000000' || theme.bg.startsWith('#0') || theme.bg.startsWith('#1');
+            
+            // Draw clock based on style
+            if (state.style === 'canvas-modern') {
+                // Modern style - gradient background, no numbers
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                gradient.addColorStop(0, isDark ? '#2a2a2a' : '#ffffff');
+                gradient.addColorStop(1, isDark ? '#1a1a1a' : '#f0f0f0');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Hour marks - modern dots
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i * 30 - 90) * Math.PI / 180;
+                    const x = centerX + Math.cos(angle) * (radius * 0.85);
+                    const y = centerY + Math.sin(angle) * (radius * 0.85);
+                    ctx.fillStyle = theme.text;
+                    ctx.beginPath();
+                    ctx.arc(x, y, i % 3 === 0 ? 6 : 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            } else if (state.style === 'canvas-classic') {
+                // Classic style - white face, black numbers
+                ctx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = theme.text;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Numbers
+                ctx.fillStyle = theme.text;
+                ctx.font = 'bold 24px serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                for (let i = 1; i <= 12; i++) {
+                    const angle = (i * 30 - 90) * Math.PI / 180;
+                    const x = centerX + Math.cos(angle) * (radius * 0.75);
+                    const y = centerY + Math.sin(angle) * (radius * 0.75);
+                    ctx.fillText(i.toString(), x, y);
+                }
+                
+                // Minute marks
+                for (let i = 0; i < 60; i++) {
+                    if (i % 5 !== 0) {
+                        const angle = (i * 6 - 90) * Math.PI / 180;
+                        const x1 = centerX + Math.cos(angle) * (radius * 0.9);
+                        const y1 = centerY + Math.sin(angle) * (radius * 0.9);
+                        const x2 = centerX + Math.cos(angle) * (radius * 0.85);
+                        const y2 = centerY + Math.sin(angle) * (radius * 0.85);
+                        ctx.strokeStyle = theme.text;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            } else if (state.style === 'canvas-minimalist') {
+                // Minimalist - just a circle
+                ctx.strokeStyle = theme.text;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+            } else if (state.style === 'canvas-elegant') {
+                // Elegant - ornate design
+                ctx.fillStyle = isDark ? '#1a1a1a' : '#fafafa';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Double ring
+                ctx.strokeStyle = theme.text;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.95, 0, 2 * Math.PI);
+                ctx.stroke();
+                
+                // Roman numerals
+                const romans = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
+                ctx.fillStyle = theme.text;
+                ctx.font = 'italic 20px Georgia, serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i * 30 - 90) * Math.PI / 180;
+                    const x = centerX + Math.cos(angle) * (radius * 0.75);
+                    const y = centerY + Math.sin(angle) * (radius * 0.75);
+                    ctx.fillText(romans[i], x, y);
+                }
+            }
+            
+            // Draw hands
+            const hourAngle = ((hours % 12) * 30 + minutes * 0.5 - 90) * Math.PI / 180;
+            const minuteAngle = (minutes * 6 - 90) * Math.PI / 180;
+            const secondAngle = (seconds * 6 - 90) * Math.PI / 180;
+            
+            // Hour hand
+            ctx.strokeStyle = theme.text;
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + Math.cos(hourAngle) * (radius * 0.5),
+                centerY + Math.sin(hourAngle) * (radius * 0.5)
+            );
+            ctx.stroke();
+            
+            // Minute hand
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + Math.cos(minuteAngle) * (radius * 0.7),
+                centerY + Math.sin(minuteAngle) * (radius * 0.7)
+            );
+            ctx.stroke();
+            
+            // Second hand (smooth)
+            ctx.strokeStyle = theme.shadow !== 'none' ? theme.glow || '#ff0000' : '#ff0000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + Math.cos(secondAngle) * (radius * 0.8),
+                centerY + Math.sin(secondAngle) * (radius * 0.8)
+            );
+            ctx.stroke();
+            
+            // Center dot
+            ctx.fillStyle = theme.text;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        function generateClockFace(timeString) {
+            // Parse time
+            const parts = timeString.split(':');
+            let hours = parseInt(parts[0]) % 12;
+            let minutes = parseInt(parts[1]);
+            let seconds = parts[2] ? parseInt(parts[2].split('.')[0]) : 0;
+            
+            const hourAngle = (hours * 30 + minutes * 0.5) * Math.PI / 180;
+            const minuteAngle = (minutes * 6) * Math.PI / 180;
+            const secondAngle = (seconds * 6) * Math.PI / 180;
+            
+            const size = 21;
+            const center = Math.floor(size / 2);
+            let grid = Array(size).fill(0).map(() => Array(size).fill(' '));
+            
+            // Draw clock circle
+            for (let angle = 0; angle < 360; angle += 1) {
+                const rad = angle * Math.PI / 180;
+                const x = Math.round(center + center * 0.9 * Math.cos(rad - Math.PI / 2));
+                const y = Math.round(center + center * 0.9 * Math.sin(rad - Math.PI / 2));
+                if (x >= 0 && x < size && y >= 0 && y < size) {
+                    grid[y][x] = '●';
+                }
+            }
+            
+            // Draw numbers or marks based on style
+            if (state.style === 'clock-full') {
+                // Full numbers and marks
+                const numbers = ['12', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+                for (let i = 0; i < 12; i++) {
+                    const angle = i * 30 * Math.PI / 180 - Math.PI / 2;
+                    const x = Math.round(center + center * 0.75 * Math.cos(angle));
+                    const y = Math.round(center + center * 0.75 * Math.sin(angle));
+                    if (x >= 0 && x < size && y >= 0 && y < size) {
+                        const num = numbers[i];
+                        if (num.length === 1) {
+                            grid[y][x] = num;
+                        } else {
+                            if (x > 0) grid[y][x-1] = num[0];
+                            grid[y][x] = num[1];
+                        }
+                    }
+                }
+                // Minute marks
+                for (let i = 0; i < 60; i++) {
+                    if (i % 5 !== 0) {
+                        const angle = i * 6 * Math.PI / 180 - Math.PI / 2;
+                        const x = Math.round(center + center * 0.85 * Math.cos(angle));
+                        const y = Math.round(center + center * 0.85 * Math.sin(angle));
+                        if (x >= 0 && x < size && y >= 0 && y < size) {
+                            grid[y][x] = '·';
+                        }
+                    }
+                }
+            } else if (state.style === 'clock-simple') {
+                // Hour marks only
+                for (let i = 0; i < 12; i++) {
+                    const angle = i * 30 * Math.PI / 180 - Math.PI / 2;
+                    const x = Math.round(center + center * 0.85 * Math.cos(angle));
+                    const y = Math.round(center + center * 0.85 * Math.sin(angle));
+                    if (x >= 0 && x < size && y >= 0 && y < size) {
+                        grid[y][x] = '■';
+                    }
+                }
+            }
+            // clock-minimal has no marks
+            
+            // Draw hour hand
+            const hourLen = center * 0.5;
+            for (let i = 0; i < hourLen; i++) {
+                const x = Math.round(center + i * Math.cos(hourAngle - Math.PI / 2));
+                const y = Math.round(center + i * Math.sin(hourAngle - Math.PI / 2));
+                if (x >= 0 && x < size && y >= 0 && y < size) {
+                    grid[y][x] = '█';
+                }
+            }
+            
+            // Draw minute hand (all styles)
+            if (state.style !== 'clock-minimal') {
+                const minLen = center * 0.7;
+                for (let i = 0; i < minLen; i++) {
+                    const x = Math.round(center + i * Math.cos(minuteAngle - Math.PI / 2));
+                    const y = Math.round(center + i * Math.sin(minuteAngle - Math.PI / 2));
+                    if (x >= 0 && x < size && y >= 0 && y < size) {
+                        grid[y][x] = '▓';
+                    }
+                }
+            }
+            
+            // Draw second hand for simple and full
+            if (state.style === 'clock-full' || state.style === 'clock-simple') {
+                const secLen = center * 0.8;
+                for (let i = 0; i < secLen; i++) {
+                    const x = Math.round(center + i * Math.cos(secondAngle - Math.PI / 2));
+                    const y = Math.round(center + i * Math.sin(secondAngle - Math.PI / 2));
+                    if (x >= 0 && x < size && y >= 0 && y < size) {
+                        grid[y][x] = '░';
+                    }
+                }
+            }
+            
+            // Center dot
+            grid[center][center] = '●';
+            
+            return grid.map(row => row.join('')).join('\n');
+        }
+
+        function updateDisplay() {
+            let timeString = '';
+            let label = '';
+            let dateString = '';
+            let useCanvas = state.style.startsWith('canvas-');
+            
+            // Hide/show appropriate display
+            const asciiEl = document.getElementById('asciiClock');
+            const canvasEl = document.getElementById('canvasClock');
+            if (useCanvas) {
+                asciiEl.style.display = 'none';
+                canvasEl.style.display = 'block';
+            } else {
+                asciiEl.style.display = 'block';
+                canvasEl.style.display = 'none';
+            }
+            
+            if (currentMode === 'clock') {
+                const time = getTimeForTimezone();
+                const hours = time.getHours();
+                const minutes = time.getMinutes();
+                const seconds = time.getSeconds();
+                const milliseconds = time.getMilliseconds();
+                
+                // For ASCII display with precision
+                let displayHours = String(hours).padStart(2, '0');
+                let displayMinutes = String(minutes).padStart(2, '0');
+                let displaySeconds = String(seconds).padStart(2, '0');
+                let precisionPart = '';
+                
+                // Add precision to display
+                if (state.showMilliseconds) {
+                    precisionPart = ':' + String(milliseconds).padStart(3, '0');
+                } else if (state.showHundredths) {
+                    const centiseconds = Math.floor(milliseconds / 10);
+                    precisionPart = ':' + String(centiseconds).padStart(2, '0');
+                } else if (state.showTenths) {
+                    const deciseconds = Math.floor(milliseconds / 100);
+                    precisionPart = ':' + deciseconds;
+                }
+                
+                timeString = `${displayHours}:${displayMinutes}:${displaySeconds}${precisionPart}`;
+                label = timezones[state.timezone];
+                
+                if (useCanvas) {
+                    drawCanvasClock(hours, minutes, seconds + milliseconds / 1000);
+                } else {
+                    asciiEl.textContent = generateAsciiTime(timeString);
+                }
+                
+                // Format date
+                const format = state.dateFormat || 'full';
+                if (format === 'full') {
+                    dateString = time.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                } else if (format === 'long') {
+                    dateString = time.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                } else if (format === 'short') {
+                    dateString = time.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                } else if (format === 'numeric') {
+                    dateString = time.toLocaleDateString('en-US');
+                } else if (format === 'iso') {
+                    dateString = time.toISOString().split('T')[0];
+                }
+            } else if (currentMode === 'stopwatch') {
+                if (stopwatchRunning) {
+                    stopwatchElapsed = Date.now() - stopwatchStartTime;
+                }
+                timeString = formatTime(stopwatchElapsed, true).replace(/\./g, ':');
+                label = 'Stopwatch';
+                
+                if (!useCanvas) {
+                    asciiEl.textContent = generateAsciiTime(timeString);
+                }
+            } else if (currentMode === 'timer') {
+                if (timerRemaining > 0) {
+                    timeString = formatTime(timerRemaining, true).replace(/\./g, ':');
+                } else {
+                    timeString = '00:00:00';
+                }
+                label = 'Timer';
+                
+                if (!useCanvas) {
+                    asciiEl.textContent = generateAsciiTime(timeString);
+                }
+            } else if (currentMode === 'alarm') {
+                const time = getTimeForTimezone();
+                const hours = time.getHours();
+                const minutes = time.getMinutes();
+                const seconds = time.getSeconds();
+                const milliseconds = time.getMilliseconds();
+                
+                // For ASCII display with precision
+                let displayHours = String(hours).padStart(2, '0');
+                let displayMinutes = String(minutes).padStart(2, '0');
+                let displaySeconds = String(seconds).padStart(2, '0');
+                let precisionPart = '';
+                
+                // Add precision to display
+                if (state.showMilliseconds) {
+                    precisionPart = ':' + String(milliseconds).padStart(3, '0');
+                } else if (state.showHundredths) {
+                    const centiseconds = Math.floor(milliseconds / 10);
+                    precisionPart = ':' + String(centiseconds).padStart(2, '0');
+                } else if (state.showTenths) {
+                    const deciseconds = Math.floor(milliseconds / 100);
+                    precisionPart = ':' + deciseconds;
+                }
+                
+                timeString = `${displayHours}:${displayMinutes}:${displaySeconds}${precisionPart}`;
+                label = alarmTime ? `Alarm set for ${alarmTime.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}` : 'No alarm set';
+                
+                if (useCanvas) {
+                    drawCanvasClock(hours, minutes, seconds + milliseconds / 1000);
+                } else {
+                    asciiEl.textContent = generateAsciiTime(timeString);
+                }
+                
+                // Show date for alarm mode too
+                const format = state.dateFormat || 'full';
+                if (format === 'full') {
+                    dateString = time.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                } else if (format === 'long') {
+                    dateString = time.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                } else if (format === 'short') {
+                    dateString = time.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                } else if (format === 'numeric') {
+                    dateString = time.toLocaleDateString('en-US');
+                } else if (format === 'iso') {
+                    dateString = time.toISOString().split('T')[0];
+                }
+            }
+            
+            timezoneLabelEl.textContent = label;
+            document.getElementById('dateLabel').textContent = dateString;
+        }
+
+        function applyColorTheme() {
+            const theme = colorThemes[state.color];
+            bodyEl.style.backgroundColor = theme.bg;
+            clockEl.style.color = theme.text;
+            clockEl.style.textShadow = theme.shadow;
+            timezoneLabelEl.style.color = theme.text;
+        }
+
+        function applyAnimation() {
+            clockEl.className = '';
+            if (state.animation !== 'none') {
+                clockEl.classList.add(`animate-${state.animation}`);
+            }
+        }
+
+        function applyTextSize() {
+            const size = state.size || 16;
+            clockEl.style.fontSize = `${size}px`;
+        }
+
+        function randomizeSettings() {
+            // Get all available options
+            const timezoneOptions = Object.keys(timezones);
+            const styleOptions = ['blocks', 'dots', 'lines', 'mixed', 'wave', 'geometric', 'pixel', 'canvas-modern', 'canvas-classic', 'canvas-minimalist', 'canvas-elegant', 'clock-full', 'clock-simple', 'clock-minimal'];
+            const colorOptions = Object.keys(colorThemes);
+            const animationOptions = ['none', 'pulse', 'glow', 'float', 'rotate', 'slide', 'rainbow'];
+            
+            // Randomize each setting
+            state.timezone = timezoneOptions[Math.floor(Math.random() * timezoneOptions.length)];
+            state.style = styleOptions[Math.floor(Math.random() * styleOptions.length)];
+            state.color = colorOptions[Math.floor(Math.random() * colorOptions.length)];
+            state.animation = animationOptions[Math.floor(Math.random() * animationOptions.length)];
+            state.size = Math.floor(Math.random() * 27) + 6; // 6-32
+            
+            // Update UI elements
+            document.getElementById('timezoneSelect').value = state.timezone;
+            document.getElementById('styleSelect').value = state.style;
+            document.getElementById('colorSelect').value = state.color;
+            document.getElementById('animationSelect').value = state.animation;
+            document.getElementById('sizeSlider').value = state.size;
+            
+            // Apply all changes
+            saveState();
+            applyColorTheme();
+            applyAnimation();
+            applyTextSize();
+            updateDisplay();
+        }
+
+        // Calendar functions
+        function toggleCalendar() {
+            const popup = document.getElementById('calendarPopup');
+            calendarVisible = !calendarVisible;
+            if (calendarVisible) {
+                popup.style.display = 'block';
+                renderCalendar();
+            } else {
+                popup.style.display = 'none';
+            }
+        }
+
+        function renderCalendar() {
+            const year = calendarDate.getFullYear();
+            const month = calendarDate.getMonth();
+            
+            document.getElementById('calendarTitle').textContent = 
+                `${calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const daysContainer = document.getElementById('calendarDays');
+            daysContainer.innerHTML = '';
+            
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+            
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day other-month';
+                dayEl.textContent = day;
+                daysContainer.appendChild(dayEl);
+            }
+            
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                if (isCurrentMonth && day === today.getDate()) {
+                    dayEl.classList.add('today');
+                }
+                dayEl.textContent = day;
+                dayEl.onclick = () => {
+                    const selectedDate = new Date(year, month, day);
+                    document.getElementById('calendarInfo').innerHTML = 
+                        `<strong>${selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>`;
+                };
+                daysContainer.appendChild(dayEl);
+            }
+            
+            // Next month days
+            const remainingSlots = 42 - (firstDay + daysInMonth);
+            for (let day = 1; day <= remainingSlots; day++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day other-month';
+                dayEl.textContent = day;
+                daysContainer.appendChild(dayEl);
+            }
+        }
+
+        function changeMonth(delta) {
+            calendarDate.setMonth(calendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function changeYear(delta) {
+            calendarDate.setFullYear(calendarDate.getFullYear() + delta);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            calendarDate = new Date();
+            renderCalendar();
+        }
+
+        // Close calendar when clicking outside
+        document.addEventListener('click', (e) => {
+            const popup = document.getElementById('calendarPopup');
+            const dateLabel = document.getElementById('dateLabel');
+            if (calendarVisible && !popup.contains(e.target) && e.target !== dateLabel) {
+                calendarVisible = false;
+                popup.style.display = 'none';
+            }
+        });
+
+        // Scroll calendar with mouse wheel
+        document.getElementById('calendarPopup').addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                changeMonth(-1);
+            } else {
+                changeMonth(1);
+            }
+        });
+
+        function pasteImageFromClipboard() {
+            navigator.clipboard.read().then(items => {
+                for (let item of items) {
+                    for (let type of item.types) {
+                        if (type.startsWith('image/')) {
+                            item.getType(type).then(blob => {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                    const img = document.getElementById('backgroundImage');
+                                    img.src = event.target.result;
+                                    img.style.display = 'block';
+                                };
+                                reader.readAsDataURL(blob);
+                            });
+                            return;
+                        }
+                    }
+                }
+                alert('No image found in clipboard');
+            }).catch(err => {
+                alert('Failed to read clipboard. Please use the file upload instead.');
+            });
+        }
+
+        function clearBackgroundImage() {
+            const img = document.getElementById('backgroundImage');
+            img.src = '';
+            img.style.display = 'none';
+        }
+
+        // Initialize and start clock
+        document.getElementById('timezoneSelect').value = state.timezone;
+        document.getElementById('styleSelect').value = state.style;
+        document.getElementById('colorSelect').value = state.color;
+        document.getElementById('animationSelect').value = state.animation;
+        document.getElementById('sizeSlider').value = state.size || 16;
+        document.getElementById('dateFormatSelect').value = state.dateFormat || 'full';
+        document.getElementById('showTenths').checked = state.showTenths || false;
+        document.getElementById('showHundredths').checked = state.showHundredths || false;
+        document.getElementById('showMilliseconds').checked = state.showMilliseconds || false;
+        document.getElementById('bgOpacitySlider').value = (state.bgOpacity || 0.3) * 100;
+        
+        // Restore alarm if saved
+        if (state.alarmTime) {
+            const savedAlarmTime = new Date(state.alarmTime);
+            if (savedAlarmTime > new Date()) {
+                alarmTime = savedAlarmTime;
+                document.getElementById('alarmTime').value = savedAlarmTime.toTimeString().slice(0, 5);
+                document.getElementById('alarmSound').value = state.alarmSound || 'beep';
+                
+                const timeUntil = alarmTime - new Date();
+                currentAlarmTimeout = setTimeout(() => {
+                    const sound = document.getElementById('alarmSound').value;
+                    playExtendedAlarm(sound);
+                    showAlarmDismiss('⏰ ALARM!');
+                }, timeUntil);
+                
+                document.getElementById('alarmStatus').innerHTML = 
+                    `<div class="alert alert-success">Alarm set for ${alarmTime.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}</div>`;
+            }
+        }
+        
+        applyColorTheme();
+        applyAnimation();
+        applyTextSize();
+        updateDisplay();
+        
+        // Update more frequently for precision and smooth clock hands
+        const updateInterval = (state.showMilliseconds || state.showHundredths || state.showTenths || state.style.startsWith('canvas-')) ? 50 : 1000;
+        setInterval(() => {
+            if (currentMode === 'clock' || currentMode === 'alarm') {
+                updateDisplay();
+            }
+        }, updateInterval);
+    </script>
+</body>
+</html>
