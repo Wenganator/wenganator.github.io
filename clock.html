@@ -717,8 +717,8 @@
         let audioContext = null;
         let currentAlarmTimeout = null;
         let alarmTime = null;
-        let alarmOscillator = null;
-        let alarmGain = null;
+        let alarmOscillators = [];
+        let alarmGains = [];
         let alarmInterval = null;
         let alarmActive = false;
 
@@ -827,65 +827,83 @@
             console.log('Stopping alarm sound...');
             alarmActive = false;
             
+            // Clear any pending alarm function calls
             if (window.currentAlarmFunction) {
                 window.currentAlarmFunction();
                 window.currentAlarmFunction = null;
             }
             
-            // Stop all audio contexts
-            if (audioContext) {
+            // Stop and disconnect all oscillators
+            alarmOscillators.forEach(osc => {
                 try {
-                    // Get all sources and stop them
-                    if (alarmOscillator) {
-                        alarmOscillator.stop();
-                        alarmOscillator.disconnect();
-                        alarmOscillator = null;
-                    }
-                    if (alarmGain) {
-                        alarmGain.disconnect();
-                        alarmGain = null;
-                    }
+                    osc.stop();
+                    osc.disconnect();
                 } catch (e) {
                     console.log('Error stopping oscillator:', e);
                 }
-            }
+            });
+            alarmOscillators = [];
             
+            // Disconnect all gain nodes
+            alarmGains.forEach(gain => {
+                try {
+                    gain.disconnect();
+                } catch (e) {
+                    console.log('Error disconnecting gain:', e);
+                }
+            });
+            alarmGains = [];
+            
+            // Clear the interval
             if (alarmInterval) {
                 clearInterval(alarmInterval);
                 alarmInterval = null;
             }
             
+            // Close and recreate audio context to ensure clean state
+            if (audioContext) {
+                try {
+                    audioContext.close();
+                } catch (e) {
+                    console.log('Error closing audio context:', e);
+                }
+                audioContext = null;
+            }
+            
             console.log('Alarm sound stopped');
         }
-
+        
         function playExtendedAlarm(type) {
             stopAlarmSound();
+            alarmActive = true;
             
             const ctx = getAudioContext();
-            
-            // Play continuously for up to 30 seconds
             const startTime = Date.now();
             const duration = 30000; // 30 seconds
             
             function playTone() {
-                if (Date.now() - startTime > duration) {
+                if (!alarmActive || Date.now() - startTime > duration) {
                     stopAlarmSound();
                     return;
                 }
                 
-                alarmOscillator = ctx.createOscillator();
-                alarmGain = ctx.createGain();
-                
-                alarmOscillator.connect(alarmGain);
-                alarmGain.connect(ctx.destination);
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                // Track oscillators and gains for cleanup
+                alarmOscillators.push(osc);
+                alarmGains.push(gain);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
                 
                 switch(type) {
                     case 'beep':
-                        alarmOscillator.frequency.value = 800;
-                        alarmOscillator.type = 'square';
-                        alarmGain.gain.setValueAtTime(0.3, ctx.currentTime);
-                        alarmOscillator.start(ctx.currentTime);
-                        alarmOscillator.stop(ctx.currentTime + 0.5);
+                        osc.frequency.value = 800;
+                        osc.type = 'square';
+                        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.5);
                         setTimeout(playTone, 600);
                         break;
                     case 'chime':
@@ -908,12 +926,12 @@
                         setTimeout(playTone, 1200);
                         break;
                     case 'bell':
-                        alarmOscillator.frequency.value = 1000;
-                        alarmOscillator.type = 'sine';
-                        alarmGain.gain.setValueAtTime(0.5, ctx.currentTime);
-                        alarmGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
-                        alarmOscillator.start(ctx.currentTime);
-                        alarmOscillator.stop(ctx.currentTime + 1.5);
+                        osc.frequency.value = 1000;
+                        osc.type = 'sine';
+                        gain.gain.setValueAtTime(0.5, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.5);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 1.5);
                         setTimeout(playTone, 1700);
                         break;
                     case 'digital':
@@ -960,6 +978,10 @@
                 case 'chime':
                     // Play a sequence of tones
                     [523.25, 659.25, 783.99].forEach((freq, i) => {
+                        const osc2 = ctx.createOscillator();
+                        const gain2 = ctx.createGain();
+                        alarmOscillators.push(osc2);
+                        alarmGains.push(gain2);
                         const osc = ctx.createOscillator();
                         const gain = ctx.createGain();
                         osc.connect(gain);
@@ -970,6 +992,7 @@
                         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.3 + 0.5);
                         osc.start(ctx.currentTime + i * 0.3);
                         osc.stop(ctx.currentTime + i * 0.3 + 0.5);
+                        if (!alarmActive || Date.now() - startTime > duration) return;
                     });
                     break;
                 case 'bell':
@@ -982,6 +1005,10 @@
                     break;
                 case 'digital':
                     for (let i = 0; i < 3; i++) {
+                        const osc2 = ctx.createOscillator();
+                        const gain2 = ctx.createGain();
+                        alarmOscillators.push(osc2);
+                        alarmGains.push(gain2);
                         const osc = ctx.createOscillator();
                         const gain = ctx.createGain();
                         osc.connect(gain);
@@ -992,6 +1019,7 @@
                         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.2 + 0.15);
                         osc.start(ctx.currentTime + i * 0.2);
                         osc.stop(ctx.currentTime + i * 0.2 + 0.15);
+                        if (!alarmActive || Date.now() - startTime > duration) return;
                     }
                     break;
             }
