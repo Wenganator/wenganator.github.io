@@ -344,6 +344,15 @@
                     <label>Seconds:</label>
                     <input type="number" class="form-control" id="timerSeconds" min="0" max="59" value="0">
                 </div>
+                <div class="mb-2">
+                    <label>Alarm Sound:</label>
+                    <select class="form-select" id="timerSound">
+                        <option value="beep">Beep</option>
+                        <option value="chime">Chime</option>
+                        <option value="bell">Bell</option>
+                        <option value="digital">Digital</option>
+                    </select>
+                </div>
                 <button class="btn btn-success w-100 mb-2" onclick="startTimer()">Start</button>
                 <button class="btn btn-warning w-100 mb-2" onclick="pauseTimer()">Pause</button>
                 <button class="btn btn-danger w-100 mb-2" onclick="resetTimer()">Reset</button>
@@ -1035,7 +1044,7 @@
                 laps.push(lapTime);
                 const lapEl = document.createElement('div');
                 lapEl.className = 'lap-item';
-                lapEl.textContent = `Lap ${laps.length}: ${formatTime(lapTime)}`;
+                lapEl.textContent = `Lap ${laps.length}: ${formatTime(lapTime, true)}`;
                 document.getElementById('lapTimes').appendChild(lapEl);
             }
         }
@@ -1061,7 +1070,7 @@
             }
             let csv = 'Lap,Time\n';
             laps.forEach((lap, i) => {
-                csv += `${i + 1},${formatTime(lap)}\n`;
+                csv += `${i + 1},${formatTime(lap, true)}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -1087,7 +1096,7 @@
                 if (timerRemaining <= 0) {
                     clearInterval(timerInterval);
                     timerRunning = false;
-                    const sound = document.getElementById('alarmSound').value;
+                    const sound = document.getElementById('timerSound').value;
                     playExtendedAlarm(sound);
                     showAlarmDismiss('⏱️ TIMER FINISHED!');
                 } else {
@@ -1655,20 +1664,21 @@
                 let displayHours = String(hours).padStart(2, '0');
                 let displayMinutes = String(minutes).padStart(2, '0');
                 let displaySeconds = String(seconds).padStart(2, '0');
-                let precisionPart = '';
                 
-                // Add precision to display
+                // Build base time string
+                timeString = `${displayHours}:${displayMinutes}:${displaySeconds}`;
+
+                // Add precision digits separately
                 if (state.showMilliseconds) {
-                    precisionPart = ':' + String(milliseconds).padStart(3, '0');
+                    const ms = String(milliseconds).padStart(3, '0');
+                    timeString += `:${ms}`;
                 } else if (state.showHundredths) {
-                    const centiseconds = Math.floor(milliseconds / 10);
-                    precisionPart = ':' + String(centiseconds).padStart(2, '0');
+                    const centis = String(Math.floor(milliseconds / 10)).padStart(2, '0');
+                    timeString += `:${centis}`;
                 } else if (state.showTenths) {
-                    const deciseconds = Math.floor(milliseconds / 100);
-                    precisionPart = ':' + deciseconds;
+                    const decis = String(Math.floor(milliseconds / 100));
+                    timeString += `:${decis}`;
                 }
-                
-                timeString = `${displayHours}:${displayMinutes}:${displaySeconds}${precisionPart}`;
                 label = timezones[state.timezone];
                 
                 if (useCanvas) {
@@ -1722,20 +1732,21 @@
                 let displayHours = String(hours).padStart(2, '0');
                 let displayMinutes = String(minutes).padStart(2, '0');
                 let displaySeconds = String(seconds).padStart(2, '0');
-                let precisionPart = '';
-                
-                // Add precision to display
+
+                // Build base time string
+                timeString = `${displayHours}:${displayMinutes}:${displaySeconds}`;
+
+                // Add precision digits separately
                 if (state.showMilliseconds) {
-                    precisionPart = ':' + String(milliseconds).padStart(3, '0');
+                    const ms = String(milliseconds).padStart(3, '0');
+                    timeString += `:${ms}`;
                 } else if (state.showHundredths) {
-                    const centiseconds = Math.floor(milliseconds / 10);
-                    precisionPart = ':' + String(centiseconds).padStart(2, '0');
+                    const centis = String(Math.floor(milliseconds / 10)).padStart(2, '0');
+                    timeString += `:${centis}`;
                 } else if (state.showTenths) {
-                    const deciseconds = Math.floor(milliseconds / 100);
-                    precisionPart = ':' + deciseconds;
+                    const decis = String(Math.floor(milliseconds / 100));
+                    timeString += `:${decis}`;
                 }
-                
-                timeString = `${displayHours}:${displayMinutes}:${displaySeconds}${precisionPart}`;
                 label = alarmTime ? `Alarm set for ${alarmTime.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'})}` : 'No alarm set';
                 
                 if (useCanvas) {
@@ -1768,7 +1779,14 @@
             bodyEl.style.backgroundColor = theme.bg;
             clockEl.style.color = theme.text;
             clockEl.style.textShadow = theme.shadow;
+            
+            // Timezone - full color
             timezoneLabelEl.style.color = theme.text;
+            
+            // Date - same color but 70% opacity
+            const dateLabel = document.getElementById('dateLabel');
+            dateLabel.style.color = theme.text;
+            dateLabel.style.opacity = '0.7';
         }
 
         function applyAnimation() {
@@ -1978,13 +1996,12 @@
         applyTextSize();
         updateDisplay();
         
-        // Update more frequently for precision and smooth clock hands
-        const updateInterval = (state.showMilliseconds || state.showHundredths || state.showTenths || state.style.startsWith('canvas-')) ? 50 : 1000;
+        // Update every 10ms for smooth precision display
         setInterval(() => {
             if (currentMode === 'clock' || currentMode === 'alarm') {
                 updateDisplay();
             }
-        }, updateInterval);
+        }, 10);
     </script>
 </body>
 </html>
