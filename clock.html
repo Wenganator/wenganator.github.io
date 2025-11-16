@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASCII World Clock Suite</title>
+    <title>Clock Suite</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -727,12 +727,14 @@
         let stopwatchStartTime = 0;
         let stopwatchElapsed = 0;
         let stopwatchInterval = null;
+        let stopwatchUpdateInterval = null;
         let laps = [];
 
         // Timer state
         let timerRunning = false;
         let timerRemaining = 0;
         let timerInterval = null;
+        let timerUpdateInterval = null;
         let timerTotal = 0;
 
         // Current mode
@@ -1053,13 +1055,15 @@
             if (!stopwatchRunning) {
                 stopwatchStartTime = Date.now() - stopwatchElapsed;
                 stopwatchRunning = true;
-                stopwatchInterval = setInterval(updateDisplay, 100);
+                // Use faster update rate if precision is enabled
+                const updateRate = (state.showMilliseconds || state.showHundredths || state.showTenths) ? 10 : 100;
+                stopwatchUpdateInterval = setInterval(updateDisplay, updateRate);
                 event.target.textContent = 'Stop';
                 event.target.classList.remove('btn-success');
                 event.target.classList.add('btn-danger');
             } else {
                 stopwatchRunning = false;
-                clearInterval(stopwatchInterval);
+                clearInterval(stopwatchUpdateInterval);
                 event.target.textContent = 'Start';
                 event.target.classList.remove('btn-danger');
                 event.target.classList.add('btn-success');
@@ -1082,7 +1086,7 @@
             stopwatchElapsed = 0;
             stopwatchStartTime = 0;
             laps = [];
-            clearInterval(stopwatchInterval);
+            clearInterval(stopwatchUpdateInterval);
             document.getElementById('lapTimes').innerHTML = '';
             const btn = document.querySelector('#stopwatchControls button');
             btn.textContent = 'Start';
@@ -1119,35 +1123,38 @@
             timerRemaining = timerTotal;
             timerRunning = true;
             
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
+            // Use faster update rate if precision is enabled
+            const updateRate = (state.showMilliseconds || state.showHundredths || state.showTenths) ? 10 : 100;
+            
+            if (timerUpdateInterval) clearInterval(timerUpdateInterval);
+            timerUpdateInterval = setInterval(() => {
                 if (timerRemaining <= 0) {
-                    clearInterval(timerInterval);
+                    clearInterval(timerUpdateInterval);
                     timerRunning = false;
                     const sound = document.getElementById('timerSound').value;
                     playExtendedAlarm(sound);
                     showAlarmDismiss('⏱️ TIMER FINISHED!');
                 } else {
-                    timerRemaining -= 100;
+                    timerRemaining -= updateRate;
                     updateDisplay();
                 }
-            }, 100);
+            }, updateRate);
         }
 
         function pauseTimer() {
             timerRunning = false;
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
+            if (timerUpdateInterval) {
+                clearInterval(timerUpdateInterval);
+                timerUpdateInterval = null;
             }
         }
 
         function resetTimer() {
             timerRunning = false;
             timerRemaining = 0;
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
+            if (timerUpdateInterval) {
+                clearInterval(timerUpdateInterval);
+                timerUpdateInterval = null;
             }
             updateDisplay();
         }
@@ -1318,6 +1325,27 @@
                 state.showMilliseconds = false;
             }
             saveState();
+            // Restart stopwatch/timer with new update rate if running
+            if (stopwatchRunning) {
+                clearInterval(stopwatchUpdateInterval);
+                stopwatchUpdateInterval = setInterval(updateDisplay, 10);
+            }
+            if (timerRunning) {
+                clearInterval(timerUpdateInterval);
+                const updateRate = 10;
+                timerUpdateInterval = setInterval(() => {
+                    if (timerRemaining <= 0) {
+                        clearInterval(timerUpdateInterval);
+                        timerRunning = false;
+                        const sound = document.getElementById('timerSound').value;
+                        playExtendedAlarm(sound);
+                        showAlarmDismiss('⏱️ TIMER FINISHED!');
+                    } else {
+                        timerRemaining -= updateRate;
+                        updateDisplay();
+                    }
+                }, updateRate);
+            }
         });
 
         document.getElementById('showHundredths').addEventListener('change', (e) => {
@@ -1329,6 +1357,27 @@
                 state.showMilliseconds = false;
             }
             saveState();
+            // Restart stopwatch/timer with new update rate if running
+            if (stopwatchRunning) {
+                clearInterval(stopwatchUpdateInterval);
+                stopwatchUpdateInterval = setInterval(updateDisplay, 10);
+            }
+            if (timerRunning) {
+                clearInterval(timerUpdateInterval);
+                const updateRate = 10;
+                timerUpdateInterval = setInterval(() => {
+                    if (timerRemaining <= 0) {
+                        clearInterval(timerUpdateInterval);
+                        timerRunning = false;
+                        const sound = document.getElementById('timerSound').value;
+                        playExtendedAlarm(sound);
+                        showAlarmDismiss('⏱️ TIMER FINISHED!');
+                    } else {
+                        timerRemaining -= updateRate;
+                        updateDisplay();
+                    }
+                }, updateRate);
+            }
         });
 
         document.getElementById('showMilliseconds').addEventListener('change', (e) => {
@@ -1340,6 +1389,27 @@
                 state.showHundredths = false;
             }
             saveState();
+            // Restart stopwatch/timer with new update rate if running
+            if (stopwatchRunning) {
+                clearInterval(stopwatchUpdateInterval);
+                stopwatchUpdateInterval = setInterval(updateDisplay, 10);
+            }
+            if (timerRunning) {
+                clearInterval(timerUpdateInterval);
+                const updateRate = 10;
+                timerUpdateInterval = setInterval(() => {
+                    if (timerRemaining <= 0) {
+                        clearInterval(timerUpdateInterval);
+                        timerRunning = false;
+                        const sound = document.getElementById('timerSound').value;
+                        playExtendedAlarm(sound);
+                        showAlarmDismiss('⏱️ TIMER FINISHED!');
+                    } else {
+                        timerRemaining -= updateRate;
+                        updateDisplay();
+                    }
+                }, updateRate);
+            }
         });
 
         // Click clock to randomize
@@ -1808,15 +1878,16 @@
             clockEl.style.color = theme.text;
             clockEl.style.textShadow = theme.shadow;
             
-            // Timezone - full color
-            timezoneLabelEl.style.color = theme.text;
-            
-            // Date - same color but 70% opacity
+            // Date - full color
             const dateLabel = document.getElementById('dateLabel');
             dateLabel.style.color = theme.text;
-            dateLabel.style.opacity = '0.7';
+            dateLabel.style.opacity = '1';
+            
+            // Timezone - same color but 70% opacity
+            timezoneLabelEl.style.color = theme.text;
+            timezoneLabelEl.style.opacity = '0.7';
         }
-
+        
         function applyAnimation() {
             clockEl.className = '';
             if (state.animation !== 'none') {
