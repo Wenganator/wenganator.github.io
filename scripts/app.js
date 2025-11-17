@@ -29,6 +29,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Games", group: true, children: [
                 { name: "Blind Rank", url: "/blind-rank.html" },
                 { name: "Chess", url: "/chess.html" },
+                { name: "Connect 4", url: "/connect-four.html" },
             ]},
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },

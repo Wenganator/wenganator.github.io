@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect 4</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: #0a0e27;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: #e8eaed;
+    }
+    
+    .game-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .status-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .board {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      display: inline-block;
+    }
+    
+    .board-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .cell {
+      width: 65px;
+      height: 65px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    
+    .cell:hover:not(.red):not(.yellow) {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+    
+    .cell.red {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
+    }
+    
+    .cell.yellow {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5);
+    }
+    
+    .cell.winning {
+      animation: winPulse 0.8s ease-in-out infinite;
+    }
+    
+    @keyframes winPulse {
+      0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5);
+      }
+      50% { 
+        transform: scale(1.15);
+        box-shadow: 0 8px 30px rgba(255, 255, 255, 0.8);
+      }
+    }
+    
+    .menu-screen, .game-screen, .auth-screen {
+      display: none;
+    }
+    
+    .menu-screen.active, .game-screen.active, .auth-screen.active {
+      display: block;
+    }
+    
+    .btn-game-mode {
+      padding: 18px 24px;
+      font-size: 17px;
+      font-weight: 500;
+      margin: 8px 0;
+      border: none;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.1);
+      color: #e8eaed;
+    }
+    
+    .btn-game-mode:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: none;
+    }
+    
+    .btn-success:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+      border: none;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border: none;
+    }
+    
+    .difficulty-btn {
+      margin: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+    }
+    
+    #gameCode {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      color: #60a5fa;
+      text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+    }
+    
+    .online-status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      margin-right: 8px;
+      animation: blink 2s infinite;
+      box-shadow: 0 0 10px #10b981;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    
+    .chat-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+      max-height: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      max-height: 300px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+    }
+    
+    .chat-message {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .chat-message.own {
+      background: rgba(59, 130, 246, 0.2);
+      text-align: right;
+    }
+    
+    .chat-message .username {
+      font-weight: 600;
+      font-size: 13px;
+      color: #60a5fa;
+      margin-bottom: 4px;
+    }
+    
+    .chat-message .text {
+      font-size: 14px;
+      color: #e8eaed;
+    }
+    
+    .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e8eaed;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    
+    .form-control:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #60a5fa;
+      color: #e8eaed;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+    
+    .form-control::placeholder {
+      color: rgba(232, 234, 237, 0.5);
+    }
+    
+    .user-stats {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-item {
+      display: inline-block;
+      margin: 0 20px;
+      font-size: 15px;
+    }
+    
+    .rank-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+    
+    .rank-gold { background: #fbbf24; color: #000; }
+    .rank-silver { background: #d1d5db; color: #000; }
+    .rank-bronze { background: #f97316; color: #fff; }
+    
+    .table {
+      color: #e8eaed;
+    }
+    
+    .table thead th {
+      border-color: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .table tbody td {
+      border-color: rgba(255, 255, 255, 0.05);
+      padding: 14px;
+    }
+    
+    .table-hover tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    h1, h2, h3, h4 {
+      color: #e8eaed;
+      font-weight: 600;
+    }
+    
+    .player-turn-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .color-dot.red {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+    
+    .color-dot.yellow {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    }
+    
+    .turn-status {
+      font-weight: 600;
+      color: #10b981;
+    }
+    
+    .turn-status.waiting {
+      color: #f59e0b;
+    }
+    
+    .form-check-input:checked {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+    }
+    
+    .form-check-label {
+      color: #e8eaed;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container game-container">
+    <!-- Auth Screen -->
+    <div class="auth-screen">
+      <div class="status-card text-center">
+        <h1 class="mb-4">🔴 Connect 4 🟡</h1>
+        <p class="text-muted mb-4">Sign in to track your stats and appear on the leaderboard</p>
+        
+        <div id="signInForm">
+          <h3 class="mb-3">Sign in</h3>
+          <input type="email" class="form-control mb-3" id="signInEmail" placeholder="Email">
+          <input type="password" class="form-control mb-3" id="signInPassword" placeholder="Password">
+          <button class="btn btn-primary w-100 mb-2" onclick="signIn()">Sign in</button>
+          <button class="btn btn-link" onclick="toggleAuthForm()">Need an account? Sign up</button>
+        </div>
+        
+        <div id="signUpForm" style="display: none;">
+          <h3 class="mb-3">Sign up</h3>
+          <input type="text" class="form-control mb-3" id="signUpUsername" placeholder="Username" maxlength="20">
+          <input type="email" class="form-control mb-3" id="signUpEmail" placeholder="Email">
+          <input type="password" class="form-control mb-3" id="signUpPassword" placeholder="Password (min 6 characters)">
+          <button class="btn btn-success w-100 mb-2" onclick="signUp()">Sign up</button>
+          <button class="btn btn-link" onclick="toggleAuthForm()">Already have an account? Sign in</button>
+        </div>
+        
+        <hr style="border-color: rgba(255, 255, 255, 0.1);">
+        <button class="btn btn-secondary" onclick="backToMenu()">Back to menu</button>
+      </div>
+    </div>
+
+    <!-- Menu Screen -->
+    <div class="menu-screen">
+      <div class="status-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2>Connect 4</h2>
+          <div>
+            <span id="usernameDisplay" class="me-3"></span>
+            <button class="btn btn-sm btn-primary" id="signInBtn" onclick="showAuthScreen()" style="display: none;">Sign in</button>
+            <button class="btn btn-sm btn-outline-secondary" id="leaderboardBtn" onclick="showLeaderboard()">🏆 Leaderboard</button>
+            <button class="btn btn-sm btn-outline-danger" id="signOutBtn" onclick="signOut()" style="display: none;">Sign out</button>
+          </div>
+        </div>
+        
+        <div class="user-stats" id="userStats" style="display: none;">
+          <div class="stat-item">🎮 <strong id="gamesPlayed">0</strong> games</div>
+          <div class="stat-item">🏆 <strong id="gamesWon">0</strong> wins</div>
+          <div class="stat-item">📊 <strong id="winRate">0%</strong> win rate</div>
+        </div>
+        
+        <button class="btn btn-primary btn-lg btn-game-mode w-100" onclick="startLocalGame()">
+          👥 Local 2 player
+        </button>
+        <button class="btn btn-success btn-lg btn-game-mode w-100" onclick="showAIMenu()">
+          🤖 Play vs AI
+        </button>
+        <button class="btn btn-info btn-lg btn-game-mode w-100" onclick="showOnlineMenu()">
+          🌐 Play online
+        </button>
+      </div>
+    </div>
+
+    <!-- AI Difficulty Menu -->
+    <div class="menu-screen" id="aiMenu">
+      <div class="status-card text-center">
+        <h2 class="mb-4">Select AI difficulty</h2>
+        <button class="btn btn-success btn-lg difficulty-btn" onclick="startAIGame('easy')">Easy</button>
+        <button class="btn btn-warning btn-lg difficulty-btn" onclick="startAIGame('medium')">Medium</button>
+        <button class="btn btn-danger btn-lg difficulty-btn" onclick="startAIGame('hard')">Hard</button>
+        <br><br>
+        <button class="btn btn-secondary" onclick="backToMenu()">Back</button>
+      </div>
+    </div>
+
+    <!-- Online Menu -->
+    <div class="menu-screen" id="onlineMenu">
+      <div class="status-card text-center">
+        <h2 class="mb-4">Online multiplayer</h2>
+        <button class="btn btn-primary btn-lg btn-game-mode w-100" onclick="showCreateGameOptions()">
+          Create game
+        </button>
+        <button class="btn btn-success btn-lg btn-game-mode w-100" onclick="showJoinGame()">
+          Join with code
+        </button>
+        <button class="btn btn-info btn-lg btn-game-mode w-100" onclick="joinRandomGame()">
+          Join random game
+        </button>
+        <button class="btn btn-secondary mt-3" onclick="backToMenu()">Back</button>
+      </div>
+    </div>
+
+    <!-- Create Game Options -->
+    <div class="menu-screen" id="createGameOptions">
+      <div class="status-card text-center">
+        <h2 class="mb-4">Create game</h2>
+        <p class="mb-4">Choose game visibility</p>
+        <div class="form-check text-start mb-3">
+          <input class="form-check-input" type="radio" name="gameVisibility" id="privateGame" value="private" checked>
+          <label class="form-check-label" for="privateGame">
+            <strong>Private</strong> - Only players with the code can join
+          </label>
+        </div>
+        <div class="form-check text-start mb-4">
+          <input class="form-check-input" type="radio" name="gameVisibility" id="publicGame" value="public">
+          <label class="form-check-label" for="publicGame">
+            <strong>Public</strong> - Anyone can find and join your game
+          </label>
+        </div>
+        <button class="btn btn-primary btn-lg w-100 mb-2" onclick="createOnlineGame()">Create game</button>
+        <button class="btn btn-secondary" onclick="backToOnlineMenu()">Back</button>
+      </div>
+    </div>
+
+    <!-- Join Game Screen -->
+    <div class="menu-screen" id="joinGameScreen">
+      <div class="status-card text-center">
+        <h2 class="mb-4">Enter game code</h2>
+        <input type="text" class="form-control form-control-lg text-center mb-3" id="joinCodeInput" placeholder="XXXX" maxlength="4" style="font-size: 28px; letter-spacing: 8px; text-transform: uppercase;">
+        <button class="btn btn-primary btn-lg w-100" onclick="joinGameWithCode()">Join game</button>
+        <button class="btn btn-secondary mt-3" onclick="backToOnlineMenu()">Back</button>
+      </div>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div class="menu-screen" id="leaderboardScreen">
+      <div class="status-card">
+        <h2 class="mb-4">🏆 Leaderboard</h2>
+        <div class="leaderboard-table" style="max-height: 500px; overflow-y: auto;">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Wins</th>
+                <th>Games</th>
+                <th>Win rate</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <tr><td colspan="5" class="text-center">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-secondary mt-3" onclick="backToMenu()">Back</button>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="game-screen">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="status-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div>
+                <h4 id="gameStatus" class="mb-2">Red's turn</h4>
+                <small id="gameModeDisplay" class="text-muted"></small>
+              </div>
+              <div id="playerInfo" style="display:none;">
+                <div class="player-turn-indicator">
+                  <span>You are:</span>
+                  <div class="color-dot" id="yourColor"></div>
+                  <span class="turn-status" id="turnStatus">Your turn</span>
+                </div>
+              </div>
+              <div id="onlineInfo" style="display:none;">
+                <div class="mb-2"><span class="online-status"></span><span id="gameCode"></span></div>
+                <small class="text-muted" id="waitingMessage"></small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-center mb-3">
+            <div class="board" id="board"></div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-warning me-2" onclick="resetGame()">New game</button>
+            <button class="btn btn-danger me-2" id="resignBtn" onclick="resignGame()" style="display: none;">Resign</button>
+            <button class="btn btn-secondary" onclick="backToMenu()">Main menu</button>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div id="chatContainer" class="chat-container" style="display: none;">
+            <h5 class="mb-3">Chat</h5>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="d-flex gap-2">
+              <input type="text" class="form-control" id="chatInput" placeholder="Type a message..." maxlength="200">
+              <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Game state
+    let board = Array(6).fill(null).map(() => Array(7).fill(0));
+    let currentPlayer = 1;
+    let gameMode = 'local';
+    let aiDifficulty = 'medium';
+    let gameActive = true;
+    let onlineGameId = null;
+    let playerColor = null;
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let chatUnsubscribe = null;
+    let gameUnsubscribe = null;
+
+    // Guest name adjectives and nouns for random names
+    const adjectives = ['Swift', 'Clever', 'Brave', 'Quick', 'Bold', 'Wise', 'Lucky', 'Cool', 'Sharp', 'Bright'];
+    const nouns = ['Eagle', 'Tiger', 'Dragon', 'Phoenix', 'Wolf', 'Falcon', 'Lion', 'Bear', 'Fox', 'Hawk'];
+
+    // Initialize Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getDatabase, ref, set, onValue, update, remove, push, get, query, orderByChild, equalTo, limitToFirst } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+    // REPLACE THIS WITH YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZhuDAjfmLj7unBId7iIF99p7O-Uy4uPg",
+      authDomain: "connect-4-a150c.firebaseapp.com",
+      projectId: "connect-4-a150c",
+      storageBucket: "connect-4-a150c.firebasestorage.app",
+      messagingSenderId: "896624864238",
+      appId: "1:896624864238:web:e899e9df6386710a80bcff",
+      measurementId: "G-WHX6J9837J"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    db = getDatabase(app);
+    auth = getAuth(app);
+
+    // Auth state listener
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        loadUserData();
+        showMainMenu();
+      } else {
+        currentUser = null;
+        playAsGuest();
+      }
+    });
+
+    // Cleanup old games on load
+    cleanupOldGames();
+
+    async function cleanupOldGames() {
+      try {
+        const gamesRef = ref(db, 'games');
+        const snapshot = await get(gamesRef);
+        if (snapshot.exists()) {
+          const now = Date.now();
+          const cutoff = now - (60 * 60 * 1000);
+          snapshot.forEach((child) => {
+            const game = child.val();
+            if (game.createdAt && game.createdAt < cutoff) {
+              remove(ref(db, `games/${child.key}`));
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Cleanup error:', error);
+      }
+    }
+
+    // Make functions global
+    window.signIn = signIn;
+    window.signUp = signUp;
+    window.signOut = signOut;
+    window.toggleAuthForm = toggleAuthForm;
+    window.startLocalGame = startLocalGame;
+    window.showAIMenu = showAIMenu;
+    window.showOnlineMenu = showOnlineMenu;
+    window.showCreateGameOptions = showCreateGameOptions;
+    window.startAIGame = startAIGame;
+    window.backToMenu = backToMenu;
+    window.backToOnlineMenu = backToOnlineMenu;
+    window.resetGame = resetGame;
+    window.resignGame = resignGame;
+    window.createOnlineGame = createOnlineGame;
+    window.showJoinGame = showJoinGame;
+    window.joinGameWithCode = joinGameWithCode;
+    window.joinRandomGame = joinRandomGame;
+    window.sendMessage = sendMessage;
+    window.showLeaderboard = showLeaderboard;
+    window.showAuthScreen = showAuthScreen;
+
+    function generateGuestName() {
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const noun = nouns[Math.floor(Math.random() * nouns.length)];
+      return `${adj}${noun}`;
+    }
+
+    function showAuthScreen() {
+      showScreen('auth-screen');
+    }
+
+    function toggleAuthForm() {
+      const signInForm = document.getElementById('signInForm');
+      const signUpForm = document.getElementById('signUpForm');
+      if (signInForm.style.display === 'none') {
+        signInForm.style.display = 'block';
+        signUpForm.style.display = 'none';
+      } else {
+        signInForm.style.display = 'none';
+        signUpForm.style.display = 'block';
+      }
+    }
+
+    async function signUp() {
+      const email = document.getElementById('signUpEmail').value;
+      const password = document.getElementById('signUpPassword').value;
+      const username = document.getElementById('signUpUsername').value;
+
+      if (!username || username.length < 3) {
+        alert('Username must be at least 3 characters');
+        return;
+      }
+
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        await set(ref(db, `users/${user.uid}`), {
+          username: username,
+          email: email,
+          gamesPlayed: 0,
+          gamesWon: 0,
+          createdAt: Date.now()
+        });
+
+        alert('Account created successfully!');
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function signIn() {
+      const email = document.getElementById('signInEmail').value;
+      const password = document.getElementById('signInPassword').value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    async function signOut() {
+      if (onlineGameId) {
+        await remove(ref(db, `games/${onlineGameId}`));
+        onlineGameId = null;
+      }
+      await firebaseSignOut(auth);
+    }
+
+    function playAsGuest() {
+      const guestName = generateGuestName();
+      currentUser = { 
+        isGuest: true, 
+        uid: 'guest_' + Math.random().toString(36).substring(7),
+        guestName: guestName
+      };
+      document.getElementById('usernameDisplay').textContent = `👤 ${guestName}`;
+      document.getElementById('signInBtn').style.display = 'inline-block';
+      document.getElementById('signOutBtn').style.display = 'none';
+      showMainMenu();
+    }
+
+    async function loadUserData() {
+      if (!currentUser || currentUser.isGuest) return;
+      
+      document.getElementById('signInBtn').style.display = 'none';
+      document.getElementById('signOutBtn').style.display = 'inline-block';
+      
+      const userRef = ref(db, `users/${currentUser.uid}`);
+      const snapshot = await get(userRef);
+      
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        document.getElementById('usernameDisplay').textContent = `👤 ${userData.username}`;
+        document.getElementById('gamesPlayed').textContent = userData.gamesPlayed || 0;
+        document.getElementById('gamesWon').textContent = userData.gamesWon || 0;
+        const winRate = userData.gamesPlayed > 0 ? Math.round((userData.gamesWon / userData.gamesPlayed) * 100) : 0;
+        document.getElementById('winRate').textContent = winRate + '%';
+        document.getElementById('userStats').style.display = 'block';
+      }
+    }
+
+    function showMainMenu() {
+      showScreen('menu-screen');
+    }
+
+    function showScreen(screenClass) {
+      document.querySelectorAll('.menu-screen, .game-screen, .auth-screen').forEach(s => s.classList.remove('active'));
+      document.querySelector(`.${screenClass}`).classList.add('active');
+    }
+
+    function startLocalGame() {
+      gameMode = 'local';
+      document.getElementById('gameModeDisplay').textContent = 'Local 2 player';
+      document.getElementById('onlineInfo').style.display = 'none';
+      document.getElementById('chatContainer').style.display = 'none';
+      document.getElementById('playerInfo').style.display = 'none';
+      document.getElementById('resignBtn').style.display = 'none';
+      initGame();
+      showScreen('game-screen');
+    }
+
+    function showAIMenu() {
+      document.getElementById('aiMenu').classList.add('active');
+      document.querySelector('.menu-screen').classList.remove('active');
+    }
+
+    function showOnlineMenu() {
+      document.getElementById('onlineMenu').classList.add('active');
+      document.querySelector('.menu-screen').classList.remove('active');
+    }
+
+    function showCreateGameOptions() {
+      document.getElementById('createGameOptions').classList.add('active');
+      document.getElementById('onlineMenu').classList.remove('active');
+    }
+
+    function startAIGame(difficulty) {
+      gameMode = 'ai';
+      aiDifficulty = difficulty;
+      document.getElementById('gameModeDisplay').textContent = `vs AI (${difficulty})`;
+      document.getElementById('onlineInfo').style.display = 'none';
+      document.getElementById('chatContainer').style.display = 'none';
+      document.getElementById('playerInfo').style.display = 'none';
+      document.getElementById('resignBtn').style.display = 'inline-block';
+      initGame();
+      showScreen('game-screen');
+    }
+
+    async function backToMenu() {
+      if (onlineGameId) {
+        await remove(ref(db, `games/${onlineGameId}`));
+        if (chatUnsubscribe) {
+          chatUnsubscribe();
+          chatUnsubscribe = null;
+        }
+        if (gameUnsubscribe) {
+          gameUnsubscribe();
+          gameUnsubscribe = null;
+        }
+        onlineGameId = null;
+      }
+      document.querySelectorAll('.menu-screen').forEach(s => s.classList.remove('active'));
+      showMainMenu();
+    }
+
+    function backToOnlineMenu() {
+      document.getElementById('joinGameScreen').classList.remove('active');
+      document.getElementById('createGameOptions').classList.remove('active');
+      document.getElementById('onlineMenu').classList.add('active');
+    }
+
+    function initGame() {
+      board = Array(6).fill(null).map(() => Array(7).fill(0));
+      currentPlayer = 1;
+      gameActive = true;
+      renderBoard();
+      updateStatus();
+      updatePlayerInfo();
+    }
+
+    function renderBoard() {
+      const boardEl = document.getElementById('board');
+      boardEl.innerHTML = '';
+      
+      for (let row = 0; row < 6; row++) {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'board-row';
+        
+        for (let col = 0; col < 7; col++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (board[row][col] === 1) cell.classList.add('red');
+          if (board[row][col] === 2) cell.classList.add('yellow');
+          
+          cell.onclick = () => handleCellClick(col);
+          rowEl.appendChild(cell);
+        }
+        boardEl.appendChild(rowEl);
+      }
+    }
+
+    async function handleCellClick(col) {
+      if (!gameActive) return;
+      
+      if (gameMode === 'online') {
+        if (playerColor !== currentPlayer) return;
+      }
+
+      if (makeMove(col)) {
+        renderBoard();
+        
+        const winner = checkWinner();
+        if (winner) {
+          gameActive = false;
+          highlightWinningCells(winner.cells);
+          updateStatus(`${winner.player === 1 ? 'Red' : 'Yellow'} wins!`);
+          
+          if (gameMode === 'online' && onlineGameId) {
+            await update(ref(db, `games/${onlineGameId}`), { 
+              winner: winner.player, 
+              status: 'finished',
+              board: board
+            });
+            await updatePlayerStats(winner.player);
+          }
+          return;
+        }
+        
+        if (board.every(row => row.every(cell => cell !== 0))) {
+          gameActive = false;
+          updateStatus("It's a draw!");
+          if (gameMode === 'online' && onlineGameId) {
+            await update(ref(db, `games/${onlineGameId}`), { 
+              winner: 0, 
+              status: 'finished',
+              board: board
+            });
+            await updatePlayerStats(0);
+          }
+          return;
+        }
+        
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
+        updateStatus();
+        updatePlayerInfo();
+        
+        if (gameMode === 'online' && onlineGameId) {
+          await update(ref(db, `games/${onlineGameId}`), {
+            board: board,
+            currentPlayer: currentPlayer
+          });
+        } else if (gameMode === 'ai' && currentPlayer === 2) {
+          setTimeout(makeAIMove, 500);
+        }
+      }
+    }
+
+    function updatePlayerInfo() {
+      if (gameMode === 'online' && playerColor) {
+        document.getElementById('playerInfo').style.display = 'block';
+        const colorDot = document.getElementById('yourColor');
+        const turnStatus = document.getElementById('turnStatus');
+        
+        colorDot.className = 'color-dot ' + (playerColor === 1 ? 'red' : 'yellow');
+        
+        if (currentPlayer === playerColor) {
+          turnStatus.textContent = 'Your turn';
+          turnStatus.className = 'turn-status';
+        } else {
+          turnStatus.textContent = 'Opponent\'s turn';
+          turnStatus.className = 'turn-status waiting';
+        }
+      }
+    }
+
+    async function resignGame() {
+      if (!confirm('Are you sure you want to resign?')) return;
+      
+      if (gameMode === 'online' && onlineGameId) {
+        const opponent = playerColor === 1 ? 2 : 1;
+        await update(ref(db, `games/${onlineGameId}`), { 
+          winner: opponent,
+          status: 'finished',
+          resigned: true
+        });
+        await updatePlayerStats(opponent);
+      }
+      
+      gameActive = false;
+      const winner = gameMode === 'ai' ? 2 : (playerColor === 1 ? 2 : 1);
+      updateStatus(`${winner === 1 ? 'Red' : 'Yellow'} wins by resignation!`);
+    }
+
+    async function updatePlayerStats(winner) {
+      if (!currentUser || currentUser.isGuest) return;
+      
+      const userRef = ref(db, `users/${currentUser.uid}`);
+      const snapshot = await get(userRef);
+      
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        const updates = {
+          gamesPlayed: (userData.gamesPlayed || 0) + 1
+        };
+        
+        if (winner === playerColor) {
+          updates.gamesWon = (userData.gamesWon || 0) + 1;
+        }
+        
+        await update(userRef, updates);
+        await loadUserData();
+      }
+    }
+
+    function makeMove(col) {
+      for (let row = 5; row >= 0; row--) {
+        if (board[row][col] === 0) {
+          board[row][col] = currentPlayer;
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function makeAIMove() {
+      let col;
+      
+      if (aiDifficulty === 'easy') {
+        col = Math.random() < 0.7 ? getRandomMove() : getBestMove();
+      } else if (aiDifficulty === 'medium') {
+        col = Math.random() < 0.4 ? getRandomMove() : getBestMove();
+      } else {
+        col = getBestMoveAdvanced();
+      }
+      
+      handleCellClick(col);
+    }
+
+    function getRandomMove() {
+      const validCols = [];
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) validCols.push(col);
+      }
+      return validCols[Math.floor(Math.random() * validCols.length)];
+    }
+
+    function getBestMove() {
+      // Check for winning move
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) {
+          const tempBoard = board.map(row => [...row]);
+          simulateMove(tempBoard, col, 2);
+          if (checkWinnerOnBoard(tempBoard, 2)) return col;
+        }
+      }
+      
+      // Block opponent's winning move
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) {
+          const tempBoard = board.map(row => [...row]);
+          simulateMove(tempBoard, col, 1);
+          if (checkWinnerOnBoard(tempBoard, 1)) return col;
+        }
+      }
+      
+      // Prefer center
+      if (board[0][3] === 0 && Math.random() < 0.7) return 3;
+      
+      return getRandomMove();
+    }
+
+    function getBestMoveAdvanced() {
+      // Check for immediate win
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) {
+          const tempBoard = board.map(row => [...row]);
+          simulateMove(tempBoard, col, 2);
+          if (checkWinnerOnBoard(tempBoard, 2)) return col;
+        }
+      }
+      
+      // Block opponent's immediate win
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) {
+          const tempBoard = board.map(row => [...row]);
+          simulateMove(tempBoard, col, 1);
+          if (checkWinnerOnBoard(tempBoard, 1)) return col;
+        }
+      }
+      
+      // Look ahead for threats (opponent could win next turn)
+      for (let col = 0; col < 7; col++) {
+        if (board[0][col] === 0) {
+          const tempBoard = board.map(row => [...row]);
+          simulateMove(tempBoard, col, 2);
+          
+          // Check if this move creates a threat for opponent
+          let opponentCanWin = false;
+          for (let checkCol = 0; checkCol < 7; checkCol++) {
+            if (tempBoard[0][checkCol] === 0) {
+              const tempBoard2 = tempBoard.map(row => [...row]);
+              simulateMove(tempBoard2, checkCol, 1);
+              if (checkWinnerOnBoard(tempBoard2, 1)) {
+                opponentCanWin = true;
+                break;
+              }
+            }
+          }
+          
+          if (!opponentCanWin) {
+            // Check for creating multiple threats
+            let threats = 0;
+            for (let checkCol = 0; checkCol < 7; checkCol++) {
+              if (tempBoard[0][checkCol] === 0) {
+                const tempBoard3 = tempBoard.map(row => [...row]);
+                simulateMove(tempBoard3, checkCol, 2);
+                if (checkWinnerOnBoard(tempBoard3, 2)) threats++;
+              }
+            }
+            if (threats >= 2) return col;
+          }
+        }
+      }
+      
+      // Prefer center columns
+      const centerCols = [3, 2, 4, 1, 5, 0, 6];
+      for (const col of centerCols) {
+        if (board[0][col] === 0) {
+          // Avoid moves that give opponent a winning position above
+          const tempBoard = board.map(row => [...row]);
+          simulateMove(tempBoard, col, 2);
+          
+          let safe = true;
+          for (let checkCol = 0; checkCol < 7; checkCol++) {
+            if (tempBoard[0][checkCol] === 0) {
+              const tempBoard2 = tempBoard.map(row => [...row]);
+              simulateMove(tempBoard2, checkCol, 1);
+              if (checkWinnerOnBoard(tempBoard2, 1)) {
+                safe = false;
+                break;
+              }
+            }
+          }
+          
+          if (safe) return col;
+        }
+      }
+      
+      return getBestMove();
+    }
+
+    function simulateMove(tempBoard, col, player) {
+      for (let row = 5; row >= 0; row--) {
+        if (tempBoard[row][col] === 0) {
+          tempBoard[row][col] = player;
+          return;
+        }
+      }
+    }
+
+    function checkWinnerOnBoard(tempBoard, player) {
+      // Horizontal
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 4; col++) {
+          if (tempBoard[row][col] === player &&
+              tempBoard[row][col+1] === player &&
+              tempBoard[row][col+2] === player &&
+              tempBoard[row][col+3] === player) {
+            return true;
+          }
+        }
+      }
+      
+      // Vertical
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 7; col++) {
+          if (tempBoard[row][col] === player &&
+              tempBoard[row+1][col] === player &&
+              tempBoard[row+2][col] === player &&
+              tempBoard[row+3][col] === player) {
+            return true;
+          }
+        }
+      }
+      
+      // Diagonal down-right
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 4; col++) {
+          if (tempBoard[row][col] === player &&
+              tempBoard[row+1][col+1] === player &&
+              tempBoard[row+2][col+2] === player &&
+              tempBoard[row+3][col+3] === player) {
+            return true;
+          }
+        }
+      }
+      
+      // Diagonal up-right
+      for (let row = 3; row < 6; row++) {
+        for (let col = 0; col < 4; col++) {
+          if (tempBoard[row][col] === player &&
+              tempBoard[row-1][col+1] === player &&
+              tempBoard[row-2][col+2] === player &&
+              tempBoard[row-3][col+3] === player) {
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    }
+
+    function checkWinner() {
+      // Horizontal
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 4; col++) {
+          if (board[row][col] !== 0 &&
+              board[row][col] === board[row][col+1] &&
+              board[row][col] === board[row][col+2] &&
+              board[row][col] === board[row][col+3]) {
+            return {
+              player: board[row][col],
+              cells: [[row,col], [row,col+1], [row,col+2], [row,col+3]]
+            };
+          }
+        }
+      }
+      
+      // Vertical
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 7; col++) {
+          if (board[row][col] !== 0 &&
+              board[row][col] === board[row+1][col] &&
+              board[row][col] === board[row+2][col] &&
+              board[row][col] === board[row+3][col]) {
+            return {
+              player: board[row][col],
+              cells: [[row,col], [row+1,col], [row+2,col], [row+3,col]]
+            };
+          }
+        }
+      }
+      
+      // Diagonal down-right
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 4; col++) {
+          if (board[row][col] !== 0 &&
+              board[row][col] === board[row+1][col+1] &&
+              board[row][col] === board[row+2][col+2] &&
+              board[row][col] === board[row+3][col+3]) {
+            return {
+              player: board[row][col],
+              cells: [[row,col], [row+1,col+1], [row+2,col+2], [row+3,col+3]]
+            };
+          }
+        }
+      }
+      
+      // Diagonal up-right
+      for (let row = 3; row < 6; row++) {
+        for (let col = 0; col < 4; col++) {
+          if (board[row][col] !== 0 &&
+              board[row][col] === board[row-1][col+1] &&
+              board[row][col] === board[row-2][col+2] &&
+              board[row][col] === board[row-3][col+3]) {
+            return {
+              player: board[row][col],
+              cells: [[row,col], [row-1,col+1], [row-2,col+2], [row-3,col+3]]
+            };
+          }
+        }
+      }
+      
+      return null;
+    }
+
+    function highlightWinningCells(cells) {
+      cells.forEach(([row, col]) => {
+        const cellIndex = row * 7 + col;
+        const cellEl = document.querySelectorAll('.cell')[cellIndex];
+        cellEl.classList.add('winning');
+      });
+    }
+
+    function updateStatus(message) {
+      const statusEl = document.getElementById('gameStatus');
+      if (message) {
+        statusEl.textContent = message;
+      } else {
+        statusEl.textContent = `${currentPlayer === 1 ? 'Red' : 'Yellow'}'s turn`;
+      }
+    }
+
+    function resetGame() {
+      if (gameMode === 'online' && onlineGameId) {
+        update(ref(db, `games/${onlineGameId}`), {
+          board: Array(6).fill(null).map(() => Array(7).fill(0)),
+          currentPlayer: 1,
+          status: 'playing'
+        });
+      }
+      initGame();
+    }
+
+    function generateGameCode() {
+      return Math.random().toString(36).substring(2, 6).toUpperCase();
+    }
+
+    async function createOnlineGame() {
+      const visibility = document.querySelector('input[name="gameVisibility"]:checked').value;
+      const gameCode = generateGameCode();
+      const gameRef = ref(db, `games/${gameCode}`);
+      
+      let username = currentUser.isGuest ? currentUser.guestName : 'Guest';
+      let userId = currentUser.uid;
+      
+      if (!currentUser.isGuest) {
+        const userSnapshot = await get(ref(db, `users/${currentUser.uid}`));
+        username = userSnapshot.val()?.username || 'Player';
+      }
+      
+      await set(gameRef, {
+        board: Array(6).fill(null).map(() => Array(7).fill(0)),
+        currentPlayer: 1,
+        player1Id: userId,
+        player1Name: username,
+        player2Id: null,
+        player2Name: null,
+        status: 'waiting',
+        visibility: visibility,
+        createdAt: Date.now()
+      });
+      
+      onlineGameId = gameCode;
+      playerColor = 1;
+      gameMode = 'online';
+      
+      document.getElementById('gameCode').textContent = gameCode;
+      document.getElementById('waitingMessage').textContent = 'Waiting for opponent...';
+      document.getElementById('onlineInfo').style.display = 'block';
+      document.getElementById('gameModeDisplay').textContent = 'Online multiplayer';
+      document.getElementById('chatContainer').style.display = 'block';
+      document.getElementById('playerInfo').style.display = 'block';
+      document.getElementById('resignBtn').style.display = 'inline-block';
+      
+      initGame();
+      showScreen('game-screen');
+      setupChat(gameCode);
+      
+      gameUnsubscribe = onValue(gameRef, (snapshot) => {
+        const game = snapshot.val();
+        if (!game) return;
+        
+        if (game.player2Id && game.status === 'waiting') {
+          update(gameRef, { status: 'playing' });
+          document.getElementById('waitingMessage').textContent = `Playing vs ${game.player2Name}`;
+          setTimeout(() => {
+            document.getElementById('waitingMessage').textContent = '';
+          }, 2000);
+        }
+        
+        if (game.status === 'playing' || game.status === 'finished') {
+          board = game.board;
+          currentPlayer = game.currentPlayer;
+          renderBoard();
+          updateStatus();
+          updatePlayerInfo();
+          
+          if (game.status === 'finished') {
+            gameActive = false;
+            if (game.winner === 0) {
+              updateStatus("It's a draw!");
+            } else {
+              const winnerName = game.winner === 1 ? game.player1Name : game.player2Name;
+              if (game.resigned) {
+                updateStatus(`${winnerName} wins by resignation!`);
+              } else {
+                updateStatus(`${winnerName} wins!`);
+                const winner = checkWinner();
+                if (winner) {
+                  highlightWinningCells(winner.cells);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function showJoinGame() {
+      document.getElementById('onlineMenu').classList.remove('active');
+      document.getElementById('joinGameScreen').classList.add('active');
+    }
+
+    async function joinGameWithCode() {
+      const code = document.getElementById('joinCodeInput').value.toUpperCase();
+      if (code.length !== 4) {
+        alert('Please enter a 4-character code');
+        return;
+      }
+      
+      const gameRef = ref(db, `games/${code}`);
+      const snapshot = await get(gameRef);
+      
+      if (!snapshot.exists()) {
+        alert('Game not found!');
+        return;
+      }
+      
+      const game = snapshot.val();
+      if (game.player2Id) {
+        alert('Game is full!');
+        return;
+      }
+      
+      let username = currentUser.isGuest ? currentUser.guestName : 'Guest';
+      let userId = currentUser.uid;
+      
+      if (!currentUser.isGuest) {
+        const userSnapshot = await get(ref(db, `users/${currentUser.uid}`));
+        username = userSnapshot.val()?.username || 'Player';
+      }
+      
+      await update(gameRef, { 
+        player2Id: userId,
+        player2Name: username
+      });
+      
+      onlineGameId = code;
+      playerColor = 2;
+      gameMode = 'online';
+      
+      document.getElementById('gameCode').textContent = code;
+      document.getElementById('waitingMessage').textContent = `Playing vs ${game.player1Name}`;
+      document.getElementById('onlineInfo').style.display = 'block';
+      document.getElementById('gameModeDisplay').textContent = 'Online multiplayer';
+      document.getElementById('chatContainer').style.display = 'block';
+      document.getElementById('playerInfo').style.display = 'block';
+      document.getElementById('resignBtn').style.display = 'inline-block';
+      
+      board = game.board;
+      currentPlayer = game.currentPlayer;
+      gameActive = true;
+      
+      showScreen('game-screen');
+      renderBoard();
+      updateStatus();
+      updatePlayerInfo();
+      setupChat(code);
+      
+      gameUnsubscribe = onValue(gameRef, (snapshot) => {
+        const game = snapshot.val();
+        if (!game) return;
+        
+        board = game.board;
+        currentPlayer = game.currentPlayer;
+        renderBoard();
+        updateStatus();
+        updatePlayerInfo();
+        
+        if (game.status === 'finished') {
+          gameActive = false;
+          if (game.winner === 0) {
+            updateStatus("It's a draw!");
+          } else {
+            const winnerName = game.winner === 1 ? game.player1Name : game.player2Name;
+            if (game.resigned) {
+              updateStatus(`${winnerName} wins by resignation!`);
+            } else {
+              updateStatus(`${winnerName} wins!`);
+              const winner = checkWinner();
+              if (winner) {
+                highlightWinningCells(winner.cells);
+              }
+            }
+          }
+        }
+      });
+    }
+
+    async function joinRandomGame() {
+      const gamesRef = ref(db, 'games');
+      const snapshot = await get(gamesRef);
+      
+      if (!snapshot.exists()) {
+        alert('No available games. Creating a new one...');
+        showCreateGameOptions();
+        return;
+      }
+      
+      const games = snapshot.val();
+      const waitingGames = Object.keys(games).filter(key => 
+        games[key].status === 'waiting' && 
+        !games[key].player2Id &&
+        games[key].visibility === 'public'
+      );
+      
+      if (waitingGames.length === 0) {
+        alert('No available public games. Creating a new one...');
+        showCreateGameOptions();
+        return;
+      }
+      
+      const gameCode = waitingGames[0];
+      document.getElementById('joinCodeInput').value = gameCode;
+      await joinGameWithCode();
+    }
+
+    function setupChat(gameCode) {
+      const chatRef = ref(db, `chats/${gameCode}`);
+      const chatMessagesEl = document.getElementById('chatMessages');
+      
+      if (chatUnsubscribe) {
+        chatUnsubscribe();
+      }
+      
+      chatUnsubscribe = onValue(chatRef, (snapshot) => {
+        chatMessagesEl.innerHTML = '';
+        if (snapshot.exists()) {
+          const messages = [];
+          snapshot.forEach((child) => {
+            messages.push({ id: child.key, ...child.val() });
+          });
+          
+          messages.sort((a, b) => a.timestamp - b.timestamp);
+          
+          messages.forEach(msg => {
+            const msgEl = document.createElement('div');
+            msgEl.className = 'chat-message';
+            if (msg.userId === currentUser.uid) {
+              msgEl.classList.add('own');
+            }
+            
+            msgEl.innerHTML = `
+              <div class="username">${escapeHtml(msg.username)}</div>
+              <div class="text">${escapeHtml(msg.text)}</div>
+            `;
+            chatMessagesEl.appendChild(msgEl);
+          });
+          
+          chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+      });
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      
+      if (!text || !onlineGameId) return;
+      
+      let username = currentUser.isGuest ? currentUser.guestName : 'Guest';
+      if (!currentUser.isGuest) {
+        const userSnapshot = await get(ref(db, `users/${currentUser.uid}`));
+        username = userSnapshot.val()?.username || 'Player';
+      }
+      
+      const chatRef = ref(db, `chats/${onlineGameId}`);
+      await push(chatRef, {
+        userId: currentUser.uid,
+        username: username,
+        text: text,
+        timestamp: Date.now()
+      });
+      
+      input.value = '';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    async function showLeaderboard() {
+      document.querySelectorAll('.menu-screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('leaderboardScreen').classList.add('active');
+      
+      const usersRef = ref(db, 'users');
+      const snapshot = await get(usersRef);
+      
+      const leaderboardBody = document.getElementById('leaderboardBody');
+      leaderboardBody.innerHTML = '';
+      
+      if (!snapshot.exists()) {
+        leaderboardBody.innerHTML = '<tr><td colspan="5" class="text-center">No players yet</td></tr>';
+        return;
+      }
+      
+      const users = [];
+      snapshot.forEach((child) => {
+        const user = child.val();
+        if (user.gamesPlayed > 0) {
+          users.push({
+            uid: child.key,
+            username: user.username,
+            gamesPlayed: user.gamesPlayed || 0,
+            gamesWon: user.gamesWon || 0,
+            winRate: user.gamesPlayed > 0 ? (user.gamesWon / user.gamesPlayed) * 100 : 0
+          });
+        }
+      });
+      
+      users.sort((a, b) => b.gamesWon - a.gamesWon);
+      
+      users.forEach((user, index) => {
+        const row = document.createElement('tr');
+        let rankBadge = '';
+        if (index === 0) rankBadge = '<span class="rank-badge rank-gold">1st</span>';
+        else if (index === 1) rankBadge = '<span class="rank-badge rank-silver">2nd</span>';
+        else if (index === 2) rankBadge = '<span class="rank-badge rank-bronze">3rd</span>';
+        
+        const isCurrentUser = currentUser && !currentUser.isGuest && user.uid === currentUser.uid;
+        if (isCurrentUser) {
+          row.style.background = 'rgba(59, 130, 246, 0.2)';
+          row.style.fontWeight = '600';
+        }
+        
+        row.innerHTML = `
+          <td>${index + 1}${rankBadge}</td>
+          <td>${escapeHtml(user.username)}${isCurrentUser ? ' (You)' : ''}</td>
+          <td>${user.gamesWon}</td>
+          <td>${user.gamesPlayed}</td>
+          <td>${user.winRate.toFixed(1)}%</td>
+        `;
+        leaderboardBody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
