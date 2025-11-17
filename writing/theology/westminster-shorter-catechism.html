@@ -30,7 +30,7 @@
             <div id="theme-buttons-container"></div>
 
             <div style="max-width: 600px;">
-                <img src="/assets/images/writing/westminster-abbey-john-coney-1814.jpg" class="img-fluid">
+                <img src="/assets/images/writing/westminster-abbey-2.png" class="img-fluid">
             </div>
 
             <h1>Westminster Shorter Catechism</h1>
@@ -541,5 +541,15 @@
         <!-- My personal JS -->
         <script src="/scripts/app.js" defer></script>
         <script src="/scripts/writing.js"></script>
+        <script>
+            // Change color of "Back to Top" links
+            document.querySelectorAll('a[href^="#"]').forEach(el => {
+                if (el.textContent.trim() === "Back to Top") {
+                    el.style.color = "#00538f";
+                    el.style.display = "block";
+                    el.style.textAlign = "right";
+                }
+            });
+        </script>
     </body>
 </html>
