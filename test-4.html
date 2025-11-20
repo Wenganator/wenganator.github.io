@@ -19,7 +19,6 @@
     body {
       background: #0a0e27;
       min-height: 100vh;
-      /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
       font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       color: #e8eaed;
     }
@@ -548,6 +547,81 @@
       box-shadow: 0 0 20px rgba(96, 165, 250, 0.6);
       transform: scale(1.15);
     }
+
+    .rematch-request {
+        background: rgba(251, 191, 36, 0.15);
+        border: 2px solid #f59e0b;
+        padding: 16px;
+        border-radius: 12px;
+        margin-top: 12px;
+        text-align: center;
+    }
+
+    .game-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    }
+
+    .game-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+    }
+
+    .game-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    }
+
+    .game-item-info {
+    flex: 1;
+    }
+
+    .game-item-players {
+    font-size: 14px;
+    color: #d1d5db;
+    margin-bottom: 4px;
+    }
+
+    .badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    }
+
+    .badge-waiting {
+    background: #f59e0b;
+    color: #000;
+    }
+
+    .badge-playing {
+    background: #10b981;
+    color: #fff;
+    }
+
+    .spectator-badge {
+    display: inline-block;
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    }
+
+    .chat-message.system {
+    background: rgba(96, 165, 250, 0.15);
+    font-style: italic;
+    text-align: center;
+    color: #93c5fd;
+    }
   </style>
 </head>
 <body>
@@ -604,7 +678,7 @@
           <div class="username-editor">
             <span>Guest name: </span>
             <button class="randomize-btn" onclick="randomizeGuestName('adjective')">🔄 Adjective</button>
-            <button class="randomize-btn" onclick="randomizeGuestName('noun')">🔄 Noun</button>
+            <button class="randomize-btn" onclick="randomizeGuestName('noun')">🔄 Animal</button>
             <button class="randomize-btn" onclick="randomizeGuestName('both')">🔄 Both</button>
           </div>
         </div>
@@ -660,6 +734,7 @@
           Join random game
         </button>
         <button class="btn btn-secondary mt-3" onclick="backToMenu()">Back</button>
+        <div class="game-list" id="publicGamesList"></div>
       </div>
     </div>
 
@@ -774,6 +849,23 @@
       </div>
     </div>
 
+    <!-- Rematch Request Modal -->
+    <div id="rematchModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h2>Rematch Request</h2>
+        <button class="modal-close" onclick="closeRematchModal()">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+        <p id="rematchMessage" class="mb-4"></p>
+        <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-success" onclick="acceptRematch()">Accept</button>
+            <button class="btn btn-danger" onclick="declineRematch()">Decline</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <!-- Leaderboard Screen -->
     <div class="menu-screen" id="leaderboardScreen">
       <div class="status-card">
@@ -820,6 +912,9 @@
                 <div class="opponent-info" id="opponentNameDisplay"></div>
               </div>
             </div>
+            <div id="rematchRequestDiv" class="rematch-request" style="display: none;">
+              <p id="rematchRequestText"></p>
+            </div>
           </div>
           
           <div class="text-center mb-3">
@@ -827,7 +922,7 @@
           </div>
 
           <div class="text-center">
-            <button class="btn btn-warning me-2" onclick="resetGame()">New game</button>
+            <button class="btn btn-warning me-2" id="newGameBtn" onclick="resetGame()">New game</button>
             <button class="btn btn-success me-2" id="rematchBtn" onclick="requestRematch()" style="display: none;">Rematch</button>
             <button class="btn btn-danger me-2" id="resignBtn" onclick="resignGame()" style="display: none;">Resign</button>
             <button class="btn btn-secondary" onclick="backToMenu()">Main menu</button>
@@ -864,6 +959,11 @@
     let gameUnsubscribe = null;
     let selectedAIDifficulty = 'medium';
     let opponentName = '';
+    let rematchRequested = false;
+    let rematchRequestedBy = null;
+    let gamesListUnsubscribe = null;
+    let opponentId = '';
+    let isSpectator = false;
 
     // Expanded guest name lists
     const adjectives = ['Swift', 'Clever', 'Brave', 'Quick', 'Bold', 'Wise', 'Lucky', 'Cool', 'Sharp', 'Bright',
@@ -931,6 +1031,36 @@
       }
     }
 
+    // Cleanup old chats on load
+    cleanupOldChats();
+
+    async function cleanupOldChats() {
+    try {
+        const chatsRef = ref(db, 'chats');
+        const snapshot = await get(chatsRef);
+        if (snapshot.exists()) {
+        const now = Date.now();
+        const cutoff = now - (2 * 60 * 60 * 1000); // 2 hours
+        snapshot.forEach((chatChild) => {
+            const chatData = chatChild.val();
+            if (chatData) {
+            let shouldDelete = true;
+            Object.values(chatData).forEach(msg => {
+                if (msg.timestamp && msg.timestamp > cutoff) {
+                shouldDelete = false;
+                }
+            });
+            if (shouldDelete) {
+                remove(ref(db, `chats/${chatChild.key}`));
+            }
+            }
+        });
+        }
+    } catch (error) {
+        console.error('Chat cleanup:', error);
+    }
+    }
+
     // Make functions global
     window.signIn = signIn;
     window.signUp = signUp;
@@ -962,6 +1092,10 @@
     window.closeProfile = closeProfile;
     window.resetStats = resetStats;
     window.randomizeGuestName = randomizeGuestName;
+    window.acceptRematch = acceptRematch;
+    window.declineRematch = declineRematch;
+    window.closeRematchModal = closeRematchModal;
+    window.spectateGame = spectateGame;
 
     function generateGuestName() {
       const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -1125,6 +1259,13 @@
         onlineGameId = null;
       }
       await firebaseSignOut(auth);
+
+        await sendSystemMessage(`${currentUser.isGuest ? currentUser.guestName : 'Player'} left the game`);
+        if (gamesListUnsubscribe) {
+        gamesListUnsubscribe();
+        gamesListUnsubscribe = null;
+        }
+        isSpectator = false;
     }
 
     function playAsGuest() {
@@ -1191,6 +1332,8 @@
       document.getElementById('playerInfo').style.display = 'none';
       document.getElementById('resignBtn').style.display = 'none';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.getElementById('newGameBtn').style.display = 'none'; // For online
+      document.getElementById('newGameBtn').style.display = 'inline-block'; // For local/AI
       initGame();
       showScreen('game-screen');
     }
@@ -1217,6 +1360,8 @@
       document.getElementById('playerInfo').style.display = 'none';
       document.getElementById('resignBtn').style.display = 'inline-block';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.getElementById('newGameBtn').style.display = 'none'; // For online
+      document.getElementById('newGameBtn').style.display = 'inline-block'; // For local/AI
       
       initGame();
       showScreen('game-screen');
@@ -1232,8 +1377,9 @@
     }
 
     function showOnlineMenu() {
-      document.getElementById('onlineMenu').classList.add('active');
-      document.querySelector('.menu-screen').classList.remove('active');
+        document.getElementById('onlineMenu').classList.add('active');
+        document.querySelector('.menu-screen').classList.remove('active');
+        loadPublicGames();
     }
 
     function showCreateGameOptions() {
@@ -1270,6 +1416,13 @@
       }
       document.querySelectorAll('.menu-screen').forEach(s => s.classList.remove('active'));
       showMainMenu();
+
+        await sendSystemMessage(`${currentUser.isGuest ? currentUser.guestName : 'Player'} left the game`);
+        if (gamesListUnsubscribe) {
+        gamesListUnsubscribe();
+        gamesListUnsubscribe = null;
+        }
+        isSpectator = false;
     }
 
     function backToOnlineMenu() {
@@ -1285,9 +1438,17 @@
       renderBoard();
       updateStatus();
       updatePlayerInfo();
+      rematchRequested = false;
+      document.getElementById('rematchRequestDiv').style.display = 'none';
     }
 
     function renderBoard() {
+        if (isSpectator) {
+        cell.onclick = null; // Remove onclick for spectators
+        } else {
+        cell.onclick = () => handleCellClick(col);
+        }
+
       const boardEl = document.getElementById('board');
       boardEl.innerHTML = '';
       
@@ -1385,6 +1546,11 @@
           opponentDisplay.innerHTML = `vs <span class="player-name">${opponentName}</span>`;
         }
       }
+
+      if (isSpectator) {
+        turnStatus.textContent = 'Spectating';
+        turnStatus.className = 'turn-status waiting';
+      }
     }
 
     window.showProfileFromGame = async function(userId, username) {
@@ -1445,6 +1611,59 @@
       
       document.getElementById('rematchBtn').style.display = 'none';
       initGame();
+    }
+
+    async function acceptRematch() {
+    if (!onlineGameId) return;
+    closeRematchModal();
+    
+    const gameRef = ref(db, `games/${onlineGameId}`);
+    const snapshot = await get(gameRef);
+    if (!snapshot.exists()) return;
+    
+    const game = snapshot.val();
+    const newPlayer1Id = game.player2Id;
+    const newPlayer1Name = game.player2Name;
+    const newPlayer2Id = game.player1Id;
+    const newPlayer2Name = game.player1Name;
+    
+    await update(gameRef, {
+        board: Array(6).fill(null).map(() => Array(7).fill(0)),
+        currentPlayer: 1,
+        player1Id: newPlayer1Id,
+        player1Name: newPlayer1Name,
+        player2Id: newPlayer2Id,
+        player2Name: newPlayer2Name,
+        status: 'playing',
+        winner: null,
+        resigned: null,
+        rematchRequestedBy: null,
+        rematchRequesterName: null
+    });
+    
+    playerColor = playerColor === 1 ? 2 : 1;
+    opponentName = playerColor === 1 ? newPlayer2Name : newPlayer1Name;
+    
+    await sendSystemMessage('Rematch started! Colors swapped.');
+    document.getElementById('rematchBtn').style.display = 'none';
+    document.getElementById('rematchRequestDiv').style.display = 'none';
+    initGame();
+    }
+
+    async function declineRematch() {
+    if (!onlineGameId) return;
+    closeRematchModal();
+    
+    await update(ref(db, `games/${onlineGameId}`), {
+        rematchRequestedBy: null,
+        rematchRequesterName: null
+    });
+    
+    await sendSystemMessage('Rematch declined.');
+    }
+
+    function closeRematchModal() {
+    document.getElementById('rematchModal').classList.remove('active');
     }
 
     async function updatePlayerStats(winner) {
@@ -1787,6 +2006,8 @@
         visibility: visibility,
         createdAt: Date.now()
       });
+
+      await sendSystemMessage(`${username} created the game`);
       
       onlineGameId = gameCode;
       playerColor = 1;
@@ -1801,6 +2022,8 @@
       document.getElementById('playerInfo').style.display = 'block';
       document.getElementById('resignBtn').style.display = 'inline-block';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.getElementById('newGameBtn').style.display = 'none'; // For online
+      document.getElementById('newGameBtn').style.display = 'inline-block'; // For local/AI
       
       initGame();
       showScreen('game-screen');
@@ -1822,6 +2045,16 @@
           renderBoard();
           updateStatus();
           updatePlayerInfo();
+
+          // Handle rematch requests
+            if (game.rematchRequestedBy && game.rematchRequestedBy !== currentUser.uid && !rematchRequested) {
+            document.getElementById('rematchMessage').textContent = `${game.rematchRequesterName} wants a rematch!`;
+            document.getElementById('rematchModal').classList.add('active');
+            rematchRequested = true;
+            } else if (!game.rematchRequestedBy) {
+            rematchRequested = false;
+            document.getElementById('rematchRequestDiv').style.display = 'none';
+            }
           
           if (game.status === 'finished') {
             gameActive = false;
@@ -1883,6 +2116,8 @@
         player2Id: userId,
         player2Name: username
       });
+
+      await sendSystemMessage(`${username} joined the game`);
       
       onlineGameId = code;
       playerColor = 2;
@@ -1897,6 +2132,8 @@
       document.getElementById('playerInfo').style.display = 'block';
       document.getElementById('resignBtn').style.display = 'inline-block';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.getElementById('newGameBtn').style.display = 'none'; // For online
+      document.getElementById('newGameBtn').style.display = 'inline-block'; // For local/AI
       
       board = game.board;
       currentPlayer = game.currentPlayer;
@@ -1917,6 +2154,16 @@
         renderBoard();
         updateStatus();
         updatePlayerInfo();
+
+        // Handle rematch requests
+        if (game.rematchRequestedBy && game.rematchRequestedBy !== currentUser.uid && !rematchRequested) {
+        document.getElementById('rematchMessage').textContent = `${game.rematchRequesterName} wants a rematch!`;
+        document.getElementById('rematchModal').classList.add('active');
+        rematchRequested = true;
+        } else if (!game.rematchRequestedBy) {
+        rematchRequested = false;
+        document.getElementById('rematchRequestDiv').style.display = 'none';
+        }
         
         if (game.status === 'finished') {
           gameActive = false;
@@ -1992,19 +2239,22 @@
           
           messages.sort((a, b) => a.timestamp - b.timestamp);
           
-          messages.forEach(msg => {
-            const msgEl = document.createElement('div');
-            msgEl.className = 'chat-message';
-            if (msg.userId === currentUser.uid) {
-              msgEl.classList.add('own');
-            }
-            
-            msgEl.innerHTML = `
-              <div class="username">${escapeHtml(msg.username)}</div>
-              <div class="text">${escapeHtml(msg.text)}</div>
-            `;
-            chatMessagesEl.appendChild(msgEl);
-          });
+            messages.forEach(msg => {
+                const msgEl = document.createElement('div');
+                msgEl.className = 'chat-message';
+                
+                if (msg.isSystem) {
+                    msgEl.classList.add('system');
+                    msgEl.innerHTML = `<div class="text">${escapeHtml(msg.text)}</div>`;
+                } else {
+                    if (msg.userId === currentUser.uid) msgEl.classList.add('own');
+                    msgEl.innerHTML = `
+                    <div class="username" onclick="showProfile('${msg.userId}', '${escapeHtml(msg.username)}')">${escapeHtml(msg.username)}</div>
+                    <div class="text">${escapeHtml(msg.text)}</div>
+                    `;
+                }
+                chatMessagesEl.appendChild(msgEl);
+            });
           
           chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
         }
@@ -2099,6 +2349,147 @@
         `;
         leaderboardBody.appendChild(row);
       });
+    }
+
+    async function loadPublicGames() {
+    const gamesRef = ref(db, 'games');
+    if (gamesListUnsubscribe) gamesListUnsubscribe();
+    
+    gamesListUnsubscribe = onValue(gamesRef, (snapshot) => {
+        const gamesList = document.getElementById('publicGamesList');
+        gamesList.innerHTML = '<h4 class="mt-4 mb-3">Public Games</h4>';
+        
+        if (!snapshot.exists()) {
+        gamesList.innerHTML += '<p class="text-muted text-center">No public games available</p>';
+        return;
+        }
+        
+        const games = [];
+        snapshot.forEach((child) => {
+        const game = child.val();
+        if (game.visibility === 'public') {
+            games.push({ code: child.key, ...game });
+        }
+        });
+        
+        if (games.length === 0) {
+        gamesList.innerHTML += '<p class="text-muted text-center">No public games available</p>';
+        return;
+        }
+        
+        games.forEach(game => {
+        const gameItem = document.createElement('div');
+        gameItem.className = 'game-item';
+        
+        const status = game.status === 'waiting' ? 'waiting' : 'playing';
+        const statusBadge = `<span class="badge badge-${status}">${status}</span>`;
+        
+        let players = game.player1Name;
+        if (game.player2Name) players += ` vs ${game.player2Name}`;
+        else players += ' (waiting for opponent)';
+        
+        let actionBtn = '';
+        if (game.status === 'waiting' && !game.player2Id) {
+            actionBtn = `<button class="btn btn-sm btn-success" onclick="joinSpecificGame('${game.code}')">Join</button>`;
+        } else if (game.status === 'playing') {
+            actionBtn = `<button class="btn btn-sm btn-info" onclick="spectateGame('${game.code}')">Spectate</button>`;
+        }
+        
+        gameItem.innerHTML = `
+            <div class="game-item-info">
+            <div class="game-item-players">${escapeHtml(players)}</div>
+            <div>Code: ${game.code} ${statusBadge}</div>
+            </div>
+            <div>${actionBtn}</div>
+        `;
+        
+        gamesList.appendChild(gameItem);
+        });
+    });
+    }
+
+    window.joinSpecificGame = async function(code) {
+    document.getElementById('joinCodeInput').value = code;
+    await joinGameWithCode();
+    };
+
+    async function spectateGame(code) {
+    const snapshot = await get(ref(db, `games/${code}`));
+    if (!snapshot.exists()) {
+        alert('Game not found!');
+        return;
+    }
+    
+    const game = snapshot.val();
+    onlineGameId = code;
+    isSpectator = true;
+    gameMode = 'online';
+    playerColor = 1;
+    opponentName = `${game.player1Name} vs ${game.player2Name}`;
+    
+    let username = currentUser.isGuest ? currentUser.guestName : 'Guest';
+    if (!currentUser.isGuest) {
+        const userSnapshot = await get(ref(db, `users/${currentUser.uid}`));
+        username = userSnapshot.val()?.username || 'Player';
+    }
+    
+    document.getElementById('gameCode').textContent = code + ' (Spectating)';
+    document.getElementById('opponentNameDisplay').innerHTML = `<span class="spectator-badge">SPECTATOR</span><br>${escapeHtml(opponentName)}`;
+    document.getElementById('onlineInfo').style.display = 'block';
+    document.getElementById('gameModeDisplay').textContent = 'Spectating';
+    document.getElementById('chatContainer').style.display = 'block';
+    document.getElementById('playerInfo').style.display = 'block';
+    document.getElementById('resignBtn').style.display = 'none';
+    document.getElementById('rematchBtn').style.display = 'none';
+    document.getElementById('newGameBtn').style.display = 'none';
+    
+    board = game.board;
+    currentPlayer = game.currentPlayer;
+    gameActive = game.status === 'playing';
+    
+    showScreen('game-screen');
+    renderBoard();
+    updateStatus();
+    updatePlayerInfo();
+    setupChat(code);
+    
+    await sendSystemMessage(`${username} is now spectating`);
+    
+    gameUnsubscribe = onValue(ref(db, `games/${code}`), (snapshot) => {
+        const game = snapshot.val();
+        if (!game) return;
+        
+        board = game.board;
+        currentPlayer = game.currentPlayer;
+        renderBoard();
+        updateStatus();
+        
+        if (game.status === 'finished') {
+        gameActive = false;
+        if (game.winner === 0) updateStatus("It's a draw!");
+        else {
+            const winnerName = game.winner === 1 ? game.player1Name : game.player2Name;
+            if (game.resigned) updateStatus(`${winnerName} wins by resignation!`);
+            else {
+            updateStatus(`${winnerName} wins!`);
+            const winner = checkWinner();
+            if (winner) highlightWinningCells(winner.cells);
+            }
+        }
+        }
+    });
+    }
+
+    async function sendSystemMessage(text) {
+    if (!onlineGameId) return;
+    const chatRef = ref(db, `chats/${onlineGameId}`);
+    await push(chatRef, {
+        userId: 'system',
+        username: 'System',
+        text: text,
+        timestamp: Date.now(),
+        isSystem: true
+    });
     }
   </script>
 </body>
