@@ -891,16 +891,27 @@
     let opponentName = '';
 
     // Expanded guest name lists
-    const adjectives = ['Swift', 'Clever', 'Brave', 'Quick', 'Bold', 'Wise', 'Lucky', 'Cool', 'Sharp', 'Bright',
-                       'Silent', 'Fierce', 'Noble', 'Mighty', 'Sneaky', 'Agile', 'Proud', 'Wild', 'Calm', 'Daring',
-                       'Epic', 'Flash', 'Grand', 'Happy', 'Iron', 'Jolly', 'Keen', 'Lively', 'Merry', 'Nimble',
-                       'Rapid', 'Royal', 'Sage', 'Sleek', 'Solid', 'Speedy', 'Strong', 'Super', 'Turbo', 'Ultra',
-                       'Vivid', 'Wicked', 'Zesty', 'Arctic', 'Blaze', 'Cosmic', 'Divine', 'Electric', 'Frost', 'Golden'];
-    const nouns = ['Eagle', 'Tiger', 'Dragon', 'Phoenix', 'Wolf', 'Falcon', 'Lion', 'Bear', 'Fox', 'Hawk',
-                   'Panther', 'Cobra', 'Shark', 'Lynx', 'Raven', 'Viper', 'Puma', 'Jaguar', 'Cheetah', 'Leopard',
-                   'Otter', 'Badger', 'Ranger', 'Knight', 'Wizard', 'Warrior', 'Hunter', 'Scout', 'Ninja', 'Samurai',
-                   'Pirate', 'Viking', 'Spartan', 'Titan', 'Giant', 'Legend', 'Hero', 'Champion', 'Master', 'Chief',
-                   'Storm', 'Thunder', 'Lightning', 'Blizzard', 'Cyclone', 'Tsunami', 'Comet', 'Meteor', 'Nova', 'Galaxy'];
+    const adjectives = ['Swift','Clever','Brave','Quick','Bold','Wise','Lucky','Cool','Sharp','Bright',
+                      'Silent','Fierce','Noble','Mighty','Sneaky','Agile','Proud','Wild','Calm','Daring',
+                      'Epic','Flash','Grand','Happy','Iron','Jolly','Keen','Lively','Merry','Nimble',
+                      'Rapid','Royal','Sage','Sleek','Solid','Speedy','Strong','Super','Turbo','Ultra',
+                      'Vivid','Wicked','Zesty','Arctic','Blaze','Cosmic','Divine','Electric','Frost','Golden',
+                      'Mystic','Shadow','Storm','Thunder','Cyber','Quantum','Stellar','Lunar','Solar','Nova',
+                      'Crimson','Azure','Jade','Onyx','Pearl','Ruby','Sapphire','Amber','Emerald','Crystal',
+                      'Ancient','Eternal','Infinite','Primal','Radiant','Sacred','Twilight','Vengeful','Zealous','Alpha',
+                      'Beta','Omega','Prime','Apex','Elite','Supreme','Ultimate','Legendary','Mythic','Exotic',
+                      'Phantom','Vortex','Nebula','Astral','Celestial','Void','Chaos','Zen','Karma','Mystic'];
+
+    const nouns = ['Eagle','Tiger','Dragon','Phoenix','Wolf','Falcon','Lion','Bear','Fox','Hawk',
+                  'Panther','Cobra','Shark','Lynx','Raven','Viper','Puma','Jaguar','Cheetah','Leopard',
+                  'Otter','Badger','Ranger','Knight','Wizard','Warrior','Hunter','Scout','Ninja','Samurai',
+                  'Pirate','Viking','Spartan','Titan','Giant','Legend','Hero','Champion','Master','Chief',
+                  'Storm','Thunder','Lightning','Blizzard','Cyclone','Tsunami','Comet','Meteor','Nova','Galaxy',
+                  'Sentinel','Guardian','Warden','Defender','Protector','Crusader','Paladin','Templar','Oracle','Sage',
+                  'Phantom','Specter','Wraith','Spirit','Ghost','Reaper','Slayer','Striker','Sniper','Assassin',
+                  'Wanderer','Nomad','Voyager','Explorer','Pioneer','Pathfinder','Trailblazer','Maverick','Renegade','Outlaw',
+                  'Dragon','Griffin','Hydra','Kraken','Leviathan','Behemoth','Colossus','Golem','Juggernaut','Destroyer',
+                  'Seeker','Keeper','Watcher','Observer','Seer','Prophet','Mystic','Shaman','Druid','Monk'];
 
     // Initialize Firebase
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -1265,6 +1276,7 @@
       initGame();
       showScreen('game-screen');
       
+      // If player chose yellow (2), AI (red/1) goes first
       if (playerColor === 2) {
         setTimeout(makeAIMove, 500);
       }
@@ -1442,7 +1454,8 @@
             board: board,
             currentPlayer: currentPlayer
           });
-        } else if (gameMode === 'ai' && currentPlayer === 2) {
+        } else if (gameMode === 'ai' && currentPlayer !== playerColor) {
+          // AI's turn (when current player is NOT the human player's color)
           setTimeout(makeAIMove, 500);
         }
       }
@@ -2111,7 +2124,7 @@
             }
             
             msgEl.innerHTML = `
-              <div class="username">${escapeHtml(msg.username)}</div>
+              <div class="username"><span class="player-name" onclick="showProfileFromGame('${msg.userId}', '${escapeHtml(msg.username)}')">${escapeHtml(msg.username)}</span></div>
               <div class="text">${escapeHtml(msg.text)}</div>
             `;
             chatMessagesEl.appendChild(msgEl);
