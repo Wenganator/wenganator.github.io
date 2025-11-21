@@ -84,24 +84,48 @@
       transition: all 0.2s ease;
       box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
       position: relative;
+      overflow: visible; /* Allow piece to animate from above */
     }
-    
-    .cell:hover:not(.red):not(.yellow) {
-      background: rgba(255, 255, 255, 0.25);
-      transform: scale(1.05);
+
+    .cell-piece {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
     }
-    
-    .cell.red {
+
+    .cell-piece.red {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
     }
-    
-    .cell.yellow {
+
+    .cell-piece.yellow {
       background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
       box-shadow: 0 4px 15px rgba(251, 191, 36, 0.5);
     }
-    
-    .cell.winning {
+
+    @keyframes dropPiece {
+      0% {
+        transform: translateY(calc(-65px - 24px - (var(--drop-distance) * 75px)));
+      }
+      75% {
+        transform: translateY(0);
+      }
+      88% {
+        transform: translateY(-6px);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    .cell-piece.dropping {
+      animation: dropPiece 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+
+    .cell-piece.winning {
       animation: winPulse 0.8s ease-in-out infinite;
     }
     
@@ -111,8 +135,8 @@
         box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5);
       }
       50% { 
-        transform: scale(1.15);
-        box-shadow: 0 8px 30px rgba(255, 255, 255, 0.8);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(255, 255, 255, 0.7);
       }
     }
     
@@ -837,6 +861,7 @@
         <div class="col-md-4">
           <div id="chatContainer" class="chat-container" style="display: none;">
             <h5 class="mb-3">Chat</h5>
+            <h5 class="mb-3">Chat <button class="btn btn-sm btn-outline-secondary float-end" onclick="exportChat()" id="exportChatBtn">📥 Export</button></h5>
             <div class="chat-messages" id="chatMessages"></div>
             <div class="d-flex gap-2">
               <input type="text" class="form-control" id="chatInput" placeholder="Type a message..." maxlength="200">
@@ -914,17 +939,35 @@
 
     async function cleanupOldGames() {
       try {
+        const now = Date.now();
+        const cutoff = now - (60 * 60 * 1000); // 1 hour
+        
+        // Cleanup old games
         const gamesRef = ref(db, 'games');
-        const snapshot = await get(gamesRef);
-        if (snapshot.exists()) {
-          const now = Date.now();
-          const cutoff = now - (60 * 60 * 1000);
-          snapshot.forEach((child) => {
+        const gamesSnapshot = await get(gamesRef);
+        if (gamesSnapshot.exists()) {
+          gamesSnapshot.forEach((child) => {
             const game = child.val();
             if (game.createdAt && game.createdAt < cutoff) {
               remove(ref(db, `games/${child.key}`));
+              // Also remove associated chat
+              remove(ref(db, `chats/${child.key}`));
             }
           });
+        }
+        
+        // Cleanup orphaned chats (chats without games)
+        const chatsRef = ref(db, 'chats');
+        const chatsSnapshot = await get(chatsRef);
+        if (chatsSnapshot.exists()) {
+          for (const chatChild of chatsSnapshot.docs || Object.keys(chatsSnapshot.val() || {})) {
+            const gameCode = typeof chatChild === 'string' ? chatChild : chatChild.key;
+            const gameRef = ref(db, `games/${gameCode}`);
+            const gameExists = await get(gameRef);
+            if (!gameExists.exists()) {
+              remove(ref(db, `chats/${gameCode}`));
+            }
+          }
         }
       } catch (error) {
         console.error('Cleanup error:', error);
@@ -962,6 +1005,7 @@
     window.closeProfile = closeProfile;
     window.resetStats = resetStats;
     window.randomizeGuestName = randomizeGuestName;
+    window.exportChat = exportChat;
 
     function generateGuestName() {
       const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -1287,8 +1331,18 @@
       updatePlayerInfo();
     }
 
-    function renderBoard() {
+    function renderBoard(skipAnimation = false) {
       const boardEl = document.getElementById('board');
+      const oldCells = Array.from(document.querySelectorAll('.cell'));
+      const oldStates = oldCells.map(cell => {
+        const piece = cell.querySelector('.cell-piece');
+        return {
+          red: piece && piece.classList.contains('red'),
+          yellow: piece && piece.classList.contains('yellow'),
+          winning: piece && piece.classList.contains('winning')
+        };
+      });
+      
       boardEl.innerHTML = '';
       
       for (let row = 0; row < 6; row++) {
@@ -1298,8 +1352,33 @@
         for (let col = 0; col < 7; col++) {
           const cell = document.createElement('div');
           cell.className = 'cell';
-          if (board[row][col] === 1) cell.classList.add('red');
-          if (board[row][col] === 2) cell.classList.add('yellow');
+          const cellIndex = row * 7 + col;
+          const oldState = oldStates[cellIndex] || {};
+          
+          const isNewPiece = (board[row][col] === 1 && !oldState.red) || 
+                            (board[row][col] === 2 && !oldState.yellow);
+          
+          if (board[row][col] !== 0) {
+            const piece = document.createElement('div');
+            piece.className = 'cell-piece';
+            
+            if (board[row][col] === 1) {
+              piece.classList.add('red');
+            } else {
+              piece.classList.add('yellow');
+            }
+            
+            if (isNewPiece && !skipAnimation) {
+              piece.classList.add('dropping');
+              piece.style.setProperty('--drop-distance', row);
+            }
+            
+            if (oldState.winning) {
+              piece.classList.add('winning');
+            }
+            
+            cell.appendChild(piece);
+          }
           
           cell.onclick = () => handleCellClick(col);
           rowEl.appendChild(cell);
@@ -1321,7 +1400,12 @@
         const winner = checkWinner();
         if (winner) {
           gameActive = false;
-          highlightWinningCells(winner.cells);
+          
+          // Delay highlighting winning cells until drop animation completes
+          setTimeout(() => {
+            highlightWinningCells(winner.cells);
+          }, 500);
+          
           updateStatus(`${winner.player === 1 ? 'Red' : 'Yellow'} wins!`);
           
           if (gameMode === 'online' && onlineGameId) {
@@ -1334,7 +1418,7 @@
           }
           return;
         }
-        
+
         if (board.every(row => row.every(cell => cell !== 0))) {
           gameActive = false;
           updateStatus("It's a draw!");
@@ -1735,7 +1819,10 @@
       cells.forEach(([row, col]) => {
         const cellIndex = row * 7 + col;
         const cellEl = document.querySelectorAll('.cell')[cellIndex];
-        cellEl.classList.add('winning');
+        const pieceEl = cellEl.querySelector('.cell-piece');
+        if (pieceEl) {
+          pieceEl.classList.add('winning');
+        }
       });
     }
 
@@ -1805,7 +1892,7 @@
       initGame();
       showScreen('game-screen');
       setupChat(gameCode);
-      
+
       gameUnsubscribe = onValue(gameRef, (snapshot) => {
         const game = snapshot.val();
         if (!game) return;
@@ -1817,11 +1904,21 @@
         }
         
         if (game.status === 'playing' || game.status === 'finished') {
-          board = game.board;
-          currentPlayer = game.currentPlayer;
-          renderBoard();
-          updateStatus();
-          updatePlayerInfo();
+          // Only update if board actually changed from what we have
+          const boardChanged = JSON.stringify(board) !== JSON.stringify(game.board);
+          
+          if (boardChanged) {
+            board = game.board;
+            currentPlayer = game.currentPlayer;
+            renderBoard(); // Always animate when board changes from Firebase
+            updateStatus();
+            updatePlayerInfo();
+          } else {
+            // Just update turn indicator without re-rendering
+            currentPlayer = game.currentPlayer;
+            updateStatus();
+            updatePlayerInfo();
+          }
           
           if (game.status === 'finished') {
             gameActive = false;
@@ -1836,7 +1933,9 @@
                 updateStatus(`${winnerName} wins!`);
                 const winner = checkWinner();
                 if (winner) {
-                  highlightWinningCells(winner.cells);
+                  setTimeout(() => {
+                    highlightWinningCells(winner.cells);
+                  }, 500);
                 }
               }
             }
@@ -1907,16 +2006,26 @@
       updateStatus();
       updatePlayerInfo();
       setupChat(code);
-      
+
       gameUnsubscribe = onValue(gameRef, (snapshot) => {
         const game = snapshot.val();
         if (!game) return;
         
-        board = game.board;
-        currentPlayer = game.currentPlayer;
-        renderBoard();
-        updateStatus();
-        updatePlayerInfo();
+        // Only update if board actually changed from what we have
+        const boardChanged = JSON.stringify(board) !== JSON.stringify(game.board);
+        
+        if (boardChanged) {
+          board = game.board;
+          currentPlayer = game.currentPlayer;
+          renderBoard(); // Always animate when board changes from Firebase
+          updateStatus();
+          updatePlayerInfo();
+        } else {
+          // Just update turn indicator without re-rendering
+          currentPlayer = game.currentPlayer;
+          updateStatus();
+          updatePlayerInfo();
+        }
         
         if (game.status === 'finished') {
           gameActive = false;
@@ -1931,7 +2040,9 @@
               updateStatus(`${winnerName} wins!`);
               const winner = checkWinner();
               if (winner) {
-                highlightWinningCells(winner.cells);
+                setTimeout(() => {
+                  highlightWinningCells(winner.cells);
+                }, 500);
               }
             }
           }
@@ -2032,6 +2143,44 @@
       });
       
       input.value = '';
+    }
+
+    async function exportChat() {
+      if (!onlineGameId) return;
+      
+      const chatRef = ref(db, `chats/${onlineGameId}`);
+      const snapshot = await get(chatRef);
+      
+      if (!snapshot.exists()) {
+        alert('No messages to export');
+        return;
+      }
+      
+      const messages = [];
+      snapshot.forEach((child) => {
+        messages.push({ id: child.key, ...child.val() });
+      });
+      
+      messages.sort((a, b) => a.timestamp - b.timestamp);
+      
+      let chatText = `Connect 4 Chat Log - Game ${onlineGameId}\n`;
+      chatText += `Exported: ${new Date().toLocaleString()}\n`;
+      chatText += '='.repeat(50) + '\n\n';
+      
+      messages.forEach(msg => {
+        const time = new Date(msg.timestamp).toLocaleTimeString();
+        chatText += `[${time}] ${msg.username}: ${msg.text}\n`;
+      });
+      
+      const blob = new Blob([chatText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `connect4-chat-${onlineGameId}-${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function escapeHtml(text) {
