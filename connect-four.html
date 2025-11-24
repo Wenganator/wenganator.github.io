@@ -40,27 +40,88 @@
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       min-height: 120px;
     }
-    
+
     .game-status-container {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       gap: 20px;
-      min-height: 60px;
+      min-height: 100px; /* Fixed height */
+      max-height: 100px; /* Prevent expansion */
     }
-    
+
     .game-status-left {
       text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
-    
+
     .game-status-center {
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    
+
     .game-status-right {
       text-align: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      max-width: 250px; /* Limit the entire right section */
+      overflow: hidden;
     }
-    
+
+    .game-status-right > div:first-child {
+      white-space: nowrap; /* Prevent game code from wrapping */
+    }
+
+    #gameStatus {
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      line-height: 1.2;
+      min-width: 150px; /* Fixed width to prevent shifting */
+    }
+
+    .game-status-left h4 {
+      margin-bottom: 0 !important; /* Remove any margin that causes shifts */
+    }
+
+    .game-status-container {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 20px;
+      min-height: 90px; /* Increased to accommodate text better */
+    }
+
+    .game-score {
+      font-size: 18px;
+      font-weight: 600;
+      color: #e8eaed;
+      margin-bottom: 16px;
+      text-align: center;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .game-score .score-red {
+      color: #ef4444;
+    }
+
+    .game-score .score-yellow {
+      color: #fbbf24;
+    }
+
+    #gameModeDisplay {
+      color: #9ca3af !important;
+      font-weight: 500;
+    }
+
     .board {
       background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
       padding: 24px;
@@ -255,13 +316,14 @@
       padding: 12px 24px;
       border-radius: 10px;
     }
-    
+
     #gameCode {
-      font-size: 32px;
+      font-size: 24px; /* Reduced slightly */
       font-weight: 700;
-      letter-spacing: 8px;
+      letter-spacing: 4px; /* Reduced */
       color: #60a5fa;
       text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+      display: inline-block; /* Prevent line break */
     }
     
     .player-name {
@@ -276,10 +338,30 @@
       color: #60a5fa;
       text-decoration: underline;
     }
-    
+
     .opponent-info {
       color: #d1d5db;
       font-size: 14px;
+      max-width: 200px; /* Increased from 180px */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .player-turn-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      max-width: 250px; /* Prevent overflow */
+    }
+
+    .player-turn-indicator span:first-child {
+      white-space: nowrap;
     }
     
     .online-status {
@@ -288,16 +370,18 @@
       height: 8px;
       border-radius: 50%;
       background: #10b981;
-      margin-right: 8px;
+      margin-right: 6px; /* Reduced from 8px */
       animation: blink 2s infinite;
       box-shadow: 0 0 10px #10b981;
+      vertical-align: middle; /* Keep inline with text */
+      flex-shrink: 0; /* Don't let it shrink */
     }
     
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.4; }
     }
-    
+
     .chat-container {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(10px);
@@ -305,7 +389,7 @@
       border-radius: 16px;
       padding: 20px;
       margin-top: 20px;
-      max-height: 400px;
+      height: 400px;
       display: flex;
       flex-direction: column;
     }
@@ -314,10 +398,10 @@
       flex: 1;
       overflow-y: auto;
       margin-bottom: 15px;
-      max-height: 300px;
       padding: 12px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 12px;
+      min-height: 0;
     }
     
     .chat-message {
@@ -417,17 +501,6 @@
       font-weight: 600;
     }
     
-    .player-turn-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    
     .username-display {
       cursor: pointer;
       transition: color 0.2s;
@@ -458,14 +531,17 @@
       background: rgba(255, 255, 255, 0.2);
       border-color: rgba(255, 255, 255, 0.3);
     }
-    
+
     .color-dot {
       width: 16px;
       height: 16px;
+      min-width: 16px;  /* Prevent compression */
+      min-height: 16px; /* Prevent compression */
+      flex-shrink: 0;   /* Don't let it shrink */
       border-radius: 50%;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
-    
+        
     .color-dot.red {
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     }
@@ -827,9 +903,12 @@
       <div class="row">
         <div class="col-md-8">
           <div class="status-card">
+            <div id="gameScoreDisplay" class="game-score" style="display: none;">
+              Score: <span class="score-red" id="redScore">0</span> - <span class="score-yellow" id="yellowScore">0</span>
+            </div>
             <div class="game-status-container">
               <div class="game-status-left">
-                <h4 id="gameStatus" class="mb-2">Red's turn</h4>
+                <h4 id="gameStatus" style="margin-bottom: 0.5rem !important;">Red's turn</h4>
                 <small id="gameModeDisplay" class="text-muted"></small>
               </div>
               <div class="game-status-center" id="playerInfo" style="display:none;">
@@ -860,7 +939,6 @@
         
         <div class="col-md-4">
           <div id="chatContainer" class="chat-container" style="display: none;">
-            <h5 class="mb-3">Chat</h5>
             <h5 class="mb-3">Chat <button class="btn btn-sm btn-outline-secondary float-end" onclick="exportChat()" id="exportChatBtn">📥 Export</button></h5>
             <div class="chat-messages" id="chatMessages"></div>
             <div class="d-flex gap-2">
@@ -889,6 +967,9 @@
     let gameUnsubscribe = null;
     let selectedAIDifficulty = 'medium';
     let opponentName = '';
+    let player1Score = 0;
+    let player2Score = 0;
+    let isUpdatingScore = false;
 
     // Expanded guest name lists
     const adjectives = ['Swift','Clever','Brave','Quick','Bold','Wise','Lucky','Cool','Sharp','Bright',
@@ -1017,6 +1098,40 @@
     window.resetStats = resetStats;
     window.randomizeGuestName = randomizeGuestName;
     window.exportChat = exportChat;
+    window.resetScore = resetScore;
+    window.sendSystemMessage = sendSystemMessage;
+
+    function resetScore() {
+      player1Score = 0;
+      player2Score = 0;
+      updateScoreDisplay();
+    }
+
+    function updateScoreDisplay() {
+      if (gameMode === 'online' && onlineGameId) {
+        document.getElementById('gameScoreDisplay').style.display = 'block';
+        
+        // In the current round, whoever is player1 is RED and whoever is player2 is YELLOW
+        // So we always show player1Score under RED and player2Score under YELLOW
+        document.getElementById('redScore').textContent = player1Score;
+        document.getElementById('yellowScore').textContent = player2Score;
+      } else {
+        document.getElementById('gameScoreDisplay').style.display = 'none';
+      }
+    }
+
+    async function sendSystemMessage(message) {
+      if (!onlineGameId) return;
+      
+      const chatRef = ref(db, `chats/${onlineGameId}`);
+      await push(chatRef, {
+        userId: 'system',
+        username: 'System',
+        text: message,
+        timestamp: Date.now(),
+        isSystem: true
+      });
+    }
 
     function generateGuestName() {
       const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -1246,6 +1361,7 @@
       document.getElementById('playerInfo').style.display = 'none';
       document.getElementById('resignBtn').style.display = 'none';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.querySelector('.btn-warning').style.display = 'inline-block'; // Show "New game" button
       initGame();
       showScreen('game-screen');
     }
@@ -1272,6 +1388,7 @@
       document.getElementById('playerInfo').style.display = 'none';
       document.getElementById('resignBtn').style.display = 'inline-block';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.querySelector('.btn-warning').style.display = 'inline-block'; // Show "New game" button
       
       initGame();
       showScreen('game-screen');
@@ -1424,9 +1541,9 @@
             await update(ref(db, `games/${onlineGameId}`), { 
               winner: winner.player, 
               status: 'finished',
-              board: board
+              board: board,
+              statsUpdated: false
             });
-            await updatePlayerStats(winner.player);
           }
           return;
         }
@@ -1438,9 +1555,9 @@
             await update(ref(db, `games/${onlineGameId}`), { 
               winner: 0, 
               status: 'finished',
-              board: board
+              board: board,
+              statsUpdated: false
             });
-            await updatePlayerStats(0);
           }
           return;
         }
@@ -1497,9 +1614,9 @@
         await update(ref(db, `games/${onlineGameId}`), { 
           winner: opponent,
           status: 'finished',
-          resigned: true
+          resigned: true,
+          statsUpdated: false
         });
-        await updatePlayerStats(opponent);
         document.getElementById('rematchBtn').style.display = 'inline-block';
       }
       
@@ -1510,6 +1627,8 @@
 
     async function requestRematch() {
       if (gameMode !== 'online' || !onlineGameId) return;
+
+        isUpdatingScore = false; // Reset score update flag
       
       const gameRef = ref(db, `games/${onlineGameId}`);
       const snapshot = await get(gameRef);
@@ -1517,31 +1636,50 @@
       if (!snapshot.exists()) return;
       
       const game = snapshot.val();
+      const myPlayerId = currentUser.uid;
       
-      // Swap player colors
-      const newPlayer1Id = game.player2Id;
-      const newPlayer1Name = game.player2Name;
-      const newPlayer2Id = game.player1Id;
-      const newPlayer2Name = game.player1Name;
+      // Check if I already requested
+      if (game.rematchRequested === myPlayerId) {
+        alert('Waiting for opponent to accept...');
+        return;
+      }
       
-      await update(gameRef, {
-        board: Array(6).fill(null).map(() => Array(7).fill(0)),
-        currentPlayer: 1,
-        player1Id: newPlayer1Id,
-        player1Name: newPlayer1Name,
-        player2Id: newPlayer2Id,
-        player2Name: newPlayer2Name,
-        status: 'playing',
-        winner: null,
-        resigned: null
-      });
-      
-      // Update local player color
-      playerColor = playerColor === 1 ? 2 : 1;
-      opponentName = playerColor === 1 ? newPlayer2Name : newPlayer1Name;
-      
-      document.getElementById('rematchBtn').style.display = 'none';
-      initGame();
+      // Check if opponent already requested (then accept it)
+      if (game.rematchRequested && game.rematchRequested !== myPlayerId) {
+        // Accept the rematch - swap colors
+        const newPlayer1Id = game.player2Id;
+        const newPlayer1Name = game.player2Name;
+        const newPlayer2Id = game.player1Id;
+        const newPlayer2Name = game.player1Name;
+        
+        await update(gameRef, {
+          board: Array(6).fill(null).map(() => Array(7).fill(0)),
+          currentPlayer: 1,
+          player1Id: newPlayer1Id,
+          player1Name: newPlayer1Name,
+          player2Id: newPlayer2Id,
+          player2Name: newPlayer2Name,
+          status: 'playing',
+          winner: null,
+          resigned: null,
+          rematchRequested: null,
+          statsUpdated: null,
+          systemMessageSent: null,
+          scoreUpdated: null,
+          [`statsUpdated_${game.player1Id}`]: null,
+          [`statsUpdated_${game.player2Id}`]: null
+        });
+        
+        // Don't update colors here - let the listener handle it
+        
+      } else {
+        // Request a rematch
+        await update(gameRef, {
+          rematchRequested: myPlayerId
+        });
+        document.getElementById('rematchBtn').textContent = 'Rematch requested...';
+        document.getElementById('rematchBtn').disabled = true;
+      }
     }
 
     async function updatePlayerStats(winner) {
@@ -1844,7 +1982,9 @@
       if (message) {
         statusEl.textContent = message;
       } else {
-        statusEl.textContent = `${currentPlayer === 1 ? 'Red' : 'Yellow'}'s turn`;
+        // Make both messages the same length by padding
+        const playerText = currentPlayer === 1 ? 'Red' : 'Yellow';
+        statusEl.textContent = `${playerText}'s turn`;
       }
     }
 
@@ -1870,7 +2010,15 @@
       
       let username = currentUser.isGuest ? currentUser.guestName : 'Guest';
       let userId = currentUser.uid;
-      
+
+      onlineGameId = gameCode;
+      playerColor = 1;
+      gameMode = 'online';
+      opponentName = '';
+      player1Score = 0;
+      player2Score = 0;
+      window.gamePlayer1Id = userId; // Track who is player1
+
       if (!currentUser.isGuest) {
         const userSnapshot = await get(ref(db, `users/${currentUser.uid}`));
         username = userSnapshot.val()?.username || 'Player';
@@ -1892,6 +2040,7 @@
       playerColor = 1;
       gameMode = 'online';
       opponentName = '';
+      window.gamePlayer1Id = userId; // Track who is player1
       
       document.getElementById('gameCode').textContent = gameCode;
       document.getElementById('opponentNameDisplay').innerHTML = '<span style="color: #f59e0b;">Waiting for opponent...</span>';
@@ -1901,25 +2050,80 @@
       document.getElementById('playerInfo').style.display = 'block';
       document.getElementById('resignBtn').style.display = 'inline-block';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.querySelector('.btn-warning').style.display = 'none'; // Hide "New game" button
       
       initGame();
       showScreen('game-screen');
+      updateScoreDisplay();
       setupChat(gameCode);
 
-      gameUnsubscribe = onValue(gameRef, (snapshot) => {
+      gameUnsubscribe = onValue(gameRef, async (snapshot) => {
         const game = snapshot.val();
         if (!game) return;
+        
+        // Store player1Id for score tracking
+        if (game.player1Id) {
+          window.gamePlayer1Id = game.player1Id;
+        }
         
         if (game.player2Id && game.status === 'waiting') {
           update(gameRef, { status: 'playing' });
           opponentName = game.player2Name;
           document.getElementById('opponentNameDisplay').innerHTML = `vs <span class="player-name" onclick="showProfileFromGame('${game.player2Id}', '${game.player2Name}')">${game.player2Name}</span>`;
         }
-        
+
         if (game.status === 'playing' || game.status === 'finished') {
+          // Check if rematch was just accepted - reset UI and update colors
+          if (game.status === 'playing' && !game.rematchRequested && !gameActive) {
+            gameActive = true;
+            
+            // CRITICAL: Determine my NEW color based on my user ID and NEW player assignments
+            if (currentUser.uid === game.player1Id) {
+              playerColor = 1; // I'm now player1, so I'm red
+              opponentName = game.player2Name;
+            } else if (currentUser.uid === game.player2Id) {
+              playerColor = 2; // I'm now player2, so I'm yellow
+              opponentName = game.player1Name;
+            }
+            
+            // Load scores from Firebase
+            if (game.player1Score !== undefined) {
+              player1Score = game.player1Score;
+              player2Score = game.player2Score;
+            }
+            
+            document.getElementById('rematchBtn').style.display = 'none';
+            document.getElementById('rematchBtn').textContent = 'Rematch';
+            document.getElementById('rematchBtn').disabled = false;
+            
+            // Update opponent display
+            const opponentId = playerColor === 1 ? game.player2Id : game.player1Id;
+            document.getElementById('opponentNameDisplay').innerHTML = `vs <span class="player-name" onclick="showProfileFromGame('${opponentId}', '${opponentName}')">${opponentName}</span>`;
+            
+            // Reset the board state
+            board = game.board;
+            currentPlayer = game.currentPlayer;
+            renderBoard();
+            updateStatus();
+            updatePlayerInfo();
+            updateScoreDisplay();
+          }
+
+          // Handle rematch requests
+          if (game.rematchRequested && game.rematchRequested !== currentUser.uid) {
+            document.getElementById('rematchBtn').textContent = 'Accept Rematch';
+            document.getElementById('rematchBtn').disabled = false;
+          } else if (game.rematchRequested === currentUser.uid) {
+            document.getElementById('rematchBtn').textContent = 'Rematch requested...';
+            document.getElementById('rematchBtn').disabled = true;
+          } else if (game.status === 'finished') {
+            document.getElementById('rematchBtn').textContent = 'Rematch';
+            document.getElementById('rematchBtn').disabled = false;
+          }
+          
           // Only update if board actually changed from what we have
           const boardChanged = JSON.stringify(board) !== JSON.stringify(game.board);
-          
+
           if (boardChanged) {
             board = game.board;
             currentPlayer = game.currentPlayer;
@@ -1932,10 +2136,69 @@
             updateStatus();
             updatePlayerInfo();
           }
-          
+
           if (game.status === 'finished') {
             gameActive = false;
             document.getElementById('rematchBtn').style.display = 'inline-block';
+
+            // Update score - track by player, not color
+            const iAmPlayer1 = currentUser.uid === game.player1Id;
+
+            if (!game.scoreUpdated && iAmPlayer1 && !isUpdatingScore) {
+              isUpdatingScore = true; // Prevent re-entry
+              
+              // Load current scores from Firebase first (for rematch continuity)
+              if (game.player1Score !== undefined) {
+                player1Score = game.player1Score;
+                player2Score = game.player2Score;
+              }
+              
+              if (game.winner !== 0) {
+                const player1Won = game.winner === 1;
+                
+                if (player1Won) {
+                  player1Score++;
+                } else {
+                  player2Score++;
+                }
+              }
+              
+              const scoreText = `${game.player1Name} ${player1Score} - ${player2Score} ${game.player2Name}`;
+              
+              if (game.winner === 0) {
+                await sendSystemMessage("Game ended in a draw! " + scoreText);
+              } else {
+                const winnerName = game.winner === 1 ? game.player1Name : game.player2Name;
+                if (game.resigned) {
+                  await sendSystemMessage(`${winnerName} wins by resignation! ${scoreText}`);
+                } else {
+                  await sendSystemMessage(`${winnerName} wins! ${scoreText}`);
+                }
+              }
+              
+              await update(gameRef, { 
+                scoreUpdated: true,
+                systemMessageSent: true,
+                player1Score: player1Score,
+                player2Score: player2Score
+              });
+            } else if (game.player1Score !== undefined) {
+              // Everyone (including player1 after update) loads from Firebase
+              player1Score = game.player1Score;
+              player2Score = game.player2Score;
+            }
+
+            updateScoreDisplay();
+
+            // Update stats - use a player-specific flag
+            const myStatsKey = `statsUpdated_${currentUser.uid}`;
+            if (!game[myStatsKey]) {
+              await updatePlayerStats(game.winner);
+              const updates = {};
+              updates[myStatsKey] = true;
+              await update(gameRef, updates);
+            }
+            
             if (game.winner === 0) {
               updateStatus("It's a draw!");
             } else {
@@ -2000,6 +2263,9 @@
       playerColor = 2;
       gameMode = 'online';
       opponentName = game.player1Name;
+      player1Score = 0;
+      player2Score = 0;
+      window.gamePlayer1Id = game.player1Id; // Track who is player1
       
       document.getElementById('gameCode').textContent = code;
       document.getElementById('opponentNameDisplay').innerHTML = `vs <span class="player-name" onclick="showProfileFromGame('${game.player1Id}', '${game.player1Name}')">${game.player1Name}</span>`;
@@ -2009,6 +2275,7 @@
       document.getElementById('playerInfo').style.display = 'block';
       document.getElementById('resignBtn').style.display = 'inline-block';
       document.getElementById('rematchBtn').style.display = 'none';
+      document.querySelector('.btn-warning').style.display = 'none'; // Hide "New game" button
       
       board = game.board;
       currentPlayer = game.currentPlayer;
@@ -2018,11 +2285,65 @@
       renderBoard();
       updateStatus();
       updatePlayerInfo();
+      updateScoreDisplay();
       setupChat(code);
 
-      gameUnsubscribe = onValue(gameRef, (snapshot) => {
+      gameUnsubscribe = onValue(gameRef, async (snapshot) => {
         const game = snapshot.val();
         if (!game) return;
+        
+        // Store player1Id for score tracking
+        if (game.player1Id) {
+          window.gamePlayer1Id = game.player1Id;
+        }
+
+        // Check if rematch was just accepted - reset UI and update colors
+        if (game.status === 'playing' && !game.rematchRequested && !gameActive) {
+          gameActive = true;
+          
+          // CRITICAL: Determine my NEW color based on my user ID and NEW player assignments
+          if (currentUser.uid === game.player1Id) {
+            playerColor = 1; // I'm now player1, so I'm red
+            opponentName = game.player2Name;
+          } else if (currentUser.uid === game.player2Id) {
+            playerColor = 2; // I'm now player2, so I'm yellow
+            opponentName = game.player1Name;
+          }
+          
+          // Load scores from Firebase
+          if (game.player1Score !== undefined) {
+            player1Score = game.player1Score;
+            player2Score = game.player2Score;
+          }
+          
+          document.getElementById('rematchBtn').style.display = 'none';
+          document.getElementById('rematchBtn').textContent = 'Rematch';
+          document.getElementById('rematchBtn').disabled = false;
+          
+          // Update opponent display
+          const opponentId = playerColor === 1 ? game.player2Id : game.player1Id;
+          document.getElementById('opponentNameDisplay').innerHTML = `vs <span class="player-name" onclick="showProfileFromGame('${opponentId}', '${opponentName}')">${opponentName}</span>`;
+          
+          // Reset the board state
+          board = game.board;
+          currentPlayer = game.currentPlayer;
+          renderBoard();
+          updateStatus();
+          updatePlayerInfo();
+          updateScoreDisplay();
+        }
+
+        // Handle rematch requests
+        if (game.rematchRequested && game.rematchRequested !== currentUser.uid) {
+          document.getElementById('rematchBtn').textContent = 'Accept Rematch';
+          document.getElementById('rematchBtn').disabled = false;
+        } else if (game.rematchRequested === currentUser.uid) {
+          document.getElementById('rematchBtn').textContent = 'Rematch requested...';
+          document.getElementById('rematchBtn').disabled = true;
+        } else if (game.status === 'finished') {
+          document.getElementById('rematchBtn').textContent = 'Rematch';
+          document.getElementById('rematchBtn').disabled = false;
+        }
         
         // Only update if board actually changed from what we have
         const boardChanged = JSON.stringify(board) !== JSON.stringify(game.board);
@@ -2039,10 +2360,69 @@
           updateStatus();
           updatePlayerInfo();
         }
-        
+
         if (game.status === 'finished') {
           gameActive = false;
           document.getElementById('rematchBtn').style.display = 'inline-block';
+
+          // Update score - track by player, not color
+          const iAmPlayer1 = currentUser.uid === game.player1Id;
+
+          if (!game.scoreUpdated && iAmPlayer1 && !isUpdatingScore) {
+            isUpdatingScore = true; // Prevent re-entry
+            
+            // Load current scores from Firebase first (for rematch continuity)
+            if (game.player1Score !== undefined) {
+              player1Score = game.player1Score;
+              player2Score = game.player2Score;
+            }
+            
+            if (game.winner !== 0) {
+              const player1Won = game.winner === 1;
+              
+              if (player1Won) {
+                player1Score++;
+              } else {
+                player2Score++;
+              }
+            }
+            
+            const scoreText = `${game.player1Name} ${player1Score} - ${player2Score} ${game.player2Name}`;
+            
+            if (game.winner === 0) {
+              await sendSystemMessage("Game ended in a draw! " + scoreText);
+            } else {
+              const winnerName = game.winner === 1 ? game.player1Name : game.player2Name;
+              if (game.resigned) {
+                await sendSystemMessage(`${winnerName} wins by resignation! ${scoreText}`);
+              } else {
+                await sendSystemMessage(`${winnerName} wins! ${scoreText}`);
+              }
+            }
+            
+            await update(gameRef, { 
+              scoreUpdated: true,
+              systemMessageSent: true,
+              player1Score: player1Score,
+              player2Score: player2Score
+            });
+          } else if (game.player1Score !== undefined) {
+            // Everyone (including player1 after update) loads from Firebase
+            player1Score = game.player1Score;
+            player2Score = game.player2Score;
+          }
+
+          updateScoreDisplay();
+
+          // Update stats - use a player-specific flag
+          const myStatsKey = `statsUpdated_${currentUser.uid}`;
+          if (!game[myStatsKey]) {
+            await updatePlayerStats(game.winner);
+            const updates = {};
+            updates[myStatsKey] = true;
+            await update(gameRef, updates);
+          }
+          
           if (game.winner === 0) {
             updateStatus("It's a draw!");
           } else {
@@ -2115,7 +2495,7 @@
           });
           
           messages.sort((a, b) => a.timestamp - b.timestamp);
-          
+
           messages.forEach(msg => {
             const msgEl = document.createElement('div');
             msgEl.className = 'chat-message';
@@ -2123,13 +2503,20 @@
               msgEl.classList.add('own');
             }
             
-            msgEl.innerHTML = `
-              <div class="username"><span class="player-name" onclick="showProfileFromGame('${msg.userId}', '${escapeHtml(msg.username)}')">${escapeHtml(msg.username)}</span></div>
-              <div class="text">${escapeHtml(msg.text)}</div>
-            `;
+            if (msg.isSystem) {
+              msgEl.style.background = 'rgba(59, 130, 246, 0.3)';
+              msgEl.style.textAlign = 'center';
+              msgEl.style.fontWeight = '600';
+              msgEl.innerHTML = `<div class="text">${escapeHtml(msg.text)}</div>`;
+            } else {
+              msgEl.innerHTML = `
+                <div class="username"><span class="player-name" onclick="showProfileFromGame('${msg.userId}', '${escapeHtml(msg.username)}')">${escapeHtml(msg.username)}</span></div>
+                <div class="text">${escapeHtml(msg.text)}</div>
+              `;
+            }
             chatMessagesEl.appendChild(msgEl);
           });
-          
+                    
           chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
         }
       });
