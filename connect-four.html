@@ -350,14 +350,14 @@
 
     .player-turn-indicator {
       display: inline-flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
       padding: 10px 16px;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 10px;
       font-size: 14px;
       font-weight: 500;
-      max-width: 250px; /* Prevent overflow */
+      max-width: 250px;
     }
 
     .player-turn-indicator span:first-child {
@@ -397,11 +397,13 @@
     .chat-messages {
       flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
       margin-bottom: 15px;
       padding: 12px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 12px;
       min-height: 0;
+      max-height: 330px;
     }
     
     .chat-message {
@@ -904,7 +906,9 @@
         <div class="col-md-8">
           <div class="status-card">
             <div id="gameScoreDisplay" class="game-score" style="display: none;">
-              Score: <span class="score-red" id="redScore">0</span> - <span class="score-yellow" id="yellowScore">0</span>
+              <span id="player1Display">Player 1: <span id="player1ScoreSpan">0</span></span>
+              <span style="margin: 0 10px;">-</span>
+              <span id="player2Display">Player 2: <span id="player2ScoreSpan">0</span></span>
             </div>
             <div class="game-status-container">
               <div class="game-status-left">
@@ -913,9 +917,13 @@
               </div>
               <div class="game-status-center" id="playerInfo" style="display:none;">
                 <div class="player-turn-indicator">
-                  <span>You are:</span>
-                  <div class="color-dot" id="yourColor"></div>
-                  <span class="turn-status" id="turnStatus">Your turn</span>
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <span>You are:</span>
+                    <div class="color-dot" id="yourColor"></div>
+                  </div>
+                  <div>
+                    <span class="turn-status" id="turnStatus">Your turn</span>
+                  </div>
                 </div>
               </div>
               <div class="game-status-right" id="onlineInfo" style="display:none;">
@@ -1107,14 +1115,26 @@
       updateScoreDisplay();
     }
 
-    function updateScoreDisplay() {
+    async function updateScoreDisplay() {
       if (gameMode === 'online' && onlineGameId) {
         document.getElementById('gameScoreDisplay').style.display = 'block';
         
-        // In the current round, whoever is player1 is RED and whoever is player2 is YELLOW
-        // So we always show player1Score under RED and player2Score under YELLOW
-        document.getElementById('redScore').textContent = player1Score;
-        document.getElementById('yellowScore').textContent = player2Score;
+        // Get the game data to show player names
+        const gameRef = ref(db, `games/${onlineGameId}`);
+        const snapshot = await get(gameRef);
+        
+        if (snapshot.exists()) {
+          const game = snapshot.val();
+          
+          // Display format: Always show player1 - player2 with their current color
+          const player1ColorClass = 'score-red'; // Player1 is always red in current game
+          const player2ColorClass = 'score-yellow'; // Player2 is always yellow in current game
+          
+          document.getElementById('player1Display').innerHTML = 
+            `<span class="${player1ColorClass}"><span class="player-name" onclick="showProfileFromGame('${game.player1Id}', '${escapeHtml(game.player1Name)}')">${escapeHtml(game.player1Name)}</span>: <span id="player1ScoreSpan">${player1Score}</span></span>`;
+          document.getElementById('player2Display').innerHTML = 
+            `<span class="${player2ColorClass}"><span class="player-name" onclick="showProfileFromGame('${game.player2Id}', '${escapeHtml(game.player2Name)}')">${escapeHtml(game.player2Name)}</span>: <span id="player2ScoreSpan">${player2Score}</span></span>`;
+        }
       } else {
         document.getElementById('gameScoreDisplay').style.display = 'none';
       }
