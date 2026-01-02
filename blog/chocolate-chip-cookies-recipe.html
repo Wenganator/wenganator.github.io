@@ -25,6 +25,21 @@
         
         <!-- Bootstrap Icons CDN -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+        <style>
+            .recipe-checklist {
+            list-style: none;
+            padding-left: 0;
+            }
+
+            .recipe-checklist li {
+            margin-bottom: 0.4rem;
+            }
+
+            .recipe-checklist input {
+            margin-right: 0.5rem;
+            }
+        </style>
     </head>
     <body>
         <div id="header"></div> <!-- Modify header content in header.html -->
@@ -96,19 +111,79 @@
                                 <p>
                                     <br>
                                     Yield: 1½ dozen 5-inch cookies
-                                    <ul>
-                                        <li>2 cups minus 2 tablespoons cake flour (8½ ounces)</li>
-                                        <li>1⅔ cups bread flour (8½ ounces)</li>
-                                        <li>1¼ teaspoons baking soda</li>
-                                        <li>1½ teaspoons baking powder</li>
-                                        <li>1½ teaspoons coarse salt</li>
-                                        <li>1¼ cups unsalted butter (2½ sticks)</li>
-                                        <li>1¼ cups light brown sugar (10 ounces)</li>
-                                        <li>1 cup plus 2 tablespoons granulated sugar (8 ounces)</li>
-                                        <li>2 large eggs</li>
-                                        <li>2 teaspoons natural vanilla extract</li>
-                                        <li>1¼ pounds bittersweet chocolate disks or fèves, at least 60 percent cacao content</li>
-                                        <li>Sea salt</li>
+                                    <ul class="recipe-checklist">
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                2 cups minus 2 tablespoons cake flour (8½ ounces)
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1⅔ cups bread flour (8½ ounces)
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1¼ teaspoons baking soda
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1½ teaspoons baking powder
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1½ teaspoons coarse salt
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1¼ cups unsalted butter (2½ sticks)
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1¼ cups light brown sugar (10 ounces)
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1 cup plus 2 tablespoons granulated sugar (8 ounces)
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                2 large eggs
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                2 teaspoons natural vanilla extract
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                1¼ pounds bittersweet chocolate disks or fèves, at least 60 percent cacao content
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label>
+                                                <input type="checkbox">
+                                                Sea salt
+                                            </label>
+                                        </li>
                                     </ul>
                                 </p>
                             </div>

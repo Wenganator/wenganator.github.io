@@ -7,6 +7,13 @@
 //       Technology, Theology, Worship, Writing, Miscellaneous
 const blogPosts = [
     {
+        title: 'Bible Reading Tracker',
+        tag: ['Bible', 'Christianity', 'Memory', 'Technology', 'Theology', 'Worship'],
+        content: 'A tool to help you track your Bible reading progress.',
+        image: '/assets/images/blog/bible-reading-tracker.png',
+        url: '/blog/bible-reading-tracker.html'
+    },
+    {
         title: 'Playlists',
         tag: ['Christianity', 'Entertainment', 'Music', 'Technology', 'Worship'],
         content: 'A collection of playlists',
