@@ -105,6 +105,8 @@ blogContainer.parentNode.appendChild(loading);
 let currentPage = 1; // for infinite scrolling
 const postsPerPage = 3; // for infinite scrolling  // Change this value to control how many posts load at a time
 
+let currentFilteredPosts = [];
+
 
 const renderPosts = (posts) => {
     posts.forEach(post => {
@@ -176,28 +178,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterPosts = () => {
         const searchText = searchBar.value.toLowerCase();
         const selectedTag = tagFilter.value;
-    
-        const filteredPosts = blogPosts.filter(post => {
+
+        currentFilteredPosts = blogPosts.filter(post => {
             const matchesText = post.title.toLowerCase().includes(searchText);
             const matchesTag = !selectedTag || post.tag.includes(selectedTag);
             return matchesText && matchesTag;
         });
-    
+
         blogContainer.innerHTML = ''; // Clear all posts
         currentPage = 1; // Reset to the first page
-        loadMoreFilteredPosts(filteredPosts); // Load the first batch of filtered posts
+        
+        // Remove old scroll listener and add new one for filtered posts
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('scroll', handleFilteredScroll);
+        
+        loadMoreFilteredPosts();
+        
+        if (currentFilteredPosts.length > postsPerPage) {
+            window.addEventListener('scroll', handleFilteredScroll);
+        }
     };
 
-    const loadMoreFilteredPosts = (filteredPosts) => {
+    const loadMoreFilteredPosts = () => {
         const start = (currentPage - 1) * postsPerPage;
         const end = currentPage * postsPerPage;
-        const postsToRender = filteredPosts.slice(start, end);
+        const postsToRender = currentFilteredPosts.slice(start, end);
         renderPosts(postsToRender);
-    
-        if (end >= filteredPosts.length) {
-            window.removeEventListener('scroll', handleScroll);
+
+        if (end >= currentFilteredPosts.length) {
+            window.removeEventListener('scroll', handleFilteredScroll);
         }
         currentPage++;
+    };
+
+    const handleFilteredScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 50) {
+            loading.classList.remove('d-none');
+            setTimeout(() => {
+                loadMoreFilteredPosts();
+                loading.classList.add('d-none');
+            }, 1000);
+        }
     };
     
 
@@ -288,6 +310,8 @@ const viewBookmarks = () => {
 const viewAllPosts = () => {
     blogContainer.innerHTML = ''; // Clear the container
     currentPage = 1; // Reset page count
+    currentFilteredPosts = []; // Clear filtered posts
+    window.removeEventListener('scroll', handleFilteredScroll); // Remove filtered scroll handler
     loadMorePosts(); // Reload all posts
     window.addEventListener('scroll', handleScroll); // Re-enable scrolling
 };
