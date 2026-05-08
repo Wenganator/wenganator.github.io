@@ -10,6 +10,7 @@ body {
     width: 100%;
     height: 300px;
     perspective: 1000px;
+    perspective-origin: 50% 50%;
     margin-bottom: 2em;
     display: flex;
     justify-content: center;
@@ -21,7 +22,7 @@ body {
     width: 200px;
     height: 200px;
     transform-style: preserve-3d;
-    animation: rotate 15s linear infinite;
+    /* animation: rotate 15s linear infinite; */
 }
 
 .wheel img {
@@ -31,6 +32,11 @@ body {
     transform-origin: 50% 250px;
     backface-visibility: hidden;
     cursor: pointer;
+    pointer-events: auto;
+}
+
+.wheel.dragging img {
+    pointer-events: none;  /* Disable pointer events on images while dragging */
 }
 
 @keyframes rotate {
@@ -79,4 +85,65 @@ body {
     width: 30px;
     height: 30px;
     cursor: pointer;
+}
+
+/* ── Controls bar ── */
+.book-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2em;
+    align-items: center;
+    padding: 0.8em 1.2em;
+    margin-bottom: 1.5em;
+    background: #f0f0f5;
+    border-radius: 8px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.ctrl-btn {
+    padding: 0.4em 1em;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.ctrl-btn:hover { background: #e0e0e8; }
+.ctrl-btn.active { background: #4a4af0; color: white; border-color: #4a4af0; }
+
+/* ── Flat view ── */
+.genre.flat-view {
+    height: auto;
+    min-height: 160px;
+    perspective: none;
+}
+
+.genre.flat-view .wheel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 10px;
+    transform: none !important;
+    transform-style: flat;
+}
+
+.genre.flat-view .wheel img {
+    position: relative;
+    transform: none !important;
+    transform-origin: unset;
+    transition: transform 0.15s;
+}
+
+.genre.flat-view .wheel img:hover {
+    transform: scale(1.06) !important;
 }

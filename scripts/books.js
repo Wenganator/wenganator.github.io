@@ -52,6 +52,11 @@ const genres = {
     ]
 };
 
+// Global state for controls — lives OUTSIDE setupWheel
+let globalRotationSpeed = 0.5;
+let globalDirection = 1; // 1 = forward, -1 = reverse
+const allWheels = []; // track all wheel controllers for flat-view toggle
+
 function setupWheel(genre, elementId) {
     const wheel = document.getElementById(elementId);
     const books = genres[genre];
@@ -60,57 +65,111 @@ function setupWheel(genre, elementId) {
     books.forEach((book, index) => {
         const img = document.createElement('img');
         img.src = book.cover;
+        img.alt = book.title;
         img.style.transform = `rotateY(${index * angle}deg) translateZ(250px)`;
-        img.dataset.title = book.title;
-        img.dataset.author = book.author;
-        img.dataset.notes = book.notes;
-        img.onclick = () => showOverlay(book);
+        img.dataset.index = index; // store for flat-view reset
+        img.addEventListener('click', () => {
+            if (!hasDragged) showOverlay(book);
+        });
         wheel.appendChild(img);
     });
 
     let isDragging = false;
+    let hasDragged = false;
     let startX = 0;
+    let dragStartX = 0;
     let currentRotation = 0;
     let spinVelocity = 0;
-    let animationFrame;
+    let animationFrame = null;
+    let autoRotateFrame = null;
 
-    wheel.onmousedown = (event) => {
-        event.preventDefault();
-        isDragging = true;
-        startX = event.clientX;
-        cancelAnimationFrame(animationFrame);
+    const autoRotate = () => {
+        if (isDragging || animationFrame) return;
+        currentRotation -= globalRotationSpeed * globalDirection;
+        wheel.style.transform = `rotateY(${currentRotation}deg)`;
+        autoRotateFrame = requestAnimationFrame(autoRotate);
     };
 
-    wheel.onmousemove = (event) => {
+    autoRotate();
+
+    const handleMouseDown = (event) => {
+        if (wheel.closest('.flat-view')) return; // disable drag in flat view
+        isDragging = true;
+        hasDragged = false;
+        startX = event.clientX;
+        dragStartX = event.clientX;
+        spinVelocity = 0;
+        wheel.classList.add('dragging');
+        if (autoRotateFrame) { cancelAnimationFrame(autoRotateFrame); autoRotateFrame = null; }
+        if (animationFrame)  { cancelAnimationFrame(animationFrame);  animationFrame  = null; }
+    };
+
+    const handleMouseMove = (event) => {
         if (!isDragging) return;
+        if (Math.abs(event.clientX - dragStartX) > 5) hasDragged = true;
         const deltaX = event.clientX - startX;
         startX = event.clientX;
-        currentRotation += deltaX * 0.5;
+        currentRotation += deltaX * 0.3;
         wheel.style.transform = `rotateY(${currentRotation}deg)`;
         spinVelocity = deltaX;
     };
 
-    wheel.onmouseup = () => {
+    const handleMouseUp = () => {
+        if (!isDragging) return;
         isDragging = false;
-        let lastTime;
-        function animate(time) {
-            if (!lastTime) lastTime = time;
-            const deltaTime = time - lastTime;
-            lastTime = time;
+        wheel.classList.remove('dragging');
 
-            if (Math.abs(spinVelocity) > 0.1) {
-                currentRotation += spinVelocity * (deltaTime / 16);
-                wheel.style.transform = `rotateY(${currentRotation}deg)`;
-                spinVelocity *= 0.95;
-                animationFrame = requestAnimationFrame(animate);
-            } else {
-                animationFrame = null;
-            }
+        if (Math.abs(spinVelocity) > 0.5) {
+            let lastTime = null;
+            const animate = (time) => {
+                if (!lastTime) lastTime = time;
+                const deltaTime = time - lastTime;
+                lastTime = time;
+                if (Math.abs(spinVelocity) > 0.1) {
+                    currentRotation += spinVelocity * (deltaTime / 16);
+                    wheel.style.transform = `rotateY(${currentRotation}deg)`;
+                    spinVelocity *= 0.95;
+                    animationFrame = requestAnimationFrame(animate);
+                } else {
+                    animationFrame = null;
+                    autoRotate();
+                }
+            };
+            animationFrame = requestAnimationFrame(animate);
+        } else {
+            autoRotate();
         }
-        animationFrame = requestAnimationFrame(animate);
     };
 
-    wheel.onmouseleave = wheel.onmouseup;
+    // Touch support
+    wheel.addEventListener('touchstart', (e) => handleMouseDown({ clientX: e.touches[0].clientX }), { passive: true });
+    document.addEventListener('touchmove', (e) => handleMouseMove({ clientX: e.touches[0].clientX }), { passive: true });
+    document.addEventListener('touchend', handleMouseUp);
+
+    wheel.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    // Return a controller so flat-view toggle can stop/start rotation
+    return {
+        resumeAutoRotate: autoRotate,
+        stopAutoRotate: () => {
+            if (autoRotateFrame) { cancelAnimationFrame(autoRotateFrame); autoRotateFrame = null; }
+            if (animationFrame)  { cancelAnimationFrame(animationFrame);  animationFrame  = null; }
+        },
+        setFlatView: (flat) => {
+            const imgs = wheel.querySelectorAll('img');
+            if (flat) {
+                wheel.style.transform = 'none';
+                imgs.forEach(img => { img.style.transform = 'none'; });
+            } else {
+                imgs.forEach((img, i) => {
+                    img.style.transform = `rotateY(${i * angle}deg) translateZ(250px)`;
+                });
+                autoRotate();
+            }
+        }
+    };
 }
 
 function showOverlay(book) {
@@ -126,8 +185,36 @@ function closeOverlay() {
     document.getElementById('book-overlay').style.display = 'none';
 }
 
-setupWheel('Theology', 'wheel-theology');
-setupWheel('Nonfiction', 'wheel-nonfiction');
-setupWheel('Fiction', 'wheel-fiction');
-setupWheel('Classics', 'wheel-classics');
-setupWheel('Other', 'wheel-other');
+document.addEventListener('DOMContentLoaded', function () {
+    const controllers = [];
+    controllers.push(setupWheel('Theology',  'wheel-theology'));
+    controllers.push(setupWheel('Nonfiction','wheel-nonfiction'));
+    controllers.push(setupWheel('Fiction',   'wheel-fiction'));
+    controllers.push(setupWheel('Classics',  'wheel-classics'));
+    controllers.push(setupWheel('Other',     'wheel-other'));
+
+    // ── Speed control ──
+    document.getElementById('speed-control').addEventListener('input', function () {
+        globalRotationSpeed = parseFloat(this.value);
+    });
+
+    // ── Direction toggle ──
+    document.getElementById('direction-btn').addEventListener('click', function () {
+        globalDirection *= -1;
+        this.classList.toggle('active');
+    });
+
+    // ── Flat view toggle ──
+    let isFlatView = false;
+    document.getElementById('flat-view-btn').addEventListener('click', function () {
+        isFlatView = !isFlatView;
+        this.textContent = isFlatView ? '⟳ Wheel View' : '⊞ Flat View';
+        this.classList.toggle('active', isFlatView);
+
+        document.querySelectorAll('.genre').forEach(g => g.classList.toggle('flat-view', isFlatView));
+        controllers.forEach(c => {
+            if (isFlatView) c.stopAutoRotate();
+            c.setFlatView(isFlatView);
+        });
+    });
+});

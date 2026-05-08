@@ -26,6 +26,19 @@
     <main>
         <h1>Books</h1>
 
+        <div class="book-controls" id="book-controls">
+            <div class="control-group">
+                <label for="speed-control">Speed</label>
+                <input type="range" id="speed-control" min="0" max="2" step="0.1" value="0.5">
+            </div>
+            <div class="control-group">
+                <button id="direction-btn" class="ctrl-btn">⇄ Reverse Direction</button>
+            </div>
+            <div class="control-group">
+                <button id="flat-view-btn" class="ctrl-btn">⊞ Flat View</button>
+            </div>
+        </div>
+
         <div class="genre" id="genre-theology">
             <div class="wheel" id="wheel-theology"></div>
         </div>
@@ -64,7 +77,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
 
     <!-- My personal JS -->
-    <script src="scripts/books.js"></script>
+    <script src="scripts/books.js" defer></script>
     <script src="scripts/app.js" defer></script>
 
 </body>
