@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>♠ Blackjack Strategy Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060e08;--felt:#0d3d1e;--felt-l:#165a2d;
+  --gold:#c9a84c;--gold-l:#e8c56e;--gold-d:#8a6c28;--gold-faint:rgba(201,168,76,.12);
+  --cream:#f0e6cc;--cream-d:#bfaf8e;--cream-dd:#7a6e55;
+  --card:#fafaf7;--red:#c0392b;
+  --H:rgba(192,57,43,.85);--S:rgba(34,153,84,.85);--D:rgba(31,97,141,.85);
+  --Ds:rgba(17,122,101,.85);--P:rgba(108,52,131,.85);--Ph:rgba(85,42,108,.7);
+  --Rh:rgba(176,58,46,.85);--Rs:rgba(130,40,28,.85);--Rp:rgba(155,50,35,.8);
+  --ok:#27ae60;--err:#c0392b;
+  --bdr:rgba(201,168,76,.28);--r6:6px;--r10:10px;--r14:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lora',Georgia,serif;background:var(--bg);color:var(--cream);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(21,90,45,.2) 0%,transparent 65%),radial-gradient(ellipse 60% 50% at 80% 50%,rgba(21,90,45,.15) 0%,transparent 65%);pointer-events:none;z-index:0}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;background:rgba(6,14,8,.97);border-bottom:1px solid var(--bdr);backdrop-filter:blur(12px);display:flex;align-items:center;padding:0 1.2rem;gap:.6rem}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);white-space:nowrap;letter-spacing:.04em;cursor:pointer;user-select:none;margin-right:.4rem}
+.nav-logo span{color:var(--cream-d)}
+.nav-tabs{display:flex;gap:.25rem;flex:1;overflow-x:auto}
+.nav-tab{padding:.38rem .85rem;background:none;border:1px solid transparent;color:var(--cream-d);font-family:'Lora',serif;font-size:.88rem;cursor:pointer;border-radius:var(--r6);transition:.18s;white-space:nowrap}
+.nav-tab:hover{color:var(--cream);border-color:var(--bdr)}
+.nav-tab.active{color:var(--gold);border-color:var(--gold-d);background:var(--gold-faint)}
+.nav-gear{padding:.38rem .7rem;background:none;border:1px solid var(--bdr);color:var(--cream-d);cursor:pointer;border-radius:var(--r6);font-size:1.05rem;transition:.18s;flex-shrink:0}
+.nav-gear:hover{color:var(--gold);border-color:var(--gold-d)}
+
+/* MAIN */
+.main{padding-top:58px;min-height:100vh;position:relative;z-index:1}
+.page{display:none;animation:fadeUp .28s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{width:62px;height:88px;background:var(--card);border-radius:6px;border:1px solid rgba(0,0,0,.12);box-shadow:2px 3px 8px rgba(0,0,0,.45);display:flex;flex-direction:column;justify-content:space-between;padding:4px 5px;animation:dealCard .25s cubic-bezier(.34,1.56,.64,1);flex-shrink:0}
+.card-sm{width:52px;height:73px;padding:3px 4px}
+@keyframes dealCard{from{transform:scale(.55) translateY(-16px);opacity:0}to{transform:scale(1);opacity:1}}
+.card-rank{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;line-height:1}
+.card-suit{font-size:1.5rem;text-align:center;flex:1;display:flex;align-items:center;justify-content:center}
+.card-rank-b{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;line-height:1;text-align:right;transform:rotate(180deg)}
+.card.red{color:var(--red)}
+.card.blk{color:#1a1a2e}
+.card.facedown{background:linear-gradient(145deg,#1c3a6a,#0e2040);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0,rgba(255,255,255,.04) 1px,transparent 1px,transparent 8px)}
+.cards-row{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;min-height:88px;align-items:center}
+.hand-val{margin-top:.35rem;font-family:'DM Mono',monospace;font-size:.82rem;color:rgba(240,230,204,.6);text-align:center;min-height:1.2em}
+
+/* BUTTONS */
+.btn{padding:.6rem 1.3rem;border:2px solid;border-radius:var(--r6);font-family:'Playfair Display',serif;font-size:.9rem;cursor:pointer;transition:.18s;letter-spacing:.03em;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+.btn-H{background:rgba(192,57,43,.18);border-color:#c0392b;color:#e74c3c}
+.btn-H:hover{background:rgba(192,57,43,.35)}
+.btn-S{background:rgba(34,153,84,.18);border-color:#22994a;color:#2ecc71}
+.btn-S:hover{background:rgba(34,153,84,.35)}
+.btn-D{background:rgba(31,97,141,.18);border-color:#1f618d;color:#5dade2}
+.btn-D:hover{background:rgba(31,97,141,.35)}
+.btn-P{background:rgba(108,52,131,.18);border-color:#6c3483;color:#af7ac5}
+.btn-P:hover{background:rgba(108,52,131,.35)}
+.btn-R{background:rgba(176,58,46,.18);border-color:#b03a2e;color:#e59866}
+.btn-R:hover{background:rgba(176,58,46,.35)}
+.btn-gold{background:rgba(201,168,76,.15);border-color:var(--gold-d);color:var(--gold-l)}
+.btn-gold:hover{background:rgba(201,168,76,.28)}
+.btn-ghost{background:none;border-color:var(--bdr);color:var(--cream-d)}
+.btn-ghost:hover{border-color:var(--gold-d);color:var(--cream)}
+
+/* FELT */
+.felt{background:linear-gradient(150deg,#0e4a25,#0a3018);border-radius:60px;padding:2rem 1.8rem;position:relative;border:4px solid rgba(120,75,30,.6);box-shadow:0 0 0 5px rgba(6,14,8,.9),0 18px 50px rgba(0,0,0,.55),inset 0 2px 18px rgba(0,0,0,.3)}
+.felt::after{content:'';position:absolute;inset:12px;border-radius:52px;border:1px solid rgba(201,168,76,.1);pointer-events:none}
+
+/* LEARN */
+.learn-pg{max-width:800px;margin:0 auto;padding:3rem 1.5rem}
+.learn-hero{text-align:center;padding:2.5rem 0 3rem;border-bottom:1px solid var(--bdr);margin-bottom:2.5rem}
+.learn-hero h1{font-family:'Playfair Display',serif;font-size:2.6rem;color:var(--gold);margin-bottom:.7rem;line-height:1.2}
+.learn-hero p{font-size:1.1rem;color:var(--cream-d);max-width:540px;margin:0 auto;line-height:1.75}
+.sec-card{background:rgba(13,61,30,.35);border:1px solid var(--bdr);border-radius:var(--r14);padding:1.6rem 1.8rem;margin-bottom:1.6rem}
+.sec-card h2{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold-l);margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem}
+.sec-card h3{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);margin:1.1rem 0 .5rem}
+.sec-card p{line-height:1.78;color:var(--cream-d);font-size:1rem;margin-bottom:.8rem}
+.rule-list{list-style:none;padding:0}
+.rule-list li{padding:.45rem 0 .45rem 1.4rem;position:relative;color:var(--cream-d);border-bottom:1px solid rgba(201,168,76,.07);font-size:1rem;line-height:1.65}
+.rule-list li::before{content:'♦';position:absolute;left:0;color:var(--gold-d);font-size:.6rem;top:.82rem}
+.rule-list li:last-child{border-bottom:none}
+.info-box{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.26);border-radius:var(--r6);padding:.85rem 1rem;margin:.75rem 0;color:var(--gold-l);font-size:.93rem;line-height:1.65}
+.action-key{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.7rem}
+.abadge{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .7rem;border-radius:var(--r6);font-size:.84rem;font-family:'DM Mono',monospace}
+.ab-H{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);color:#e74c3c}
+.ab-S{background:rgba(34,153,84,.2);border:1px solid rgba(34,153,84,.5);color:#2ecc71}
+.ab-D{background:rgba(31,97,141,.2);border:1px solid rgba(31,97,141,.5);color:#5dade2}
+.ab-Ds{background:rgba(17,122,101,.2);border:1px solid rgba(17,122,101,.5);color:#48c9b0}
+.ab-P{background:rgba(108,52,131,.2);border:1px solid rgba(108,52,131,.5);color:#af7ac5}
+.ab-R{background:rgba(176,58,46,.2);border:1px solid rgba(176,58,46,.5);color:#e59866}
+
+/* CHART */
+.chart-pg{max-width:1050px;margin:0 auto;padding:2rem 1.2rem}
+.chart-pg>h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--gold);text-align:center;margin-bottom:.35rem}
+.chart-sub{text-align:center;color:var(--cream-d);margin-bottom:1.4rem;font-size:.9rem}
+.chart-legend{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.6rem}
+.chart-sec{background:rgba(13,61,30,.28);border:1px solid var(--bdr);border-radius:var(--r14);padding:1.4rem;margin-bottom:1.6rem;overflow-x:auto}
+.chart-sec h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:.9rem}
+.bs-tbl{border-collapse:collapse;min-width:540px;width:100%}
+.bs-tbl th{background:rgba(201,168,76,.13);color:var(--gold);padding:.42rem .55rem;font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500;text-align:center;border:1px solid rgba(201,168,76,.17)}
+.bs-tbl th.rh{color:var(--cream);text-align:left;padding-left:.75rem;min-width:68px}
+.bs-tbl td{padding:.35rem .42rem;text-align:center;font-family:'DM Mono',monospace;font-size:.76rem;font-weight:500;border:1px solid rgba(255,255,255,.04);cursor:pointer;transition:filter .15s,transform .1s;min-width:35px}
+.bs-tbl td:hover{filter:brightness(1.5);transform:scale(1.1);position:relative;z-index:2}
+.c-H{background:var(--H);color:#fff}.c-S{background:var(--S);color:#fff}
+.c-D{background:var(--D);color:#fff}.c-Ds{background:var(--Ds);color:#fff}
+.c-P{background:var(--P);color:#fff}.c-Ph{background:var(--Ph);color:#ddd}
+.c-Rh{background:var(--Rh);color:#fff}.c-Rs{background:var(--Rs);color:#fff}.c-Rp{background:var(--Rp);color:#fff}
+.tip{position:fixed;background:rgba(6,14,8,.97);border:1px solid var(--gold-d);border-radius:var(--r10);padding:.65rem .95rem;font-family:'Lora',serif;font-size:.88rem;color:var(--cream);max-width:240px;z-index:1000;pointer-events:none;opacity:0;transition:opacity .16s;line-height:1.55}
+.tip.show{opacity:1}
+
+/* PRACTICE */
+.prac-pg{max-width:720px;margin:0 auto;padding:2rem 1.4rem}
+.prac-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.7rem}
+.prac-hdr h1{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold)}
+.stat-pills{display:flex;gap:1.2rem;flex-wrap:wrap}
+.stat-pill .sv{font-family:'DM Mono',monospace;font-size:1.25rem;color:var(--gold);display:block}
+.stat-pill .sl{font-size:.72rem;color:var(--cream-d);text-transform:uppercase;letter-spacing:.08em}
+.prac-felt{padding:1.8rem 1.5rem;min-height:270px;margin-bottom:1.4rem}
+.area-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(240,230,204,.38);margin-bottom:.55rem;text-align:center;font-family:'DM Mono',monospace}
+.dealer-area{margin-bottom:1.6rem;padding-bottom:.9rem;border-bottom:1px solid rgba(201,168,76,.1)}
+.hand-type-badge{display:inline-block;padding:.18rem .65rem;border-radius:20px;font-size:.72rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.45rem}
+.htb-hard{background:rgba(240,230,204,.08);color:var(--cream-d);border:1px solid rgba(240,230,204,.18)}
+.htb-soft{background:rgba(31,97,141,.2);color:#5dade2;border:1px solid rgba(31,97,141,.4)}
+.htb-pair{background:rgba(108,52,131,.2);color:#af7ac5;border:1px solid rgba(108,52,131,.4)}
+.act-btns{display:flex;gap:.55rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.1rem}
+.feedback{text-align:center;padding:.85rem 1.1rem;border-radius:var(--r10);margin-bottom:.95rem;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;transition:all .28s}
+.fb-idle{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.18)}
+.fb-ok{background:rgba(39,174,96,.13);border:1px solid rgba(39,174,96,.4)}
+.fb-err{background:rgba(192,57,43,.13);border:1px solid rgba(192,57,43,.4)}
+.fb-ico{font-size:1.3rem}
+.fb-txt{font-size:.98rem;color:var(--cream)}
+.fb-detail{font-size:.88rem;color:var(--cream-d);line-height:1.55}
+
+/* TABLE */
+.tbl-pg{max-width:920px;margin:0 auto;padding:2rem 1.4rem}
+.tbl-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:.7rem}
+.tbl-hdr h1{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold)}
+.bankroll-pill{background:rgba(201,168,76,.1);border:1px solid var(--bdr);border-radius:var(--r10);padding:.4rem .9rem;text-align:center}
+.bankroll-pill .amt{font-family:'DM Mono',monospace;font-size:1.3rem;color:var(--gold)}
+.bankroll-pill .blbl{font-size:.68rem;color:var(--cream-d);text-transform:uppercase;letter-spacing:.09em;display:block}
+.casino-tbl{border-radius:50% 50% 14px 14px / 22% 22% 14px 14px;padding:1.8rem 2rem 2.2rem;min-height:360px;margin-bottom:1.4rem}
+.dealer-sec{text-align:center;margin-bottom:1.4rem;padding-bottom:.9rem;border-bottom:1px solid rgba(201,168,76,.1)}
+.dealer-name{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(201,168,76,.5);margin-bottom:.4rem;font-family:'DM Mono',monospace}
+.ai-row{display:flex;justify-content:space-around;margin-bottom:1.1rem;flex-wrap:wrap;gap:.4rem}
+.seat{display:flex;flex-direction:column;align-items:center;gap:.25rem;min-width:95px;border-radius:var(--r10);padding:.45rem .35rem;transition:.22s;border:1px solid transparent}
+.seat.seat-active{background:rgba(201,168,76,.09);border-color:rgba(201,168,76,.28)}
+.seat-name{font-size:.7rem;color:var(--cream-dd);font-family:'DM Mono',monospace}
+.seat.seat-active .seat-name{color:var(--gold)}
+.seat-bet{font-size:.7rem;color:var(--cream-dd);font-family:'DM Mono',monospace}
+.seat-result{font-size:.88rem;font-family:'DM Mono',monospace;font-weight:500;min-height:1.2em}
+.res-win{color:#2ecc71}.res-lose{color:#e74c3c}.res-push{color:var(--cream-dd)}.res-bj{color:var(--gold-l)}.res-surr{color:#e59866}
+.human-sec{border-top:1px solid rgba(201,168,76,.1);padding-top:1.4rem;text-align:center}
+.you-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:rgba(201,168,76,.5);margin-bottom:.4rem;font-family:'DM Mono',monospace}
+.bet-area{background:rgba(13,61,30,.4);border:1px solid var(--bdr);border-radius:var(--r14);padding:1.3rem;margin-bottom:1.1rem}
+.bet-area h3{font-family:'Playfair Display',serif;color:var(--gold);margin-bottom:.85rem;text-align:center}
+.chip-row{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem}
+.chip{width:52px;height:52px;border-radius:50%;border:3px dashed;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'DM Mono',monospace;font-size:.7rem;font-weight:500;transition:.18s;user-select:none;flex-shrink:0}
+.chip:hover{transform:scale(1.12) translateY(-3px);box-shadow:0 5px 12px rgba(0,0,0,.4)}
+.chip:active{transform:scale(.95)}
+.ch5{background:rgba(192,57,43,.26);border-color:#e74c3c;color:#e74c3c}
+.ch10{background:rgba(31,97,141,.26);border-color:#5dade2;color:#5dade2}
+.ch25{background:rgba(34,153,84,.26);border-color:#2ecc71;color:#2ecc71}
+.ch50{background:rgba(108,52,131,.26);border-color:#af7ac5;color:#af7ac5}
+.ch100{background:rgba(201,168,76,.26);border-color:var(--gold);color:var(--gold)}
+.ch500{background:rgba(192,57,43,.26);border-color:#e59866;color:#e59866}
+.bet-disp{text-align:center;margin:.45rem 0}
+.bet-amt{font-family:'DM Mono',monospace;font-size:1.85rem;color:var(--gold)}
+.bet-ctrls{display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;margin-top:.55rem}
+.bet-ctrl{padding:.3rem .8rem;background:rgba(201,168,76,.08);border:1px solid var(--bdr);color:var(--cream-d);border-radius:var(--r6);cursor:pointer;font-size:.85rem;transition:.18s}
+.bet-ctrl:hover{background:rgba(201,168,76,.2);color:var(--cream)}
+.game-msg{text-align:center;padding:.6rem;font-family:'Playfair Display',serif;font-size:1.02rem;color:var(--gold-l);min-height:42px;display:flex;align-items:center;justify-content:center}
+
+/* STATS */
+.stats-pg{max-width:820px;margin:0 auto;padding:2rem 1.4rem}
+.stats-pg>h1{font-family:'Playfair Display',serif;font-size:1.85rem;color:var(--gold);text-align:center;margin-bottom:1.7rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:.85rem;margin-bottom:1.8rem}
+.s-card{background:rgba(13,61,30,.35);border:1px solid var(--bdr);border-radius:var(--r10);padding:1rem;text-align:center}
+.s-card .sv{font-family:'DM Mono',monospace;font-size:1.75rem;color:var(--gold);display:block;margin-bottom:.18rem}
+.s-card .sl{font-size:.75rem;color:var(--cream-d);text-transform:uppercase;letter-spacing:.08em}
+.acc-bar{background:rgba(255,255,255,.09);border-radius:4px;height:6px;overflow:hidden;margin-top:.55rem}
+.acc-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#c0392b,#f39c12 50%,#27ae60 100%);background-size:300% 100%;transition:width .55s ease}
+.chart-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.7rem}
+.cb-item{background:rgba(13,61,30,.35);border:1px solid var(--bdr);border-radius:var(--r10);padding:.9rem;text-align:center}
+.cb-item .cbt{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--gold-l);margin-bottom:.4rem}
+.cb-item .cba{font-family:'DM Mono',monospace;font-size:1.4rem;color:var(--cream)}
+.cb-item .cbr{font-size:.78rem;color:var(--cream-d);margin-top:.2rem}
+.hist-tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.hist-tbl th{background:rgba(201,168,76,.1);color:var(--gold);padding:.42rem .65rem;font-family:'DM Mono',monospace;font-size:.74rem;text-align:left;border-bottom:1px solid var(--bdr)}
+.hist-tbl td{padding:.35rem .65rem;color:var(--cream-d);border-bottom:1px solid rgba(255,255,255,.04);font-family:'DM Mono',monospace;font-size:.8rem}
+.row-ok td:first-child{color:#2ecc71}
+.row-err td:first-child{color:#e74c3c}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:.9rem}
+
+/* SETTINGS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+.overlay.open{display:flex}
+.modal{background:#091410;border:1px solid var(--bdr);border-radius:var(--r14);padding:1.8rem;width:90%;max-width:460px;max-height:85vh;overflow-y:auto;position:relative}
+.modal h2{font-family:'Playfair Display',serif;color:var(--gold);margin-bottom:1.3rem;font-size:1.4rem}
+.modal-x{position:absolute;top:.9rem;right:.9rem;background:none;border:none;color:var(--cream-d);font-size:1.2rem;cursor:pointer;padding:.2rem}
+.sg{margin-bottom:1.15rem}
+.sg label{display:block;color:var(--cream);margin-bottom:.38rem;font-size:.95rem}
+.sg small{display:block;color:var(--cream-d);font-size:.8rem;margin-top:.2rem;line-height:1.4}
+.toggle-row{display:flex;align-items:center;gap:.65rem;margin-top:.35rem}
+.tog{position:relative;width:40px;height:21px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-s{position:absolute;inset:0;background:rgba(255,255,255,.13);border-radius:21px;cursor:pointer;transition:.26s}
+.tog-s::before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:var(--cream-d);border-radius:50%;transition:.26s}
+.tog input:checked+.tog-s{background:rgba(201,168,76,.42)}
+.tog input:checked+.tog-s::before{transform:translateX(19px);background:var(--gold)}
+.s-sel,.s-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bdr);color:var(--cream);padding:.42rem .65rem;border-radius:var(--r6);font-family:'Lora',serif;font-size:.92rem}
+.s-sel option{background:#091410}
+.gold-div{height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:1.15rem 0}
+.reset-btn{display:block;width:100%;padding:.65rem;background:rgba(192,57,43,.13);border:1px solid rgba(192,57,43,.4);color:#e74c3c;border-radius:var(--r10);cursor:pointer;font-family:'Lora',serif;font-size:.92rem;transition:.18s;margin-top:.35rem}
+.reset-btn:hover{background:rgba(192,57,43,.28)}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:1.4rem;right:1.4rem;z-index:1000;display:flex;flex-direction:column;gap:.35rem;pointer-events:none}
+.toast{background:rgba(6,14,8,.97);border:1px solid var(--bdr);border-radius:var(--r10);padding:.6rem 1rem;font-size:.86rem;color:var(--cream);animation:tIn .25s ease,tOut .28s ease 2.7s forwards;max-width:250px;line-height:1.45}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tOut{to{opacity:0;transform:translateX(16px)}}
+
+.gold-divider{height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:1.8rem 0}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(201,168,76,.45)}
+@media(max-width:600px){
+  .nav-logo{font-size:1rem}
+  .nav-tab{padding:.3rem .5rem;font-size:.8rem}
+  .felt,.casino-tbl{padding:1.4rem 1rem;border-radius:40px}
+  .chip{width:44px;height:44px}
+  .ai-row{gap:.2rem}
+  .seat{min-width:75px}
+  .chart-breakdown{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo" onclick="showPage('learn')">♠ <span>BSA</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('learn')" id="tab-learn">Learn</button>
+    <button class="nav-tab" onclick="showPage('chart')" id="tab-chart">Chart</button>
+    <button class="nav-tab" onclick="showPage('practice')" id="tab-practice">Practice</button>
+    <button class="nav-tab" onclick="showPage('table')" id="tab-table">Table</button>
+    <button class="nav-tab" onclick="showPage('stats')" id="tab-stats">Stats</button>
+  </div>
+  <button class="nav-gear" onclick="openSettings()" title="Settings">⚙</button>
+</nav>
+
+<div class="main">
+
+<!-- ═══ LEARN PAGE ═══ -->
+<div id="page-learn" class="page active">
+<div class="learn-pg">
+  <div class="learn-hero">
+    <h1>Blackjack<br>Strategy Academy</h1>
+    <p>Master the mathematically optimal play for every situation and reduce the house edge to under 0.5%.</p>
+  </div>
+  <div class="sec-card">
+    <h2>🎯 The Objective</h2>
+    <p>Beat the dealer by getting closer to 21 without going over. A <strong style="color:var(--gold-l)">Blackjack</strong> (Ace + 10-value card) pays 3:2 and beats any regular 21. If the dealer busts, all non-busted players win automatically.</p>
+  </div>
+  <div class="sec-card">
+    <h2>🃏 Card Values</h2>
+    <ul class="rule-list">
+      <li><strong>2–9</strong> — Face value</li>
+      <li><strong>10, J, Q, K</strong> — All worth 10</li>
+      <li><strong>Ace</strong> — Worth 11, counted as 1 only if 11 would cause a bust. A hand with an Ace counting as 11 is a <em>soft</em> hand.</li>
+    </ul>
+    <div class="info-box">💡 "Soft 18" = Ace + 7 where the Ace counts as 11. It's soft because you can't bust by drawing one card — the Ace simply reverts to 1.</div>
+  </div>
+  <div class="sec-card">
+    <h2>🔄 How a Round Works</h2>
+    <ul class="rule-list">
+      <li><strong>Place your bet</strong> before cards are dealt</li>
+      <li><strong>Deal</strong> — You get two face-up cards; dealer gets one face-up (upcard) and one face-down (hole card)</li>
+      <li><strong>Act on your hand</strong> before the dealer reveals</li>
+      <li><strong>Dealer reveals</strong> hole card and must hit until reaching hard 17+</li>
+      <li><strong>Settle bets</strong> — Higher total wins; blackjack pays 3:2; tie is a push</li>
+    </ul>
+  </div>
+  <div class="sec-card">
+    <h2>✋ Your Options</h2>
+    <div class="action-key">
+      <span class="abadge ab-H">H — Hit</span>
+      <span class="abadge ab-S">S — Stand</span>
+      <span class="abadge ab-D">D — Double Down</span>
+      <span class="abadge ab-P">P — Split</span>
+      <span class="abadge ab-R">R — Surrender</span>
+      <span class="abadge ab-Ds">Ds — Dbl/Stand</span>
+    </div>
+    <h3>Hit (H)</h3><p>Take another card. Repeat until you stand or bust.</p>
+    <h3>Stand (S)</h3><p>Keep your current total. Your turn ends.</p>
+    <h3>Double Down (D)</h3><p>Double your bet and receive exactly one more card. Only available on the initial two cards.</p>
+    <h3>Split (P)</h3><p>When your two cards share a value, split them into two hands, each with its own bet. <strong>Always split Aces and 8s. Never split 5s or 10s.</strong></p>
+    <h3>Surrender (R)</h3><p>Forfeit your hand and recover half your bet. Only available on the initial two cards. When the chart shows Rh, surrender if offered — otherwise Hit.</p>
+    <h3>Double/Stand (Ds)</h3><p>Double if allowed (e.g., soft 18 vs 4–6), otherwise Stand. Common for soft hands with good doubling potential.</p>
+  </div>
+  <div class="sec-card">
+    <h2>🏦 Dealer Rules</h2>
+    <ul class="rule-list">
+      <li>Dealer must hit any total of 16 or less</li>
+      <li><strong>S17</strong> (standard, player-friendly): Dealer stands on all 17s</li>
+      <li><strong>H17</strong> (worse for player): Dealer hits soft 17 — adds ~0.22% to house edge</li>
+      <li>Dealer has no choices — they follow fixed rules with no strategy decisions</li>
+    </ul>
+  </div>
+  <div class="sec-card">
+    <h2>🧠 What is Basic Strategy?</h2>
+    <p>Basic Strategy is the mathematically optimal decision for every combination of your hand vs. the dealer's upcard. Computed from millions of simulated hands, it reduces the house edge to roughly <strong style="color:#2ecc71">0.4–0.5%</strong> — the lowest of any casino table game.</p>
+    <div class="info-box">⚡ Basic Strategy doesn't guarantee winning sessions. It minimizes your average loss rate over time by maximizing expected value on every decision.</div>
+    <h3>The Logic Behind Key Plays</h3>
+    <ul class="rule-list">
+      <li><strong>Hit 12–16 vs dealer 7–A:</strong> Dealer is likely to make a strong hand. You'll lose anyway if you stand on 16 vs a dealer 20 — take the chance to improve.</li>
+      <li><strong>Stand 12+ vs dealer 4–6:</strong> Dealer has a "bust card" and must hit — let them do the work.</li>
+      <li><strong>Double 10–11 vs weak dealers:</strong> High chance of landing 20 or 21, and you earn double on the win.</li>
+      <li><strong>Always split 8s:</strong> Hard 16 is the worst hand. Two hands starting at 8 are significantly better EV.</li>
+      <li><strong>Never split 10s:</strong> A total of 20 wins ~85% of the time. Splitting it away is a huge mistake.</li>
+      <li><strong>Surrender 15/16 vs dealer 10:</strong> You're a heavy underdog — recovering 50¢ beats the expected outcome of playing.</li>
+    </ul>
+  </div>
+  <div class="sec-card">
+    <h2>🚫 Common Mistakes</h2>
+    <ul class="rule-list">
+      <li>Standing on 16 vs dealer 7–A (should hit or surrender)</li>
+      <li>Not doubling 11 vs dealer 2–10 (biggest missed EV mistake)</li>
+      <li>Splitting 10s (never do this — 20 is a powerhouse)</li>
+      <li>Not splitting Aces (always split them)</li>
+      <li>Taking insurance (a sucker bet with ~7.7% expected loss)</li>
+      <li>Standing on soft 17 (A,6) — always hit or double</li>
+      <li>Standing on 12 vs dealer 2–3 out of "caution" (correct: hit)</li>
+    </ul>
+  </div>
+  <div class="sec-card">
+    <h2>🎓 How to Use This Trainer</h2>
+    <ul class="rule-list">
+      <li><strong>Chart</strong> — Full Basic Strategy reference table. Click any cell for an explanation. Color-coded for fast memorization.</li>
+      <li><strong>Practice</strong> — Random scenarios with instant feedback. Focus on specific hand types in Settings.</li>
+      <li><strong>Table</strong> — Full casino simulation with AI players, bankroll management, and betting.</li>
+      <li><strong>Stats</strong> — Track your accuracy by hand type, monitor your bankroll trend, and review recent mistakes.</li>
+    </ul>
+  </div>
+  <div style="text-align:center;padding:2rem 0 1rem">
+    <button class="btn btn-gold" style="font-size:1rem;padding:.75rem 2.2rem" onclick="showPage('chart')">Study the Strategy Chart →</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ CHART PAGE ═══ -->
+<div id="page-chart" class="page">
+<div class="chart-pg">
+  <h1>Basic Strategy Reference</h1>
+  <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:.9rem;flex-wrap:wrap">
+    <button class="btn btn-gold" id="ct-s17" onclick="setChartMode('s17')">S17 — Dealer Stands Soft 17</button>
+    <button class="btn btn-ghost" id="ct-h17" onclick="setChartMode('h17')">H17 — Dealer Hits Soft 17</button>
+  </div>
+  <p class="chart-sub" id="chart-sub">6-deck · Dealer Stands Soft 17 (S17) · DAS · Late Surrender · Hover any cell for explanation</p>
+  <div class="chart-legend" id="chart-legend"></div>
+  <div id="chart-content"></div>
+</div>
+</div>
+
+<!-- ═══ PRACTICE PAGE ═══ -->
+<div id="page-practice" class="page">
+<div class="prac-pg">
+  <div class="prac-hdr">
+    <h1>Practice Mode</h1>
+    <div class="stat-pills">
+      <div class="stat-pill"><span class="sv" id="p-acc">—</span><span class="sl">Accuracy</span></div>
+      <div class="stat-pill"><span class="sv" id="p-hands">0</span><span class="sl">Hands</span></div>
+      <div class="stat-pill"><span class="sv" id="p-streak">0</span><span class="sl">Streak 🔥</span></div>
+    </div>
+  </div>
+  <div class="felt prac-felt">
+    <div class="dealer-area">
+      <div class="area-lbl">Dealer Upcard</div>
+      <div class="cards-row" id="p-dealer-cards"></div>
+    </div>
+    <div style="text-align:center">
+      <div class="area-lbl">Your Hand</div>
+      <div id="p-hand-type"></div>
+      <div class="cards-row" id="p-player-cards"></div>
+      <div class="hand-val" id="p-hand-val"></div>
+    </div>
+  </div>
+  <div class="act-btns" id="p-action-btns"></div>
+  <div class="feedback fb-idle" id="p-feedback">
+    <div class="fb-txt">Deal a hand to begin practicing</div>
+  </div>
+  <div style="display:flex;gap:.55rem;justify-content:center;flex-wrap:wrap">
+    <button class="btn btn-gold" id="p-new-btn" onclick="dealPracticeHand()">Deal Hand</button>
+    <button class="btn btn-ghost" id="p-hint-btn" onclick="showHint()" style="display:none">💡 Hint</button>
+    <button class="btn btn-ghost" onclick="showPage('chart')">📋 Chart</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TABLE PAGE ═══ -->
+<div id="page-table" class="page">
+<div class="tbl-pg">
+  <div class="tbl-hdr">
+    <h1>Casino Table</h1>
+    <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
+      <div class="bankroll-pill"><span class="blbl">Bankroll</span><span class="amt" id="t-bankroll">$1,000</span></div>
+      <div class="bankroll-pill"><span class="blbl">Net P/L</span><span class="amt" id="t-pnl" style="color:var(--cream-d)">$0</span></div>
+      <div class="bankroll-pill"><span class="blbl">Hands</span><span class="amt" id="t-hands-played" style="font-size:1rem">0</span></div>
+    </div>
+  </div>
+  <div class="felt casino-tbl">
+    <div class="dealer-sec">
+      <div class="dealer-name">Dealer</div>
+      <div class="cards-row" id="t-dealer-cards"></div>
+      <div class="hand-val" id="t-dealer-val"></div>
+    </div>
+    <div class="ai-row" id="t-ai-row"></div>
+    <div class="human-sec">
+      <div class="you-label">You</div>
+      <div class="cards-row" id="t-player-cards"></div>
+      <div class="hand-val" id="t-player-val"></div>
+      <div id="t-split-cards" style="display:none">
+        <div style="font-size:.7rem;color:var(--gold);font-family:'DM Mono',monospace;margin:.5rem 0 .3rem">Split Hand 2</div>
+        <div class="cards-row" id="t-split-cards-row"></div>
+        <div class="hand-val" id="t-split-val"></div>
+      </div>
+    </div>
+  </div>
+  <div class="game-msg" id="t-message">Place your bet and click Deal.</div>
+  <div id="t-feedback-msg" style="text-align:center;font-size:.88rem;color:#e74c3c;min-height:1.4em;margin-bottom:.4rem"></div>
+  <div class="bet-area" id="t-bet-area">
+    <h3>Place Your Bet</h3>
+    <div class="chip-row" id="t-chips"></div>
+    <div class="bet-disp"><span class="bet-amt" id="t-bet-amt">$0</span></div>
+    <div class="bet-ctrls">
+      <button class="bet-ctrl" onclick="clearBet()">Clear</button>
+      <button class="bet-ctrl" onclick="repeatBet()">Repeat</button>
+      <button class="bet-ctrl" onclick="maxBet()">Max</button>
+    </div>
+    <button class="btn btn-gold" id="t-deal-btn" onclick="startTableRound()" style="display:block;width:100%;max-width:260px;margin:1rem auto 0;font-size:.98rem">Deal</button>
+  </div>
+  <div class="act-btns" id="t-action-btns" style="display:none"></div>
+  <div style="text-align:center;margin-top:.6rem">
+    <button class="btn btn-gold" id="t-next-btn" onclick="nextTableRound()" style="display:none">Next Round</button>
+    <button class="btn btn-ghost" id="t-reload-btn" onclick="reloadBankroll()" style="display:none;margin-left:.55rem">Reload Bankroll</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ STATS PAGE ═══ -->
+<div id="page-stats" class="page">
+<div class="stats-pg">
+  <h1>Your Progress</h1>
+  <div id="stats-content"></div>
+</div>
+</div>
+
+</div><!-- .main -->
+
+<!-- Settings Modal -->
+<div id="settings-overlay" class="overlay">
+<div class="modal">
+  <h2>⚙ Settings</h2>
+  <button class="modal-x" onclick="closeSettings()">✕</button>
+  <div class="sg"><label>Number of Decks</label>
+    <select class="s-sel" id="s-decks" onchange="saveSetting('numDecks',+this.value);PS.deck=[];if(T)initTableState()">
+      <option value="1">1 Deck</option><option value="2">2 Decks</option>
+      <option value="4">4 Decks</option><option value="6" selected>6 Decks (standard)</option>
+      <option value="8">8 Decks</option>
+    </select>
+  </div>
+  <div class="sg"><label>Dealer Rule</label>
+    <select class="s-sel" id="s-dealer" onchange="setChartMode(this.value)">
+      <option value="s17" selected>S17 — Stands on all 17s</option>
+      <option value="h17">H17 — Hits soft 17</option>
+    </select>
+  </div>
+  <div class="sg"><label>Late Surrender Allowed
+    <div class="toggle-row"><label class="tog"><input type="checkbox" id="s-surrender" checked onchange="saveSetting('surrender',this.checked)"><span class="tog-s"></span></label><span style="font-size:.88rem;color:var(--cream-d)">Recommended on</span></div>
+  </label></div>
+  <div class="sg"><label>Double After Split (DAS)
+    <div class="toggle-row"><label class="tog"><input type="checkbox" id="s-das" checked onchange="saveSetting('das',this.checked)"><span class="tog-s"></span></label><span style="font-size:.88rem;color:var(--cream-d)">Standard rule at most casinos</span></div>
+  </label></div>
+  <div class="gold-div"></div>
+  <div class="sg"><label>Show Feedback After Each Play
+    <div class="toggle-row"><label class="tog"><input type="checkbox" id="s-feedback" checked onchange="saveSetting('feedback',this.checked)"><span class="tog-s"></span></label><span style="font-size:.88rem;color:var(--cream-d)">Correct / incorrect indicator</span></div>
+  </label></div>
+  <div class="sg"><label>Show Hint Button
+    <div class="toggle-row"><label class="tog"><input type="checkbox" id="s-hints" checked onchange="saveSetting('hints',this.checked);updateHintBtn()"><span class="tog-s"></span></label><span style="font-size:.88rem;color:var(--cream-d)">Reveals optimal play on demand</span></div>
+  </label></div>
+  <div class="sg"><label>Practice Focus</label>
+    <select class="s-sel" id="s-focus" onchange="saveSetting('focus',this.value)">
+      <option value="all" selected>All situations (fully random)</option>
+      <option value="hard">Hard hands only</option>
+      <option value="soft">Soft hands only</option>
+      <option value="pair">Pairs only</option>
+    </select>
+  </div>
+  <div class="gold-div"></div>
+  <div class="sg"><label>AI Players at Table</label>
+    <select class="s-sel" id="s-ai" onchange="saveSetting('numAI',+this.value);initTableState()">
+      <option value="0">0 — You vs. dealer only</option>
+      <option value="1">1 AI player</option>
+      <option value="2" selected>2 AI players</option>
+      <option value="3">3 AI players</option>
+      <option value="4">4 AI players</option>
+    </select>
+  </div>
+  <div class="sg"><label>Starting Bankroll ($)</label>
+    <input type="number" class="s-inp" id="s-bankroll" value="1000" min="50" max="100000" step="50" onchange="saveSetting('startBankroll',+this.value)">
+  </div>
+  <div class="sg"><label>Minimum Bet ($)</label>
+    <input type="number" class="s-inp" id="s-minbet" value="5" min="1" max="500" onchange="saveSetting('minBet',+this.value)">
+  </div>
+  <div class="sg"><label>Maximum Bet ($)</label>
+    <input type="number" class="s-inp" id="s-maxbet" value="500" min="10" max="100000" onchange="saveSetting('maxBet',+this.value)">
+  </div>
+  <div class="sg"><label>Table Speed</label>
+    <select class="s-sel" id="s-speed" onchange="saveSetting('speed',this.value)">
+      <option value="slow">Slow (1.1s per action)</option>
+      <option value="normal" selected>Normal (0.65s)</option>
+      <option value="fast">Fast (0.2s)</option>
+    </select>
+  </div>
+  <div class="gold-div"></div>
+  <div class="sg">
+    <label style="color:#e74c3c">⚠ Reset All Progress</label>
+    <small>Clears all practice stats, hand history, and table data. Settings are preserved.</small>
+    <button class="reset-btn" onclick="confirmReset()">Reset Progress</button>
+  </div>
+</div>
+</div>
+
+<div id="bs-tip" class="tip"></div>
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+'use strict';
+// ──────────────────────────────────────────────
+// BASIC STRATEGY DATA
+// Columns: dealer upcard index 0=2, 1=3, …, 8=10, 9=A
+// ──────────────────────────────────────────────
+const H='H',S='S',D='D',Ds='Ds',Dh='Dh',P='P',Ph='Ph',Rh='Rh',Rs='Rs',Rp='Rp';
+const DEALER_HDRS=['2','3','4','5','6','7','8','9','10','A'];
+
+const HARD_BS={
+  4:[H,H,H,H,H,H,H,H,H,H],
+  5:[H,H,H,H,H,H,H,H,H,H],
+  6:[H,H,H,H,H,H,H,H,H,H],
+  7:[H,H,H,H,H,H,H,H,H,H],
+  8:[H,H,H,H,H,H,H,H,H,H],
+  9:[H,D,D,D,D,H,H,H,H,H],
+  10:[D,D,D,D,D,D,D,D,H,H],
+  11:[D,D,D,D,D,D,D,D,D,D],
+  12:[H,H,S,S,S,H,H,H,H,H],
+  13:[S,S,S,S,S,H,H,H,H,H],
+  14:[S,S,S,S,S,H,H,H,H,H],
+  15:[S,S,S,S,S,H,H,H,Rh,Rh],
+  16:[S,S,S,S,S,H,H,Rh,Rh,Rh],
+  17:[S,S,S,S,S,S,S,S,S,S],
+};
+const SOFT_BS={
+  13:[H,H,H,D,D,H,H,H,H,H],
+  14:[H,H,H,D,D,H,H,H,H,H],
+  15:[H,H,D,D,D,H,H,H,H,H],
+  16:[H,H,D,D,D,H,H,H,H,H],
+  17:[H,D,D,D,D,H,H,H,H,H],
+  18:[Ds,Ds,Ds,Ds,Ds,S,S,H,H,H],
+  19:[S,S,S,S,Ds,S,S,S,S,S],
+  20:[S,S,S,S,S,S,S,S,S,S],
+};
+const PAIR_BS={
+  1:[P,P,P,P,P,P,P,P,P,P],
+  2:[Ph,Ph,P,P,P,P,H,H,H,H],
+  3:[Ph,Ph,P,P,P,P,H,H,H,H],
+  4:[H,H,H,Ph,Ph,H,H,H,H,H],
+  5:[D,D,D,D,D,D,D,D,H,H],
+  6:[Ph,P,P,P,P,H,H,H,H,H],
+  7:[P,P,P,P,P,P,H,H,H,H],
+  8:[P,P,P,P,P,P,P,P,Rp,Rp],
+  9:[P,P,P,P,P,S,P,P,S,S],
+  10:[S,S,S,S,S,S,S,S,S,S],
+};
+// H17 tables — key difference: soft 17 vs 2 becomes Dh (double or hit)
+const SOFT_H17={...SOFT_BS, 17:[Dh,D,D,D,D,H,H,H,H,H]};
+const HARD_H17={...HARD_BS, 17:[S,S,S,S,S,S,S,S,S,Rs]}; // H17: surrender hard 17 vs Ace
+const ACTION_LABEL={H:'Hit',S:'Stand',D:'Double',Ds:'Dbl/Stand',Dh:'Dbl/Hit',P:'Split',Ph:'Split/Hit',Rh:'Surrender',Rs:'Surrender',Rp:'Surrender'};
+const ACTION_CC={H:'c-H',S:'c-S',D:'c-D',Ds:'c-Ds',Dh:'c-D',P:'c-P',Ph:'c-Ph',Rh:'c-Rh',Rs:'c-Rs',Rp:'c-Rp'};
+const LEGEND_ITEMS=[{k:'H',l:'Hit'},{k:'S',l:'Stand'},{k:'D',l:'Double'},{k:'Ds',l:'Dbl/Stand'},{k:'Dh',l:'Dbl/Hit'},{k:'P',l:'Split'},{k:'Ph',l:'Split/Hit'},{k:'Rh',l:'Surrender'}];
+
+// ──────────────────────────────────────────────
+// DEFAULTS & PERSISTENCE
+// ──────────────────────────────────────────────
+const DEF_SETTINGS={numDecks:6,dealerHitSoft17:false,surrender:true,das:true,feedback:true,hints:true,focus:'all',numAI:2,startBankroll:1000,minBet:5,maxBet:500,speed:'normal'};
+const DEF_STATS={
+  practice:{handsPlayed:0,correct:0,incorrect:0,streak:0,bestStreak:0,byType:{hard:{c:0,t:0},soft:{c:0,t:0},pair:{c:0,t:0}}},
+  history:[],
+  table:{handsPlayed:0,wins:0,losses:0,pushes:0,bjs:0,startBankroll:1000,bankroll:1000,peakBankroll:1000,lastBet:10}
+};
+
+let S2={...DEF_SETTINGS};
+let ST=JSON.parse(JSON.stringify(DEF_STATS));
+
+function loadState(){
+  try{
+    const s=localStorage.getItem('bsa_s');
+    if(s) S2={...DEF_SETTINGS,...JSON.parse(s)};
+    const d=localStorage.getItem('bsa_d');
+    if(d){
+      const loaded=JSON.parse(d);
+      ST=JSON.parse(JSON.stringify(DEF_STATS));
+      // Handle new nested format
+      if(loaded.practice){
+        ST.practice={...DEF_STATS.practice,...loaded.practice};
+        if(!ST.practice.byType) ST.practice.byType=JSON.parse(JSON.stringify(DEF_STATS.practice.byType));
+        ['hard','soft','pair'].forEach(k=>{if(!ST.practice.byType[k])ST.practice.byType[k]={c:0,t:0};});
+      } else if(typeof loaded.handsPlayed==='number'){
+        // Migrate from old flat format
+        ST.practice.handsPlayed=loaded.handsPlayed||0;
+        ST.practice.correct=loaded.correct||0;
+        ST.practice.incorrect=loaded.incorrect||0;
+        ST.practice.streak=loaded.streak||0;
+        ST.practice.bestStreak=loaded.bestStreak||0;
+        if(loaded.byType) ST.practice.byType=loaded.byType;
+      }
+      if(loaded.table) ST.table={...DEF_STATS.table,...loaded.table};
+      if(loaded.history) ST.history=loaded.history.slice(0,100);
+    }
+  }catch(e){}
+}
+function saveState(){
+  try{
+    localStorage.setItem('bsa_s',JSON.stringify(S2));
+    localStorage.setItem('bsa_d',JSON.stringify(ST));
+  }catch(e){}
+}
+function saveSetting(key,val){S2[key]=val;saveState();}
+function confirmReset(){
+  if(!confirm('Reset ALL progress? Stats, history, and table data will be cleared. Settings are kept.')) return;
+  ST=JSON.parse(JSON.stringify(DEF_STATS));
+  ST.table.startBankroll=S2.startBankroll;
+  ST.table.bankroll=S2.startBankroll;
+  saveState();renderStats();updatePracticeStats();initTableState();
+  toast('Progress reset ✓');closeSettings();
+}
+
+// ──────────────────────────────────────────────
+// CARDS & DECK
+// ──────────────────────────────────────────────
+const SUITS=['♠','♥','♦','♣'];
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+function cval(r){if(r==='A')return 1;if(['J','Q','K','10'].includes(r))return 10;return+r;}
+function isRed(s){return s==='♥'||s==='♦';}
+function makeDeck(n=6){const d=[];for(let i=0;i<n;i++)for(const s of SUITS)for(const r of RANKS)d.push({r,s,v:cval(r),red:isRed(s)});return d;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ──────────────────────────────────────────────
+// HAND UTILITIES
+// ──────────────────────────────────────────────
+function handInfo(cards){
+  let total=0,aces=0;
+  for(const c of cards){if(c.v===1){aces++;total+=11;}else total+=c.v;}
+  let soft=aces;
+  while(total>21&&soft>0){total-=10;soft--;}
+  return{total,isSoft:soft>0&&total<=21,isBust:total>21,isBJ:cards.length===2&&total===21};
+}
+function isPair(cards){return cards.length===2&&cards[0].v===cards[1].v;}
+function dIdx(card){return card.v===1?9:card.v-2;}
+function hStr(cards){return cards.map(c=>c.r+c.s).join(' ');}
+function handLabel(cards){
+  const info=handInfo(cards);
+  if(info.isBJ) return 'Blackjack!';
+  if(info.isBust) return `${info.total} — Bust`;
+  return info.isSoft&&info.total<21?`Soft ${info.total}`:`${info.total}`;
+}
+
+// ──────────────────────────────────────────────
+// BASIC STRATEGY LOOKUP
+// ──────────────────────────────────────────────
+function getRaw(pCards,dCard){
+  const di=dIdx(dCard);
+  const info=handInfo(pCards);
+  if(isPair(pCards)){const pv=pCards[0].v;return PAIR_BS[pv]?.[di]??H;}
+  const useH17=S2.dealerHitSoft17;
+  if(info.isSoft&&!info.isBJ){
+    const st=useH17?SOFT_H17:SOFT_BS;
+    return st[info.total]?.[di]??(info.total>=18?S:H);
+  }
+  // Hard hands: totals 18+ always stand; 17 may differ by rule; <=8 always hit
+  if(info.total>17) return S;
+  if(info.total===17){const ht=useH17?HARD_H17:HARD_BS;return ht[17]?.[di]??S;}
+  if(info.total<=8) return H;
+  return HARD_BS[info.total]?.[di]??H;
+}
+function resolveRaw(raw,canSplit=true,canDouble=true){
+  if(raw===Ph) return(S2.das&&canSplit)?P:H;
+  if(raw===Ds) return canDouble?D:S;
+  if(raw===Dh) return canDouble?D:H;
+  if(raw===Rh) return S2.surrender?'R':H;
+  if(raw===Rs) return S2.surrender?'R':S;
+  if(raw===Rp) return S2.surrender?'R':(canSplit?P:H);
+  return raw;
+}
+function getOptimal(pCards,dCard,canSplit=true,canDouble=true){
+  return resolveRaw(getRaw(pCards,dCard),canSplit,canDouble);
+}
+function getExplanation(raw,pCards,dCard){
+  const info=handInfo(pCards);
+  const dv=dCard.v===1?'Ace':dCard.r;
+  const total=info.total;
+  const pair=isPair(pCards);
+  const m={
+    H:pair?`Hitting gives better EV than splitting these vs dealer ${dv}.`
+           :info.isSoft?`Soft ${total} can only improve — take a free card vs dealer ${dv}.`
+           :total<=8?`Always hit low totals regardless of upcard.`
+           :`Dealer ${dv} is strong. Hitting gives you a chance to improve over standing with a losing hand.`,
+    S:pair?`20 is a dominant hand — never split tens.`
+          :info.isSoft?`Soft ${total} is already strong. Stand and let dealer risk busting.`
+          :`Dealer ${dv} has a high bust probability (4–6). Stand and collect.`,
+    D:pair?`Treat the hand as hard ${total} and double — strong profit situation.`
+          :`Strong doubling spot — your ${total} has a high chance of reaching 20 or 21. Double to maximize the win.`,
+    Ds:`Double if the casino allows it (strong hand), otherwise Stand to protect your good total.`,
+    P:pCards[0].r==='A'?`Always split Aces. Two hands starting at 11 far outperform one hard 12.`
+      :pCards[0].v===8?`Hard 16 is the worst hand in blackjack. Two hands starting at 8 are dramatically better EV.`
+      :`Splitting creates two superior starting positions vs dealer ${dv}.`,
+    Ph:S2.das?`With Double After Split, splitting is profitable here vs dealer ${dv}.`:`Without DAS, hitting the combined total is better than splitting.`,
+    Rh:`Surrender saves half your bet. Hard ${total} vs dealer ${dv} is heavily unfavorable — recovering 50¢ on the dollar beats playing through.`,
+    Rs:`Surrender is correct. Hard ${total} vs dealer ${dv} loses more standing or hitting than surrendering.`,
+    Rp:S2.surrender?`Surrender is optimal for this holding vs dealer ${dv}.`:`Split — two hands are better than playing hard ${total} here.`,
+  };
+  return m[raw]||'Optimal play for this situation per basic strategy.';
+}
+
+// ──────────────────────────────────────────────
+// RENDERING
+// ──────────────────────────────────────────────
+function cardHTML(c,facedown=false,sm=false){
+  if(facedown)return`<div class="card${sm?' card-sm':''} facedown"></div>`;
+  const cls=(c.red?'red':'blk')+(sm?' card-sm':'');
+  return`<div class="card ${cls}"><div class="card-rank">${c.r}</div><div class="card-suit">${c.s}</div><div class="card-rank-b">${c.r}</div></div>`;
+}
+function setCardsRow(id,cards,hideLast=false,sm=false){
+  const el=document.getElementById(id);
+  if(!el)return;
+  let h=cards.map((c,i)=>cardHTML(c,hideLast&&i===cards.length-1,sm)).join('');
+  el.innerHTML=h;
+}
+function setHandVal(id,cards,hide=false){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=(!hide&&cards.length)?handLabel(cards):'';
+}
+
+// ──────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='chart')renderChart();
+  if(name==='stats')renderStats();
+  if(name==='practice')updatePracticeStats();
+  if(name==='table'&&!T)initTableState();
+}
+
+// ──────────────────────────────────────────────
+// CHART
+// ──────────────────────────────────────────────
+function setChartMode(mode){
+  S2.dealerHitSoft17=(mode==='h17');
+  saveState();
+  // Sync settings modal
+  const sel=document.getElementById('s-dealer');
+  if(sel) sel.value=mode;
+  // Clear chart cache and re-render
+  const cont=document.getElementById('chart-content');
+  if(cont){cont.dataset.ok='';cont.innerHTML='';}
+  const leg=document.getElementById('chart-legend');
+  if(leg) leg.innerHTML='';
+  renderChart();
+}
+function renderChart(){
+  const leg=document.getElementById('chart-legend');
+  if(leg&&!leg.innerHTML){
+    const abClasses={H:'ab-H',S:'ab-S',D:'ab-D',Ds:'ab-Ds',P:'ab-P',Ph:'ab-P',Rh:'ab-R'};
+    leg.innerHTML=LEGEND_ITEMS.map(l=>`<span class="abadge ${abClasses[l.k]}">${l.l}</span>`).join('');
+  }
+  // Update toggle button states
+  const mode=S2.dealerHitSoft17?'h17':'s17';
+  const cs17=document.getElementById('ct-s17');
+  const ch17=document.getElementById('ct-h17');
+  if(cs17) cs17.className=mode==='s17'?'btn btn-gold':'btn btn-ghost';
+  if(ch17) ch17.className=mode==='h17'?'btn btn-gold':'btn btn-ghost';
+  // Update subtitle
+  const csub=document.getElementById('chart-sub');
+  if(csub) csub.textContent=`6-deck · ${mode==='s17'?'Dealer Stands Soft 17 (S17)':'Dealer Hits Soft 17 (H17)'} · DAS · Late Surrender · Hover any cell for explanation`;
+  const cont=document.getElementById('chart-content');
+  if(!cont||cont.dataset.ok)return;
+  cont.dataset.ok='1';
+  cont.innerHTML=makeChartSec('Hard Totals','hard')+makeChartSec('Soft Totals (Ace + X)','soft')+makeChartSec('Pair Splitting','pair');
+  cont.addEventListener('mouseout',e=>{if(!e.relatedTarget||!e.relatedTarget.closest('.bs-tbl'))hideTip();});
+}
+function makeChartSec(title,type){
+  let rows=[];
+  const useH17=S2.dealerHitSoft17;
+  if(type==='hard'){
+    const htbl=useH17?HARD_H17:HARD_BS;
+    for(let t=4;t<=17;t++)rows.push({lbl:`${t}`,data:htbl[t]||Array(10).fill(t>=17?S:H)});
+  }
+  else if(type==='soft'){
+    const stbl=useH17?SOFT_H17:SOFT_BS;
+    for(let t=13;t<=20;t++)rows.push({lbl:`A,${t-11}`,data:stbl[t]||Array(10).fill(S)});
+  }
+  else{
+    const pl={2:'2',3:'3',4:'4',5:'5',6:'6',7:'7',8:'8',9:'9',10:'10',1:'A'};
+    for(const v of[2,3,4,5,6,7,8,9,10,1])rows.push({lbl:pl[v]+','+pl[v],data:PAIR_BS[v]||Array(10).fill(S)});
+  }
+  let html=`<div class="chart-sec"><h2>${title}</h2><table class="bs-tbl"><thead><tr><th class="rh" style="font-style:italic;font-weight:normal;font-size:.72rem;color:var(--cream-dd)">↓ Player / Dealer →</th>${DEALER_HDRS.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+  for(const row of rows){
+    html+=`<tr><th class="rh">${row.lbl}</th>`;
+    for(let i=0;i<10;i++){
+      const raw=row.data[i];
+      const lbl=ACTION_LABEL[raw]||raw;
+      const tip=encodeURIComponent(`vs ${DEALER_HDRS[i]}: ${lbl} — ${tipText(raw)}`);
+      html+=`<td class="${ACTION_CC[raw]||'c-H'}" data-tip="${tip}" onmouseenter="showTip(event,this)" onmouseleave="hideTip()">${raw}</td>`;
+    }
+    html+=`</tr>`;
+  }
+  return html+'</tbody></table></div>';
+}
+function tipText(raw){
+  const t={H:'Take a card.',S:'Keep current total — dealer likely to bust.',D:'Double bet, take one card — strong profit spot.',Ds:'Double if allowed, otherwise Stand.',P:'Split into two hands — better EV.',Ph:'Split with DAS, otherwise Hit.',Rh:'Surrender (recover half bet), otherwise Hit.',Rs:'Surrender if available, otherwise Stand.',Rp:'Surrender if available, otherwise Split.'};
+  return t[raw]||'';
+}
+const tipEl=document.getElementById('bs-tip');
+function showTip(e,td){
+  if(!tipEl)return;
+  const txt=decodeURIComponent(td.dataset.tip||'');
+  if(!txt)return;
+  tipEl.textContent=txt;tipEl.classList.add('show');posTip(e);
+  td._mm=e2=>posTip(e2);
+  td.addEventListener('mousemove',td._mm);
+}
+function hideTip(){
+  tipEl&&tipEl.classList.remove('show');
+  document.querySelectorAll('[data-tip]').forEach(el=>{if(el._mm){el.removeEventListener('mousemove',el._mm);delete el._mm;}});
+}
+function posTip(e){
+  if(!tipEl)return;
+  let x=e.clientX+14,y=e.clientY-10;
+  if(x+250>window.innerWidth)x=e.clientX-262;
+  if(y+90>window.innerHeight)y=e.clientY-70;
+  tipEl.style.left=x+'px';tipEl.style.top=y+'px';
+}
+
+// ──────────────────────────────────────────────
+// PRACTICE MODE
+// ──────────────────────────────────────────────
+let PS={deck:[],playerCards:[],dealerCard:null,waiting:false};
+
+function dealPracticeHand(){
+  if(!PS.deck||PS.deck.length<15) PS.deck=shuffle(makeDeck(S2.numDecks));
+  const focus=S2.focus;
+  let pCards,dCard,tries=0;
+  do{
+    if(PS.deck.length<6) PS.deck=shuffle(makeDeck(S2.numDecks));
+    pCards=[PS.deck.pop(),PS.deck.pop()];
+    dCard=PS.deck.pop();
+    tries++;
+  }while(!focusMatch(pCards,focus)&&tries<60);
+
+  PS.playerCards=pCards;PS.dealerCard=dCard;PS.waiting=true;
+
+  const info=handInfo(pCards);
+  const pair=isPair(pCards);
+  const type=pair?'pair':info.isSoft?'soft':'hard';
+  PS.type=type;
+
+  setCardsRow('p-dealer-cards',[dCard]);
+  setCardsRow('p-player-cards',pCards);
+  document.getElementById('p-hand-val').textContent=handLabel(pCards);
+
+  const typeCls={hard:'htb-hard',soft:'htb-soft',pair:'htb-pair'};
+  const typeLbl={hard:'Hard Hand',soft:'Soft Hand',pair:'Pair'};
+  document.getElementById('p-hand-type').innerHTML=`<span class="hand-type-badge ${typeCls[type]}">${typeLbl[type]}</span>`;
+
+  const avail=['H','S'];
+  if(!info.isBJ) avail.push('D');
+  if(pair) avail.push('P');
+  if(S2.surrender) avail.push('R');
+  const cfg={H:{l:'Hit',c:'btn-H'},S:{l:'Stand',c:'btn-S'},D:{l:'Double',c:'btn-D'},P:{l:'Split',c:'btn-P'},R:{l:'Surrender',c:'btn-R'}};
+  document.getElementById('p-action-btns').innerHTML=avail.map(a=>`<button class="btn ${cfg[a].c}" onclick="handlePracticeAction('${a}')">${cfg[a].l}</button>`).join('');
+  setFeedback('idle','Make your play…','');
+  updateHintBtn();
+  document.getElementById('p-new-btn').textContent='Next Hand';
+  if(info.isBJ){PS.waiting=false;document.getElementById('p-action-btns').innerHTML='';setFeedback('ok','♠ Blackjack! Automatic win.','');}
+}
+function focusMatch(cards,focus){
+  if(focus==='all')return true;
+  const info=handInfo(cards);const pair=isPair(cards);
+  if(focus==='pair')return pair;
+  if(focus==='soft')return info.isSoft&&!pair;
+  if(focus==='hard')return!info.isSoft&&!pair;
+  return true;
+}
+function handlePracticeAction(action){
+  if(!PS.waiting)return;
+  PS.waiting=false;
+  const{playerCards:pc,dealerCard:dc}=PS;
+  const raw=getRaw(pc,dc);
+  const optimal=getOptimal(pc,dc,true,true);
+  const ok=action===optimal;
+  const type=PS.type;
+  const pr=ST.practice;
+  pr.handsPlayed++;
+  if(ok){pr.correct++;pr.streak++;if(pr.streak>pr.bestStreak)pr.bestStreak=pr.streak;}
+  else{pr.incorrect++;pr.streak=0;}
+  pr.byType[type].t++;
+  if(ok)pr.byType[type].c++;
+  ST.history.unshift({type,hand:hStr(pc),dealer:dc.r+dc.s,you:action,ok,opt:optimal,src:'practice'});
+  if(ST.history.length>80)ST.history.pop();
+  saveState();
+  if(S2.feedback){
+    if(ok){
+      const q=['Correct! 🎯','Perfect play! ✓','Spot on! ♠','Exactly right! 🃏','That\'s the move! ✓'][Math.floor(Math.random()*5)];
+      setFeedback('ok',q,`${ACTION_LABEL[raw]||optimal} vs dealer ${dc.r} — optimal.`);
+    }else{
+      setFeedback('err',`Incorrect — correct play: ${ACTION_LABEL[raw]||optimal}`,getExplanation(raw,pc,dc));
+    }
+  }
+  document.getElementById('p-action-btns').innerHTML='';
+  updatePracticeStats();
+  if(ok) setTimeout(dealPracticeHand,900);
+}
+function showHint(){
+  if(!PS.waiting)return;
+  const raw=getRaw(PS.playerCards,PS.dealerCard);
+  const opt=getOptimal(PS.playerCards,PS.dealerCard,true,true);
+  setFeedback('idle',`Hint: ${ACTION_LABEL[raw]||opt}`,getExplanation(raw,PS.playerCards,PS.dealerCard));
+}
+function setFeedback(type,main,detail){
+  const el=document.getElementById('p-feedback');
+  el.className='feedback fb-'+type;
+  const ico=type==='ok'?'<div class="fb-ico">✅</div>':type==='err'?'<div class="fb-ico">❌</div>':'';
+  el.innerHTML=`${ico}<div class="fb-txt">${main}</div>${detail?`<div class="fb-detail">${detail}</div>`:''}`;
+}
+function updatePracticeStats(){
+  const pr=ST.practice;
+  const acc=pr.handsPlayed>0?Math.round(pr.correct/pr.handsPlayed*100)+'%':'—';
+  const e1=document.getElementById('p-acc');
+  const e2=document.getElementById('p-hands');
+  const e3=document.getElementById('p-streak');
+  if(e1)e1.textContent=acc;
+  if(e2)e2.textContent=pr.handsPlayed;
+  if(e3)e3.textContent=pr.streak;
+}
+function updateHintBtn(){
+  const btn=document.getElementById('p-hint-btn');
+  if(btn)btn.style.display=S2.hints?'inline-flex':'none';
+}
+
+// ──────────────────────────────────────────────
+// TABLE MODE
+// ──────────────────────────────────────────────
+const AI_NAMES=['Eddie','Rosie','The Count','Maverick','Lady Luck','Marco','Vera','Ace'];
+let T=null;
+let T_BUSY=false;
+
+function initTableState(){
+  const names=shuffle([...AI_NAMES]).slice(0,S2.numAI);
+  const br=ST.table.bankroll>0?ST.table.bankroll:(ST.table.startBankroll||S2.startBankroll);
+  T={
+    deck:shuffle(makeDeck(S2.numDecks)),
+    bankroll:br,
+    startBankroll:S2.startBankroll,
+    currentBet:0,
+    lastBet:ST.table.lastBet||S2.minBet,
+    dealer:[],
+    ai:names.map(n=>({name:n,hand:[],bet:randomAIBet(),status:'idle',result:'',active:false})),
+    human:{hands:[{cards:[],bet:0,status:'idle',result:''}],idx:0},
+    phase:'bet',
+  };
+  T_BUSY=false;
+  renderTableLayout();
+  showBetArea(true);
+  document.getElementById('t-action-btns').style.display='none';
+  const nb=document.getElementById('t-next-btn');
+  const rb=document.getElementById('t-reload-btn');
+  if(nb)nb.style.display='none';
+  if(rb)rb.style.display='none';
+  setTableMsg('Place your bet and click Deal.');
+  syncBankrollUI();
+  buildChips();
+}
+function randomAIBet(){
+  const bets=[10,15,25,50,75,100];
+  return bets[Math.floor(Math.random()*bets.length)];
+}
+function syncBankrollUI(){
+  if(!T)return;
+  const br=document.getElementById('t-bankroll');
+  const pnl=document.getElementById('t-pnl');
+  const hp=document.getElementById('t-hands-played');
+  if(br)br.textContent='$'+T.bankroll.toLocaleString();
+  const diff=T.bankroll-T.startBankroll;
+  if(pnl){pnl.textContent=(diff>=0?'+':'')+'$'+diff.toLocaleString();pnl.style.color=diff>0?'#2ecc71':diff<0?'#e74c3c':'var(--cream-d)';}
+  if(hp)hp.textContent=ST.table.handsPlayed;
+  ST.table.bankroll=T.bankroll;
+  saveState();
+}
+function buildChips(){
+  const vals=[5,10,25,50,100,500].filter(v=>v<=S2.maxBet);
+  const cls={5:'ch5',10:'ch10',25:'ch25',50:'ch50',100:'ch100',500:'ch500'};
+  const el=document.getElementById('t-chips');
+  if(el)el.innerHTML=vals.map(v=>`<div class="chip ${cls[v]||'ch25'}" onclick="addChip(${v})">$${v}</div>`).join('');
+}
+function addChip(v){
+  if(!T||T.phase!=='bet')return;
+  T.currentBet=Math.min(T.currentBet+v,S2.maxBet,T.bankroll);
+  document.getElementById('t-bet-amt').textContent='$'+T.currentBet;
+}
+function clearBet(){if(!T||T.phase!=='bet')return;T.currentBet=0;document.getElementById('t-bet-amt').textContent='$0';}
+function repeatBet(){if(!T||T.phase!=='bet')return;T.currentBet=Math.min(T.lastBet,T.bankroll,S2.maxBet);document.getElementById('t-bet-amt').textContent='$'+T.currentBet;}
+function maxBet(){if(!T||T.phase!=='bet')return;T.currentBet=Math.min(S2.maxBet,T.bankroll);document.getElementById('t-bet-amt').textContent='$'+T.currentBet;}
+
+function spd(f=1){return({slow:1050,normal:620,fast:180}[S2.speed]||620)*f;}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function setTableMsg(msg){const el=document.getElementById('t-message');if(el)el.textContent=msg;}
+function setFeedbackMsg(msg,color='#e74c3c'){const el=document.getElementById('t-feedback-msg');if(el){el.textContent=msg;el.style.color=color;}}
+function showBetArea(show){const el=document.getElementById('t-bet-area');if(el)el.style.display=show?'':'none';}
+
+function renderTableLayout(showHole=false){
+  if(!T)return;
+  // Dealer
+  if(T.dealer.length){
+    setCardsRow('t-dealer-cards',T.dealer,!showHole);
+    setHandVal('t-dealer-val',T.dealer,!showHole);
+  }else{
+    const el=document.getElementById('t-dealer-cards');
+    if(el)el.innerHTML='';
+    const el2=document.getElementById('t-dealer-val');
+    if(el2)el2.textContent='';
+  }
+  // AI players
+  const aiRow=document.getElementById('t-ai-row');
+  if(aiRow){
+    aiRow.innerHTML=T.ai.map((ai,i)=>{
+      const info=ai.hand.length?handInfo(ai.hand):{total:0,isBust:false};
+      const cards=ai.hand.map(c=>cardHTML(c,false,true)).join('');
+      const resClass={win:'res-win',lose:'res-lose',push:'res-push',bj:'res-bj',bust:'res-lose',surrender:'res-surr'}[ai.result]||'';
+      const resLabel={win:'WIN +$'+ai.bet,lose:'—$'+ai.bet,push:'PUSH',bj:'BJ! +$'+(ai.bet*1.5|0),bust:'BUST',surrender:'SURR'}[ai.result]||'';
+      return`<div class="seat${ai.active?' seat-active':''}">
+        <div class="seat-name">${ai.name}</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;justify-content:center">${cards}</div>
+        ${ai.hand.length?`<div style="font-family:'DM Mono',monospace;font-size:.7rem;color:rgba(240,230,204,.5)">${handLabel(ai.hand)}</div>`:''}
+        <div class="seat-bet">$${ai.bet}</div>
+        <div class="seat-result ${resClass}">${resLabel}</div>
+      </div>`;
+    }).join('');
+  }
+  // Human hands
+  const hHands=T.human.hands;
+  setCardsRow('t-player-cards',hHands[0].cards);
+  setHandVal('t-player-val',hHands[0].cards);
+  const splitEl=document.getElementById('t-split-cards');
+  const splitRow=document.getElementById('t-split-cards-row');
+  const splitVal=document.getElementById('t-split-val');
+  if(hHands.length>1&&hHands[1].cards.length){
+    if(splitEl)splitEl.style.display='';
+    if(splitRow)setCardsRow('t-split-cards-row',hHands[1].cards);
+    if(splitVal)splitVal.textContent=handLabel(hHands[1].cards);
+  }else{
+    if(splitEl)splitEl.style.display='none';
+  }
+}
+
+async function startTableRound(){
+  if(T_BUSY)return;
+  if(!T)initTableState();
+  if(T.bankroll<=0){toast('Bankroll empty!');return;}
+  const bet=T.currentBet;
+  if(bet<S2.minBet){toast(`Min bet is $${S2.minBet}`);return;}
+  if(bet>T.bankroll){toast("Insufficient bankroll");return;}
+  T_BUSY=true;
+  T.lastBet=bet;ST.table.lastBet=bet;
+  T.bankroll-=bet;
+  syncBankrollUI();
+  T.phase='deal';
+  showBetArea(false);
+  document.getElementById('t-action-btns').style.display='none';
+  const nb=document.getElementById('t-next-btn');
+  const rb=document.getElementById('t-reload-btn');
+  if(nb)nb.style.display='none';
+  if(rb)rb.style.display='none';
+  setFeedbackMsg('');
+
+  // Reset
+  T.dealer=[];
+  T.human={hands:[{cards:[],bet,status:'active',result:''}],idx:0};
+  for(const ai of T.ai){ai.hand=[];ai.bet=randomAIBet();ai.status='active';ai.result='';ai.active=false;}
+
+  if(T.deck.length<20*(T.ai.length+2)){T.deck=shuffle(makeDeck(S2.numDecks));setTableMsg('♻ New shoe…');await wait(spd(.5));}
+
+  setTableMsg('Dealing…');
+  renderTableLayout();
+  await wait(spd(.4));
+
+  // Deal 2 rounds
+  const allHands=[...T.ai.map(a=>a.hand),T.human.hands[0].cards,T.dealer];
+  for(let r=0;r<2;r++){
+    for(const h of allHands){h.push(T.deck.pop());renderTableLayout();await wait(spd(.3));}
+  }
+
+  const dBJ=handInfo(T.dealer).isBJ;
+  const hBJ=handInfo(T.human.hands[0].cards).isBJ;
+
+  if(dBJ){
+    renderTableLayout(true);
+    setTableMsg('Dealer Blackjack!');
+    for(const ai of T.ai){const aBJ=handInfo(ai.hand).isBJ;ai.result=aBJ?'push':'lose';ai.status='done';}
+    T.human.hands[0].result=hBJ?'push':'lose';
+    T.human.hands[0].status='done';
+    applyPayouts(true);
+    renderTableLayout(true);
+    finishRound();
+    return;
+  }
+  if(hBJ){
+    T.human.hands[0].status='done';T.human.hands[0].result='bj';
+    setTableMsg('🎉 Blackjack! You win!');
+  }
+
+  // AI turns
+  for(const ai of T.ai){
+    ai.active=true;renderTableLayout();await wait(spd(.4));
+    await playAI(ai);
+    ai.active=false;renderTableLayout();await wait(spd(.2));
+  }
+
+  if(hBJ){
+    await dealerTurn();
+    applyPayouts(true);
+    renderTableLayout(true);
+    finishRound();
+    return;
+  }
+
+  T.phase='player';T.human.idx=0;
+  renderTableLayout();
+  buildTableActionBtns();
+  setTableMsg('Your turn.');
+  T_BUSY=false;
+}
+
+async function playAI(ai){
+  let iter=0;
+  while(iter++<10){
+    const info=handInfo(ai.hand);
+    if(info.isBust||info.total>=21)break;
+    const act=getOptimal(ai.hand,T.dealer[1],false,ai.hand.length===2);
+    if(act===S||act==='R')break;
+    if(act===D&&ai.hand.length===2){ai.hand.push(T.deck.pop());renderTableLayout();await wait(spd(.4));break;}
+    ai.hand.push(T.deck.pop());renderTableLayout();await wait(spd(.4));
+  }
+  const info=handInfo(ai.hand);
+  ai.status=info.isBust?'bust':'done';
+}
+
+function buildTableActionBtns(){
+  const hand=T.human.hands[T.human.idx];
+  const info=handInfo(hand.cards);
+  if(info.isBust||info.total===21){advanceHumanHand();return;}
+  const pair=isPair(hand.cards)&&T.human.hands.length===1;
+  const canDbl=hand.cards.length===2;
+  const canSplit=pair;
+  const canSurr=S2.surrender&&hand.cards.length===2&&T.human.hands.length===1;
+  const avail=['H','S'];
+  if(canDbl)avail.push('D');
+  if(canSplit)avail.push('P');
+  if(canSurr)avail.push('R');
+  const cfg={H:{l:'Hit',c:'btn-H'},S:{l:'Stand',c:'btn-S'},D:{l:'Double',c:'btn-D'},P:{l:'Split',c:'btn-P'},R:{l:'Surrender',c:'btn-R'}};
+  const el=document.getElementById('t-action-btns');
+  el.innerHTML=avail.map(a=>`<button class="btn ${cfg[a].c}" onclick="tableAction('${a}')">${cfg[a].l}</button>`).join('');
+  el.style.display='flex';
+}
+
+async function tableAction(action){
+  if(T.phase!=='player'||T_BUSY)return;
+  T_BUSY=true;
+  const hand=T.human.hands[T.human.idx];
+  const dCard=T.dealer[1];
+
+  // Strategy feedback
+  if(S2.feedback){
+    const raw=getRaw(hand.cards,dCard);
+    const optimal=getOptimal(hand.cards,dCard,T.human.hands.length===1,hand.cards.length===2);
+    const ok=action===optimal;
+    const type=isPair(hand.cards)?'pair':handInfo(hand.cards).isSoft?'soft':'hard';
+    // Table mode: record in history but don't count toward practice stats
+    ST.history.unshift({type,hand:hStr(hand.cards),dealer:dCard.r+dCard.s,you:action,ok,opt:optimal,src:'table'});
+    if(ST.history.length>80)ST.history.pop();
+    saveState();
+    if(!ok)setFeedbackMsg(`💡 Optimal: ${ACTION_LABEL[raw]||optimal} (${getExplanation(raw,hand.cards,dCard).slice(0,60)}…)`,'#e59866');
+    else setFeedbackMsg('');
+  }
+
+  document.getElementById('t-action-btns').innerHTML='';
+  document.getElementById('t-action-btns').style.display='none';
+
+  if(action==='R'){
+    hand.status='surrender';hand.result='surrender';
+    const refund=Math.floor(hand.bet/2);
+    T.bankroll+=refund;syncBankrollUI();
+    hand.bet-=refund;
+    setTableMsg(`Surrendered — recovered $${refund}`);
+    renderTableLayout();
+    await wait(spd(.5));
+    await advanceHumanHand();return;
+  }
+  if(action==='P'){
+    if(T.bankroll<hand.bet){toast("Can't split — insufficient bankroll");buildTableActionBtns();T_BUSY=false;return;}
+    T.bankroll-=hand.bet;syncBankrollUI();
+    const c2=hand.cards.pop();
+    const hand2={cards:[c2],bet:hand.bet,status:'active',result:''};
+    T.human.hands.push(hand2);
+    hand.cards.push(T.deck.pop());hand2.cards.push(T.deck.pop());
+    renderTableLayout();await wait(spd(.5));
+    buildTableActionBtns();T_BUSY=false;return;
+  }
+  if(action==='D'){
+    if(T.bankroll<hand.bet){toast("Can't double — insufficient bankroll");action='H';}
+    else{T.bankroll-=hand.bet;hand.bet*=2;syncBankrollUI();}
+    if(action==='D'){hand.cards.push(T.deck.pop());renderTableLayout();await wait(spd(.5));await advanceHumanHand();return;}
+  }
+  if(action==='H'){
+    hand.cards.push(T.deck.pop());
+    renderTableLayout();await wait(spd(.4));
+    const info=handInfo(hand.cards);
+    if(info.isBust){hand.status='bust';hand.result='lose';setTableMsg('Bust!');renderTableLayout();await wait(spd(.5));await advanceHumanHand();return;}
+    if(info.total===21){await advanceHumanHand();return;}
+    buildTableActionBtns();T_BUSY=false;return;
+  }
+  if(action==='S'){
+    hand.status='stand';
+    await advanceHumanHand();return;
+  }
+}
+
+async function advanceHumanHand(){
+  const idx=T.human.idx;
+  if(idx+1<T.human.hands.length){
+    T.human.idx=idx+1;
+    renderTableLayout();
+    await wait(spd(.3));
+    buildTableActionBtns();
+    T_BUSY=false;
+  }else{
+    // All human hands done — dealer plays
+    document.getElementById('t-action-btns').style.display='none';
+    const allBust=T.human.hands.every(h=>handInfo(h.cards).isBust||h.status==='surrender');
+    await dealerTurn(!allBust);
+    applyPayouts(true);
+    renderTableLayout(true);
+    finishRound();
+  }
+}
+
+async function dealerTurn(mustPlay=true){
+  renderTableLayout(true);
+  if(!mustPlay){setTableMsg('All players bust — dealer wins.');return;}
+  await wait(spd(.5));
+  let iter=0;
+  while(iter++<10){
+    const info=handInfo(T.dealer);
+    if(info.isBust||info.total>17)break;
+    if(info.total===17){
+      if(!S2.dealerHitSoft17||!info.isSoft)break;
+    }
+    T.dealer.push(T.deck.pop());
+    renderTableLayout(true);
+    await wait(spd(.55));
+  }
+}
+
+function applyPayouts(showHole=true){
+  const dInfo=handInfo(T.dealer);
+  const dTotal=dInfo.total;
+  const dBust=dInfo.isBust;
+  let totalDelta=0;
+
+  // Human hands
+  for(const hand of T.human.hands){
+    if(hand.status==='surrender')continue;
+    const hInfo=handInfo(hand.cards);
+    if(hInfo.isBust){hand.result='lose';}
+    else if(hInfo.isBJ){hand.result='bj';T.bankroll+=Math.floor(hand.bet*2.5);totalDelta+=Math.floor(hand.bet*1.5);}
+    else if(dBust){hand.result='win';T.bankroll+=hand.bet*2;totalDelta+=hand.bet;}
+    else if(hInfo.total>dTotal){hand.result='win';T.bankroll+=hand.bet*2;totalDelta+=hand.bet;}
+    else if(hInfo.total===dTotal){hand.result='push';T.bankroll+=hand.bet;totalDelta+=0;}
+    else{hand.result='lose';totalDelta-=hand.bet;}
+    hand.status='done';
+  }
+
+  // AI (cosmetic only)
+  for(const ai of T.ai){
+    if(ai.status==='bust'){ai.result='lose';}
+    else if(handInfo(ai.hand).isBJ){ai.result='bj';}
+    else if(dBust){ai.result='win';}
+    else if(handInfo(ai.hand).total>dTotal){ai.result='win';}
+    else if(handInfo(ai.hand).total===dTotal){ai.result='push';}
+    else ai.result='lose';
+  }
+
+  // Stats
+  ST.table.handsPlayed++;
+  const humanMain=T.human.hands[0];
+  if(humanMain.result==='win'||humanMain.result==='bj') ST.table.wins++;
+  else if(humanMain.result==='push') ST.table.pushes++;
+  else if(humanMain.result==='lose') ST.table.losses++;
+  if(humanMain.result==='bj') ST.table.bjs++;
+  if(T.bankroll>ST.table.peakBankroll) ST.table.peakBankroll=T.bankroll;
+  syncBankrollUI();
+
+  // Overall message
+  const r=humanMain.result;
+  const msgs={win:'You win! 🎉',lose:'Dealer wins.',push:'Push — bet returned.',bj:'🎉 BLACKJACK! Pays 3:2!',surrender:'Hand surrendered.'};
+  setTableMsg(msgs[r]||'Round complete.');
+}
+
+function finishRound(){
+  T.phase='result';T_BUSY=false;
+  const nb=document.getElementById('t-next-btn');
+  const rb=document.getElementById('t-reload-btn');
+  if(nb)nb.style.display='inline-flex';
+  if(T.bankroll<=0&&rb)rb.style.display='inline-flex';
+}
+function nextTableRound(){
+  if(!T)return;
+  T.currentBet=0;
+  document.getElementById('t-bet-amt').textContent='$0';
+  T.phase='bet';T_BUSY=false;
+  showBetArea(true);
+  setFeedbackMsg('');
+  document.getElementById('t-action-btns').style.display='none';
+  const nb=document.getElementById('t-next-btn');
+  const rb=document.getElementById('t-reload-btn');
+  if(nb)nb.style.display='none';
+  if(rb)rb.style.display='none';
+  setTableMsg('Place your bet and click Deal.');
+  renderTableLayout(false);
+}
+function reloadBankroll(){
+  if(!T)return;
+  T.bankroll=S2.startBankroll;
+  ST.table.bankroll=S2.startBankroll;
+  syncBankrollUI();
+  nextTableRound();
+  toast('Bankroll reloaded!');
+}
+
+// ──────────────────────────────────────────────
+// STATS PAGE
+// ──────────────────────────────────────────────
+function renderStats(){
+  const el=document.getElementById('stats-content');
+  if(!el)return;
+  const pr=ST.practice;
+  const total=pr.handsPlayed;
+  const acc=total>0?Math.round(pr.correct/total*100):0;
+  const br=pr.byType;
+  const hardAcc=br.hard.t>0?Math.round(br.hard.c/br.hard.t*100):null;
+  const softAcc=br.soft.t>0?Math.round(br.soft.c/br.soft.t*100):null;
+  const pairAcc=br.pair.t>0?Math.round(br.pair.c/br.pair.t*100):null;
+  const diff=T?(T.bankroll-T.startBankroll):0;
+  const diffStr=(diff>=0?'+':'')+'$'+diff.toLocaleString();
+
+  el.innerHTML=`
+  <div class="stats-grid">
+    <div class="s-card"><span class="sv">${total}</span><span class="sl">Total Hands</span></div>
+    <div class="s-card"><span class="sv">${acc}%</span><span class="sl">Overall Accuracy</span>
+      <div class="acc-bar"><div class="acc-fill" style="width:${acc}%;background-position:${100-acc}% 0"></div></div>
+    </div>
+    <div class="s-card"><span class="sv">${pr.correct}</span><span class="sl">Correct Plays</span></div>
+    <div class="s-card"><span class="sv">${pr.incorrect}</span><span class="sl">Mistakes</span></div>
+    <div class="s-card"><span class="sv">${pr.streak}</span><span class="sl">Current Streak</span></div>
+    <div class="s-card"><span class="sv">${pr.bestStreak}</span><span class="sl">Best Streak 🔥</span></div>
+    <div class="s-card"><span class="sv">${ST.table.handsPlayed}</span><span class="sl">Table Hands</span></div>
+    <div class="s-card"><span class="sv" style="color:${diff>=0?'#2ecc71':'#e74c3c'}">${diffStr}</span><span class="sl">Table P/L</span></div>
+  </div>
+
+  <div class="chart-breakdown">
+    <div class="cb-item"><div class="cbt">Hard Hands</div>
+      <div class="cba">${hardAcc!==null?hardAcc+'%':'—'}</div>
+      <div class="cbr">${br.hard.c}/${br.hard.t} correct</div>
+      <div class="acc-bar" style="margin-top:.4rem"><div class="acc-fill" style="width:${hardAcc||0}%;background-position:${100-(hardAcc||0)}% 0"></div></div>
+    </div>
+    <div class="cb-item"><div class="cbt">Soft Hands</div>
+      <div class="cba">${softAcc!==null?softAcc+'%':'—'}</div>
+      <div class="cbr">${br.soft.c}/${br.soft.t} correct</div>
+      <div class="acc-bar" style="margin-top:.4rem"><div class="acc-fill" style="width:${softAcc||0}%;background-position:${100-(softAcc||0)}% 0"></div></div>
+    </div>
+    <div class="cb-item"><div class="cbt">Pairs</div>
+      <div class="cba">${pairAcc!==null?pairAcc+'%':'—'}</div>
+      <div class="cbr">${br.pair.c}/${br.pair.t} correct</div>
+      <div class="acc-bar" style="margin-top:.4rem"><div class="acc-fill" style="width:${pairAcc||0}%;background-position:${100-(pairAcc||0)}% 0"></div></div>
+    </div>
+  </div>
+
+  ${ST.history.length?`
+  <div class="sec-title">Recent Hands (last ${Math.min(ST.history.length,20)})</div>
+  <div style="overflow-x:auto;border:1px solid var(--bdr);border-radius:var(--r10)">
+  <table class="hist-tbl">
+    <thead><tr><th>Result</th><th>Type</th><th>Your Hand</th><th>Dealer</th><th>Your Play</th><th>Optimal</th></tr></thead>
+    <tbody>${ST.history.slice(0,20).map(h=>`
+      <tr class="${h.ok?'row-ok':'row-err'}">
+        <td>${h.ok?'✓':'✗'}</td>
+        <td>${h.type}</td>
+        <td style="font-size:.75rem">${h.hand}</td>
+        <td>${h.dealer}</td>
+        <td>${h.you}</td>
+        <td>${h.opt}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`:'<div style="text-align:center;color:var(--cream-d);padding:2rem">No hands played yet. Start practicing!</div>'}
+
+  <div style="text-align:center;margin-top:2rem">
+    <button class="btn btn-ghost" onclick="if(confirm('Clear history?')){ST.history=[];saveState();renderStats();}">Clear Hand History</button>
+  </div>`;
+}
+
+// ──────────────────────────────────────────────
+// SETTINGS
+// ──────────────────────────────────────────────
+function openSettings(){
+  // Sync UI
+  document.getElementById('s-decks').value=S2.numDecks;
+  document.getElementById('s-dealer').value=S2.dealerHitSoft17?'h17':'s17';
+  document.getElementById('s-surrender').checked=S2.surrender;
+  document.getElementById('s-das').checked=S2.das;
+  document.getElementById('s-feedback').checked=S2.feedback;
+  document.getElementById('s-hints').checked=S2.hints;
+  document.getElementById('s-focus').value=S2.focus;
+  document.getElementById('s-ai').value=S2.numAI;
+  document.getElementById('s-bankroll').value=S2.startBankroll;
+  document.getElementById('s-minbet').value=S2.minBet;
+  document.getElementById('s-maxbet').value=S2.maxBet;
+  document.getElementById('s-speed').value=S2.speed;
+  document.getElementById('settings-overlay').classList.add('open');
+}
+function closeSettings(){document.getElementById('settings-overlay').classList.remove('open');}
+document.getElementById('settings-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('settings-overlay'))closeSettings();});
+
+// ──────────────────────────────────────────────
+// TOAST
+// ──────────────────────────────────────────────
+function toast(msg){
+  const wrap=document.getElementById('toast-wrap');
+  if(!wrap)return;
+  const t=document.createElement('div');
+  t.className='toast';t.textContent=msg;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(),3100);
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+loadState();
+updatePracticeStats();
+// Lazy init table when visiting
+document.addEventListener('DOMContentLoaded',()=>{});
+</script>
+</body>
+</html>

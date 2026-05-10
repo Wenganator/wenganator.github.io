@@ -27,6 +27,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Blog", url: "/blog.html" },
             { name: "Gallery", url: "/gallery.html" },
             { name: "Games", group: true, children: [
+                { name: "Black Jack", url: "/blackjack.html" },
                 { name: "Blind Rank", url: "/blind-rank.html" },
                 { name: "Chess", url: "/chess.html" },
                 { name: "Connect 4", url: "/connect-four.html" },
