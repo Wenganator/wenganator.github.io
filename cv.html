@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CV — Alex Morgan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F7F4EF;
+      --bg-side:   #EDEAE3;
+      --ink:       #1C1A17;
+      --ink-mid:   #4A4640;
+      --ink-light: #8C867D;
+      --accent:    #8B3A2A;
+      --rule:      #D6D0C8;
+      --serif:     'Cormorant Garamond', Georgia, serif;
+      --sans:      'Jost', sans-serif;
+    }
+
+    html { font-size: 15px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      background: #E8E4DD;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      font-family: var(--sans);
+      color: var(--ink);
+    }
+
+    /* ── Page shell ── */
+    .page {
+      width: 100%;
+      max-width: 900px;
+      background: var(--bg);
+      box-shadow: 0 4px 40px rgba(0,0,0,.14), 0 1px 6px rgba(0,0,0,.08);
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: auto 1fr;
+      animation: rise .7s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Header ── */
+    .header {
+      grid-column: 1 / -1;
+      padding: 3.2rem 3rem 2.4rem;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      width: 4px; height: 100%;
+      background: var(--accent);
+    }
+
+    .name {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 3.4rem;
+      line-height: 1;
+      letter-spacing: -.01em;
+      color: var(--ink);
+    }
+
+    .name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .tagline {
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: .82rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-top: .65rem;
+    }
+
+    .contact-strip {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: .35rem;
+      flex-shrink: 0;
+    }
+
+    .contact-strip a,
+    .contact-strip span {
+      font-size: .78rem;
+      font-weight: 400;
+      letter-spacing: .04em;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .contact-strip a:hover { color: var(--accent); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--bg-side);
+      padding: 2.4rem 1.8rem 3rem;
+      border-right: 1px solid var(--rule);
+      animation: rise .7s .12s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* ── Main ── */
+    .main {
+      padding: 2.4rem 2.8rem 3rem;
+      animation: rise .7s .2s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* ── Section titles ── */
+    .section { margin-bottom: 2.2rem; }
+
+    .section-title {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding-bottom: .5rem;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 1.2rem;
+    }
+
+    /* ── Sidebar blocks ── */
+    .sb-label {
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: .5rem;
+    }
+
+    .skill-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .skill-list li {
+      font-size: .8rem;
+      font-weight: 300;
+      color: var(--ink-mid);
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+    }
+
+    .skill-list li::before {
+      content: '';
+      display: block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Bar skills */
+    .bar-skill { margin-bottom: 1rem; }
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .78rem;
+      font-weight: 400;
+      color: var(--ink-mid);
+      margin-bottom: .3rem;
+    }
+    .bar-track {
+      height: 2px;
+      background: var(--rule);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      transform-origin: left;
+      animation: grow 1s .5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    .sidebar .section { margin-bottom: 2rem; }
+
+    /* ── Main entries ── */
+    .entry { margin-bottom: 1.6rem; }
+    .entry:last-child { margin-bottom: 0; }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: .2rem;
+    }
+
+    .entry-title {
+      font-family: var(--serif);
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .entry-date {
+      font-size: .72rem;
+      font-weight: 400;
+      letter-spacing: .1em;
+      color: var(--ink-light);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .entry-org {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: .92rem;
+      color: var(--ink-mid);
+      margin-bottom: .45rem;
+    }
+
+    .entry-body {
+      font-size: .82rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--ink-mid);
+    }
+
+    .entry-body ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+      padding-left: .9rem;
+    }
+
+    .entry-body ul li::before {
+      content: '–';
+      margin-left: -.9rem;
+      margin-right: .4rem;
+      color: var(--accent);
+    }
+
+    /* Publication special */
+    .pub-entry {
+      padding-left: 1.1rem;
+      border-left: 2px solid var(--rule);
+      margin-bottom: 1.1rem;
+      transition: border-color .2s;
+    }
+    .pub-entry:hover { border-color: var(--accent); }
+    .pub-title {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: .95rem;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .pub-meta {
+      font-size: .75rem;
+      font-weight: 300;
+      color: var(--ink-light);
+      margin-top: .2rem;
+    }
+
+    /* Awards */
+    .award-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: .8rem;
+      padding: .55rem 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: .82rem;
+    }
+    .award-row:last-child { border-bottom: none; }
+    .award-name { font-weight: 400; color: var(--ink-mid); }
+    .award-year {
+      font-size: .7rem;
+      letter-spacing: .08em;
+      color: var(--ink-light);
+      flex-shrink: 0;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; max-width: 100%; }
+      @keyframes rise { from { opacity:1; transform:none; } }
+      @keyframes grow { from { transform: scaleX(1); } }
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 660px) {
+      .page { grid-template-columns: 1fr; }
+      .header { padding: 2rem 1.6rem 1.6rem; flex-direction: column; align-items: flex-start; }
+      .contact-strip { align-items: flex-start; }
+      .sidebar { border-right: none; border-bottom: 1px solid var(--rule); padding: 1.8rem 1.6rem; }
+      .main { padding: 1.8rem 1.6rem; }
+      .name { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<article class="page">
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div>
+      <h1 class="name">Alex <em>Morgan</em></h1>
+      <p class="tagline">Computational Neuroscience &amp; Machine Learning</p>
+    </div>
+    <address class="contact-strip">
+      <a href="mailto:alex.morgan@university.edu">alex.morgan@university.edu</a>
+      <a href="tel:+16175550198">+1 (617) 555-0198</a>
+      <span>Cambridge, MA 02139</span>
+      <a href="https://alexmorgan.io" target="_blank">alexmorgan.io</a>
+      <a href="https://linkedin.com/in/alexmorgan" target="_blank">linkedin.com/in/alexmorgan</a>
+    </address>
+  </header>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+
+    <section class="section">
+      <h2 class="section-title">Education</h2>
+      <div class="entry">
+        <div class="entry-title" style="font-size:.95rem">Ph.D. Neuroscience</div>
+        <div class="entry-org">MIT, Cambridge</div>
+        <div class="entry-date">2020 – Present</div>
+        <p class="entry-body" style="margin-top:.4rem">Advisor: Prof. Sara Lin<br>GPA 4.0 / 4.0</p>
+      </div>
+      <div class="entry">
+        <div class="entry-title" style="font-size:.95rem">B.Sc. Mathematics &amp; CS</div>
+        <div class="entry-org">University of Edinburgh</div>
+        <div class="entry-date">2016 – 2020</div>
+        <p class="entry-body" style="margin-top:.4rem">First Class Honours<br>Thesis Prize 2020</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Technical Skills</h2>
+      <p class="sb-label">Languages</p>
+      <div class="bar-skill">
+        <div class="bar-label"><span>Python</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="bar-skill">
+        <div class="bar-label"><span>MATLAB</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+      </div>
+      <div class="bar-skill">
+        <div class="bar-label"><span>C++ / CUDA</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:65%"></div></div>
+      </div>
+      <div class="bar-skill" style="margin-bottom:1.4rem">
+        <div class="bar-label"><span>R</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      </div>
+
+      <p class="sb-label">Frameworks &amp; Tools</p>
+      <ul class="skill-list">
+        <li>PyTorch &amp; JAX</li>
+        <li>scikit-learn, NumPy, SciPy</li>
+        <li>Nilearn / MNE-Python</li>
+        <li>Docker, Git, Slurm HPC</li>
+        <li>LaTeX &amp; Jupyter</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Languages</h2>
+      <ul class="skill-list">
+        <li>English — Native</li>
+        <li>French — Professional</li>
+        <li>Mandarin — Conversational</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Awards</h2>
+      <div class="award-row">
+        <span class="award-name">NSF Graduate Fellowship</span>
+        <span class="award-year">2021</span>
+      </div>
+      <div class="award-row">
+        <span class="award-name">NeurIPS Best Paper</span>
+        <span class="award-year">2022</span>
+      </div>
+      <div class="award-row">
+        <span class="award-name">MIT Presidential Fellowship</span>
+        <span class="award-year">2020</span>
+      </div>
+      <div class="award-row">
+        <span class="award-name">Edinburgh Thesis Prize</span>
+        <span class="award-year">2020</span>
+      </div>
+    </section>
+
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <section class="section">
+      <h2 class="section-title">Research Profile</h2>
+      <p class="entry-body" style="line-height:1.85">
+        I develop probabilistic models and deep learning architectures to decode the neural basis of
+        decision-making under uncertainty. My work bridges large-scale fMRI / EEG recordings with
+        interpretable machine learning, with the goal of understanding how the brain computes value
+        and adapts to novel environments. I am particularly interested in low-rank latent variable
+        models and their applications to clinical neuroscience.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Research Experience</h2>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Doctoral Researcher</span>
+          <span class="entry-date">Jan 2020 – Present</span>
+        </div>
+        <div class="entry-org">Computational Cognition Lab, MIT BCS</div>
+        <div class="entry-body">
+          <ul>
+            <li>Designed a transformer-based neural decoding pipeline reducing state-estimation error by 34 % on multi-session MEG data.</li>
+            <li>Led a 3-person team producing a large-scale dataset of 120 subjects (reward learning task); data now publicly available.</li>
+            <li>Secured $45 k supplemental grant for neuroimaging computational resources.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Research Intern</span>
+          <span class="entry-date">Jun – Sep 2022</span>
+        </div>
+        <div class="entry-org">DeepMind Neuroscience Team, London</div>
+        <div class="entry-body">
+          <ul>
+            <li>Implemented and benchmarked biologically-constrained recurrent networks for working memory tasks.</li>
+            <li>Co-authored one NeurIPS workshop paper (oral) on structured state-space models for neural time series.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Research Assistant</span>
+          <span class="entry-date">Sep 2018 – May 2020</span>
+        </div>
+        <div class="entry-org">Adaptive Cognition Lab, University of Edinburgh</div>
+        <div class="entry-body">
+          <ul>
+            <li>Analysed EEG correlates of attentional switching using ICA and time-frequency decomposition.</li>
+            <li>Developed an open-source MATLAB toolbox for artefact rejection (350 + GitHub stars).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Selected Publications</h2>
+
+      <div class="pub-entry">
+        <div class="pub-title">Low-rank latent variable models for population-level neural dynamics during reward learning</div>
+        <div class="pub-meta"><strong>Morgan A.</strong>, Chen R., Lin S. — <em>Nature Neuroscience</em>, 2024 · DOI: 10.1038/s41593-024-XXXX</div>
+      </div>
+
+      <div class="pub-entry">
+        <div class="pub-title">Structured state-space models capture the geometry of neural manifolds in working memory</div>
+        <div class="pub-meta"><strong>Morgan A.</strong>, Botvinick M., Kumaran D. — <em>NeurIPS</em>, 2022 (Best Paper) · arXiv:2210.XXXXX</div>
+      </div>
+
+      <div class="pub-entry">
+        <div class="pub-title">Transformer architectures for cross-session decoding of motor cortical activity</div>
+        <div class="pub-meta">Chen R., <strong>Morgan A.</strong>, Lin S. — <em>Journal of Neural Engineering</em>, 2023 · DOI: 10.1088/1741-2552/XXXX</div>
+      </div>
+
+      <div class="pub-entry" style="margin-bottom:0">
+        <div class="pub-title">An open-source pipeline for automated EEG artefact rejection using adaptive thresholding</div>
+        <div class="pub-meta"><strong>Morgan A.</strong>, Souza P. — <em>Journal of Neuroscience Methods</em>, 2020 · DOI: 10.1016/j.jneumeth.2020.XXXX</div>
+      </div>
+    </section>
+
+    <section class="section" style="margin-bottom:0">
+      <h2 class="section-title">Teaching &amp; Service</h2>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Teaching Assistant — 9.40 Introduction to Neural Computation</span>
+          <span class="entry-date">2021 – 2023</span>
+        </div>
+        <div class="entry-org">MIT Department of Brain &amp; Cognitive Sciences</div>
+        <div class="entry-body">Led weekly recitations for 60 students; designed two problem sets on dynamical systems.</div>
+      </div>
+
+      <div class="entry" style="margin-bottom:0">
+        <div class="entry-header">
+          <span class="entry-title">Reviewer</span>
+          <span class="entry-date">2022 – Present</span>
+        </div>
+        <div class="entry-body">NeurIPS, ICLR, ICML, Journal of Neuroscience, PLOS Computational Biology</div>
+      </div>
+    </section>
+
+  </main>
+
+</article>
+
+</body>
+</html>
