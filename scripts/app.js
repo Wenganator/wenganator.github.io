@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Blog", url: "/blog.html" },
             { name: "Gallery", url: "/gallery.html" },
             { name: "Games", group: true, children: [
-                { name: "Black Jack", url: "/blackjack.html" },
+                { name: "Blackjack", url: "/blackjack.html" },
                 { name: "Blind Rank", url: "/blind-rank.html" },
                 { name: "Chess", url: "/chess.html" },
                 { name: "Connect 4", url: "/connect-four.html" },
@@ -35,6 +35,7 @@ window.addEventListener('DOMContentLoaded', event => {
             { name: "Tools", group: true, children: [
                 { name: "Calculators", url: "/calculators.html" },
                 { name: "Clock", url: "/clock.html" },
+                { name: "Divvy", url: "/divvy.html" },
                 { name: "File Viewer", url: "/file-viewer.html" },
                 { name: "Mood Palette", url: "/mood-palette.html" },
                 { name: "Notes App", url: "/notes.html" },
